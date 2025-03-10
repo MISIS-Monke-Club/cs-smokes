@@ -14,20 +14,17 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 load_dotenv()
-# Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DJANGO_DEBUG", "True") == "True"
-ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost").split(" ")
-SECRET_KEY = os.getenv("SECRET_KEY", "SECRET_KEY")
-
+DEBUG = os.getenv("DJANGO_DEBUG", True),
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost"),
+SECRET_KEY = os.getenv("SECRET_KEY", "key"),
 
 # Application definition
 
@@ -79,14 +76,15 @@ WSGI_APPLICATION = "backend.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("DB_NAME"),
-        "USER": os.getenv("DB_USER"),
-        "PASSWORD": os.getenv("DB_PASSWORD"),
+        "NAME": os.getenv("DB_NAME", "database"),
+        "USER": os.getenv("DB_USER", "SA_admin"),
+        "PASSWORD": os.getenv("DB_PASSWORD", "12344321"),
         "HOST": os.getenv("DB_HOST", "db"),
         "PORT": os.getenv("DB_PORT", "5432"),
     },
 }
 
+print(os.getenv("DB_HOST"))
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -130,4 +128,4 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # path to setting.py
-# settings_module = os.getenv("DJANGO_SETTINGS_MODULE", "backend.backend.settings")
+# settings_module = os.getenv("DJANGO_SETTINGS_MODULE", ""),
