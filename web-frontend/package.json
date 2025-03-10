@@ -8,7 +8,7 @@
         "dev": "npx vite",
         "host": "npx vite --host",
         "build": "npx vite build",
-        "lint": "npx eslint .",
+        "lint": "npx eslint ./src",
         "lint:auto-fix": "npx eslint ./src --fix",
         "lint:format": "npx prettier ./src --write"
     },

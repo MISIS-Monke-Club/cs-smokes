@@ -17,6 +17,9 @@ services:
             context: ./web-frontend
         volumes:
             - ./web-frontend:/app
+        env_file: ./.env
+        environment:
+            - VITE_BACKEND_URL=${VITE_BACKEND_URL}
         ports:
             - 7777:5173
         depends_on:
