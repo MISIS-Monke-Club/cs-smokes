@@ -5,6 +5,9 @@ services:
             context: ./frontend
         volumes:
             - ./frontend:/app
+        env_file: ./.env
+        environment:
+            - VITE_BACKEND_URL=${VITE_BACKEND_URL}
         ports:
             - 8080:5173
         depends_on:
@@ -18,19 +21,17 @@ services:
         volumes:
             - ./backend:/backend
         ports:
-            - "3000:8000"
-        env_file:
-            - ./.env
+            - 3000:8000
+        env_file: ./.env
         environment:
-            - PYTHONDONTWRITEBYTECODE=1
-            - PYTHONUNBUFFERED=1
-            - DEBUG=1
-            - SECRET_KEY=SECRET_KEY
+            - DEBUG=${DJANGO_DEBUG}
+            - SECRET_KEY=${SECRET_KEY}
             - DB_NAME=${DB_NAME}
             - DB_USER=${DB_USER}
             - DB_PASSWORD=${DB_PASSWORD}
-            - DB_HOST=db
-            - DB_PORT=5432
+            - DB_HOST=${DB_HOST}
+            - DB_PORT=${DB_PORT}
+            - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
         depends_on:
             - db
         command: sh ./run-server.sh
@@ -39,14 +40,15 @@ services:
         container_name: postgres-db
         image: postgres:15-alpine
         restart: always
-        env_file:
-            - .env
+        env_file: ./.env
         environment:
             - POSTGRES_DB=${DB_NAME}
             - POSTGRES_USER=${DB_USER}
             - POSTGRES_PASSWORD=${DB_PASSWORD}
         ports:
-            - "5433:5432"
+            - 5433:5432
+        healthcheck:
+            test: ["CMD", "-f", "http://localhost:5433"]
         volumes:
             - ./postgres_data:/var/lib/postgresql/data
 

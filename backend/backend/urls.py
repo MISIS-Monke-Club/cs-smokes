@@ -21,7 +21,3 @@ from django.urls import path
 urlpatterns = [
     path("admin/", admin.site.urls),
 ]
-
-
-pre_commmitik_test = 52
-sigma = "test"
