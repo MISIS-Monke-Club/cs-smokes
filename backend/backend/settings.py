@@ -22,9 +22,9 @@ load_dotenv()
 # SECURITY WARNING: keep the secret key used in production secret!
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DJANGO_DEBUG", True),
-ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost"),
-SECRET_KEY = os.getenv("SECRET_KEY", "key"),
+DEBUG = (os.getenv("DJANGO_DEBUG", True),)
+ALLOWED_HOSTS = (os.getenv("DJANGO_ALLOWED_HOSTS", "localhost"),)
+SECRET_KEY = (os.getenv("SECRET_KEY", "key"),)
 
 # Application definition
 
