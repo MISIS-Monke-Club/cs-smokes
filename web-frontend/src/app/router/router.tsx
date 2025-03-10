@@ -17,14 +17,6 @@ export const router = createBrowserRouter(
                     path: "/",
                     element: <Homepage />,
                 },
-                {
-                    path: "grenades",
-                    element: <Grenades />,
-                },
-                {
-                    path: "grenades/:grenadeId",
-                    element: <GrenadePage />,
-                },
             ],
         },
     ],
