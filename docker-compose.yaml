@@ -10,6 +10,18 @@ services:
         depends_on:
             - backend
         command: sh -c "npm i && npm run host"
+    
+    web-frontend:
+        container_name: web-frontend
+        build:
+            context: ./web-frontend
+        volumes:
+            - ./web-frontend:/app
+        ports:
+            - 7777:5173
+        depends_on:
+            - backend
+        command: sh -c "npm i && npm run host"
 
     backend:
         container_name: backend
