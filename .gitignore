@@ -1,6 +1,4 @@
-secrets
 postgres_data/
-/.env
 
 # IDEs
 .idea
