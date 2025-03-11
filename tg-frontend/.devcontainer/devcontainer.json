@@ -3,37 +3,32 @@
 	"dockerComposeFile": [
 		"../../docker-compose.yaml"
 	],
-	"service": "frontend",
-	"workspaceFolder": "/backend",
+	"service": "tg-frontend",
+	"workspaceFolder": "/frontend-app",
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"ms-python.python",
-				"ms-azuretools.vscode-docker",
-				"postman.postman-for-vscode",
-				"streetsidesoftware.code-spell-checker"
+				"streetsidesoftware.code-spell-checker",
+				"dbaeumer.vscode-eslint",
+				"esbenp.prettier-vscode",
+				"christian-kohler.path-intellisense",
+				"vunguyentuan.vscode-css-variables",
+				"mrmlnc.vscode-scss"
 			],
 			"settings": {
 				"cSpell.language": "en,ru",
-				"python.defaultInterpreterPath": "/usr/local/bin/python",
-				"python.linting.enabled": true,
-				"python.linting.pylintEnabled": true,
-				"python.formatting.autopep8Path": "/usr/local/py-utils/bin/autopep8",
-				"python.formatting.blackPath": "/usr/local/py-utils/bin/black",
-				"python.formatting.yapfPath": "/usr/local/py-utils/bin/yapf",
-				"python.linting.banditPath": "/usr/local/py-utils/bin/bandit",
-				"python.linting.flake8Path": "/usr/local/py-utils/bin/flake8",
-				"python.linting.mypyPath": "/usr/local/py-utils/bin/mypy",
-				"python.linting.pycodestylePath": "/usr/local/py-utils/bin/pycodestyle",
-				"python.linting.pydocstylePath": "/usr/local/py-utils/bin/pydocstyle",
-				"python.linting.pylintPath": "/usr/local/py-utils/bin/pylint"
+				"emmet.triggerExpansionOnTab": true,
+				"files.autoSave": "afterDelay",
+				"editor.defaultFormatter": "esbenp.prettier-vscode",
+				"emmet.preferences": {
+					"output.reverseAttributes": true
+				},
+				"prettier.requireConfig": true,
+				"eslint.enable": true,
 			},
 		}
 	},
 	"forwardPorts": [
-		3000
+		8080
 	],
-	"postAttachCommand": "sh tests-on-enter.sh",
-	"remoteUser": "service-user",
-	"containerUser": "service-user"
 }
