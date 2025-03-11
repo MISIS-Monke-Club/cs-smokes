@@ -1,7 +1,29 @@
-#run husky pre-commit hook only if frontend changed
-if git diff --name-only --cached | grep 'frontend/'; then
+#run husky pre-commit hook only if frontend or web-frontend changed
+frontend_changed=$(git diff --name-only --cached | grep 'frontend/')
+web_frontend_changed=$(git diff --name-only --cached | grep 'web-frontend/')
+
+if [ -n "$frontend_changed" ] && [ -n "$web_frontend_changed" ]; then
+  echo "BOTH FRONTEND AND WEB-FRONTEND FOLDERS CHANGED --> starting husky..."
+  cd ./frontend
+  npm run lint
+  npm run lint:auto-fix
+  npm run lint:format
+  git add .
+  cd ../web-frontend
+  npm run lint
+  npm run lint:auto-fix
+  npm run lint:format
+  git add .
+elif [ -n "$frontend_changed" ]; then
   echo "FRONTEND FOLDER CHANGED --> starting husky..."
   cd ./frontend
+  npm run lint
+  npm run lint:auto-fix
+  npm run lint:format
+  git add .
+elif [ -n "$web_frontend_changed" ]; then
+  echo "WEB-FRONTEND FOLDER CHANGED --> starting husky..."
+  cd ./web-frontend
   npm run lint
   npm run lint:auto-fix
   npm run lint:format
