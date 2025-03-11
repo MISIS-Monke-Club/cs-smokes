@@ -4,10 +4,12 @@ services:
         build:
             context: ./frontend
         volumes:
-            - ./frontend:/app
+            - ./frontend:/monorepo/frontend
+            - ./.git:/monorepo/.git
         env_file: ./.env
         environment:
             - VITE_BACKEND_URL=${VITE_BACKEND_URL}
+            - HUSKY=${HUSKY}
         ports:
             - 8080:5173
         depends_on:
@@ -19,10 +21,12 @@ services:
         build:
             context: ./web-frontend
         volumes:
-            - ./web-frontend:/app
+            - ./web-frontend:/monorepo/web-frontend
+            - ./.git:/monorepo/.git
         env_file: ./.env
         environment:
             - VITE_BACKEND_URL=${VITE_BACKEND_URL}
+            - HUSKY=${HUSKY}
         ports:
             - 7777:5173
         depends_on:

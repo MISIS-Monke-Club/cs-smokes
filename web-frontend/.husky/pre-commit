@@ -1,6 +1,6 @@
 #run husky pre-commit hook only if frontend changed
 if git diff --name-only --cached | grep 'web-frontend/'; then
-  echo "FRONTEND FOLDER CHANGED --> starting husky..."
+  echo "WEB-FRONTEND FOLDER CHANGED --> starting husky..."
   cd ./web-frontend
   npm run lint
   npm run lint:auto-fix
