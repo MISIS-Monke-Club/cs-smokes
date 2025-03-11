@@ -1,6 +1,0 @@
-DEBUG=True
-SECRET_KEY=your_secret_key
-DATABASE_URL=your_database_url
-ALLOWED_HOSTS=your_allowed_hosts
-DJANGO_SETTINGS_MODULE=backend.settings  
-
