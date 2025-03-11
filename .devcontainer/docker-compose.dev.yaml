@@ -12,6 +12,13 @@ services:
           service: frontend
       volumes:
         - ./frontend:/workspace/frontend
+
+    web-frontend: 
+      extends:
+          file: ./docker-compose.yaml
+          service: web-frontend
+      volumes:
+        - ./web-frontend:/workspace/web-frontend
         
     db:
       extends:
