@@ -10,8 +10,7 @@
         "build": "npx vite build",
         "lint": "npx eslint ./src",
         "lint:auto-fix": "npx eslint ./src --fix",
-        "lint:format": "npx prettier ./src --write",
-        "prepare": "cd .. && husky ./web-frontend/.husky"
+        "lint:format": "npx prettier ./src --write"
     },
     "dependencies": {
         "@radix-ui/react-dialog": "^1.1.6",
