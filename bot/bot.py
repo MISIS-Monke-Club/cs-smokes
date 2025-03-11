@@ -2,13 +2,13 @@ import logging
 import asyncio
 import os
 
-# from dotenv import load_dotenv
+from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher, types
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
 from aiogram.filters import CommandStart
 
 # Getting environment variables from .env file
-# load_dotenv(override=False)
+load_dotenv(override=False)
 
 TOKEN = os.getenv("TOKEN", "bot_token")
 WEB_APP_URL = os.getenv("WEB_APP_URL", "https://google.com")
