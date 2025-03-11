@@ -6,12 +6,12 @@ services:
       volumes:
         - ./backend:/workspace/backend
 
-    frontend: 
+    tg-frontend: 
       extends:
           file: ./docker-compose.yaml
-          service: frontend
+          service: tg-frontend
       volumes:
-        - ./frontend:/workspace/frontend
+        - ./tg-frontend:/workspace/frontend
         
     db:
       extends:
