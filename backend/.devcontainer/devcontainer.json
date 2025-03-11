@@ -14,7 +14,7 @@
 				"streetsidesoftware.code-spell-checker"
 			],
 			"settings": {
-				"cSpell.language": "en, ru",
+				"cSpell.language": "en,ru",
 				"python.defaultInterpreterPath": "/usr/local/bin/python",
 				"python.linting.enabled": true,
 				"python.linting.pylintEnabled": true,
@@ -33,6 +33,7 @@
 	"forwardPorts": [
 		3000
 	],
+	"postAttachCommand": "sh tests-on-enter.sh",
 	"remoteUser": "service-user",
 	"containerUser": "service-user"
 }

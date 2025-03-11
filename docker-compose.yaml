@@ -68,6 +68,10 @@ services:
             context: ./bot
         volumes:
             - ./bot:/bot
+        env_file: ./.env
+        environment:
+            - TOKEN=${TOKEN}
+            - WEB_APP_URL=${WEB_APP_URL}
         depends_on:
             - backend
         command: sh -c "python bot.py"
