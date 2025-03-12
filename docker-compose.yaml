@@ -9,7 +9,7 @@ services:
         env_file: ./.env
         environment:
             - VITE_BACKEND_URL=${VITE_BACKEND_URL}
-            - HUSKY=${FRONTEND_LINTING}
+            - HUSKY=${FRONTEND_LINTING:?Variable FRONTEND_LINTING is required}
         ports:
             - 8080:5173
         depends_on:
@@ -25,7 +25,7 @@ services:
         env_file: ./.env
         environment:
             - VITE_BACKEND_URL=${VITE_BACKEND_URL}
-            - HUSKY=${FRONTEND_LINTING}
+            - HUSKY=${FRONTEND_LINTING:?Variable FRONTEND_LINTING is required}
         ports:
             - 7777:5173
         depends_on:
@@ -42,7 +42,7 @@ services:
             - 3000:8000
         env_file: ./.env
         environment:
-            - DEBUG=${DJANGO_DEBUG}
+            - DEBUG=${DJANGO_DEBUG:?Variable DJANGO_DEBUG required}
             - SECRET_KEY=${SECRET_KEY}
             - DB_NAME=${DB_NAME}
             - DB_USER=${DB_USER}
@@ -86,6 +86,10 @@ services:
             context: ./bot
         volumes:
             - ./bot:/bot
+        env_file: ./.env
+        environment:
+            - TOKEN=${TOKEN}
+            - WEB_APP_URL=${WEB_APP_URL}
         depends_on:
             - backend
         command: sh -c "python bot.py"
