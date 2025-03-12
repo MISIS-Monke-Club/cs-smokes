@@ -1,4 +1,4 @@
-name: NPM Build
+name: CI for frontend and web-frontend
 on: [push, pull_request]
 
 jobs:
