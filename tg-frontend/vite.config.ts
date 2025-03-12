@@ -2,11 +2,20 @@
 import path from "path"
 
 import react from "@vitejs/plugin-react"
-import { defineConfig } from "vite"
+import { defineConfig, loadEnv } from "vite"
+import { z } from "zod"
 import tailwindcss from "@tailwindcss/vite"
 
+const envSchema = z.object({
+    VITE_BACKEND_URL: z.string().url(),
+})
+
 // https://vitejs.dev/config/
-export default defineConfig(() => {
+export default defineConfig(({ mode }) => {
+    // Validate env
+    const env = Object.assign({}, process.env, loadEnv(mode, process.cwd()))
+    envSchema.parse(env)
+
     return {
         plugins: [react(), tailwindcss()],
         resolve: {
