@@ -2,6 +2,7 @@ secrets
 postgres_data
 /.env
 .DS_Store
+.vite
 
 # IDEs
 .idea

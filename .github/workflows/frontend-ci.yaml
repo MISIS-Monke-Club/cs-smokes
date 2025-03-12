@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        project: [frontend, web-frontend]
+        project: [tg-frontend, web-frontend]
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
