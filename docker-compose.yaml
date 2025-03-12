@@ -9,7 +9,7 @@ services:
         env_file: ./.env
         environment:
             - VITE_BACKEND_URL=${VITE_BACKEND_URL}
-            - HUSKY=${HUSKY}
+            - HUSKY=${FRONTEND_LINTING}
         ports:
             - 8080:5173
         depends_on:
@@ -25,6 +25,7 @@ services:
         env_file: ./.env
         environment:
             - VITE_BACKEND_URL=${VITE_BACKEND_URL}
+            - HUSKY=${FRONTEND_LINTING}
         ports:
             - 7777:5173
         depends_on:
