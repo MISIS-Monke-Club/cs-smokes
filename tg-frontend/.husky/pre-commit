@@ -28,7 +28,7 @@ if echo "$CHANGED_FILES" | grep -qE '^tg-frontend/' && echo "$CHANGED_FILES" | g
   run_lint "tg-frontend"
   run_lint "web-frontend"
 elif echo "$CHANGED_FILES" | grep -qE '^tg-frontend/'; then
-  echo "FRONTEND CHANGES DETECTED --> running tests..."
+  echo "TG-FRONTEND CHANGES DETECTED --> running tests..."
   run_lint "tg-frontend"
 elif echo "$CHANGED_FILES" | grep -qE '^web-frontend/'; then
   echo "WEB-FRONTEND CHANGES DETECTED --> running tests..."
