@@ -1,31 +1,29 @@
 #run husky pre-commit hook only if frontend or web-frontend changed
-frontend_changed=$(git diff --name-only --cached | grep 'frontend/')
-web_frontend_changed=$(git diff --name-only --cached | grep 'web-frontend/')
+REPO_ROOT=$(git rev-parse --show-toplevel)
+CURRENT_DIR=$(pwd)
 
-if [ -n "$frontend_changed" ] && [ -n "$web_frontend_changed" ]; then
-  echo "BOTH FRONTEND AND WEB-FRONTEND FOLDERS CHANGED --> starting husky..."
-  cd ./frontend
+CHANGED_FILES=$(git diff --cached --name-only)
+
+run_lint() {
+  echo "Testing $1 folder..."
+  cd "$REPO_ROOT/$1" || exit 1
   npm run lint
   npm run lint:auto-fix
   npm run lint:format
   git add .
-  cd ../web-frontend
-  npm run lint
-  npm run lint:auto-fix
-  npm run lint:format
-  git add .
-elif [ -n "$frontend_changed" ]; then
-  echo "FRONTEND FOLDER CHANGED --> starting husky..."
-  cd ./frontend
-  npm run lint
-  npm run lint:auto-fix
-  npm run lint:format
-  git add .
-elif [ -n "$web_frontend_changed" ]; then
-  echo "WEB-FRONTEND FOLDER CHANGED --> starting husky..."
-  cd ./web-frontend
-  npm run lint
-  npm run lint:auto-fix
-  npm run lint:format
-  git add .
+  cd "$CURRENT_DIR" || exit 1
+}
+
+if echo "$CHANGED_FILES" | grep -qE '^frontend/' && echo "$CHANGED_FILES" | grep -qE '^web-frontend/'; then
+  echo "BOTH FOLDERS: WEB-FRONTEND AND FRONTEND CHANGED -> running test for both of them..."
+  run_lint "frontend"
+  run_lint "web-frontend"
+elif echo "$CHANGED_FILES" | grep -qE '^frontend/'; then
+  echo "FRONTEND CHANGES DETECTED --> running tests..."
+  run_lint "frontend"
+elif echo "$CHANGED_FILES" | grep -qE '^web-frontend/'; then
+  echo "WEB-FRONTEND CHANGES DETECTED --> running tests..."
+  run_lint "web-frontend"
+else
+  echo "No relevant changes detected. Skipping tests."
 fi
