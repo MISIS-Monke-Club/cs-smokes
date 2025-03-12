@@ -77,6 +77,9 @@ paths:
               schema:
                 type: object
                 properties:
+                  User_ID:
+                    type: string
+
                   token:
                     type: string
         '401':
