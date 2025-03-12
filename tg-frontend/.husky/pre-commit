@@ -23,13 +23,13 @@ run_lint() {
 }
 
 
-if echo "$CHANGED_FILES" | grep -qE '^frontend/' && echo "$CHANGED_FILES" | grep -qE '^web-frontend/'; then
+if echo "$CHANGED_FILES" | grep -qE '^tg-frontend/' && echo "$CHANGED_FILES" | grep -qE '^web-frontend/'; then
   echo "BOTH FOLDERS: WEB-FRONTEND AND FRONTEND CHANGED -> running test for both of them..."
-  run_lint "frontend"
+  run_lint "tg-frontend"
   run_lint "web-frontend"
-elif echo "$CHANGED_FILES" | grep -qE '^frontend/'; then
+elif echo "$CHANGED_FILES" | grep -qE '^tg-frontend/'; then
   echo "FRONTEND CHANGES DETECTED --> running tests..."
-  run_lint "frontend"
+  run_lint "tg-frontend"
 elif echo "$CHANGED_FILES" | grep -qE '^web-frontend/'; then
   echo "WEB-FRONTEND CHANGES DETECTED --> running tests..."
   run_lint "web-frontend"
