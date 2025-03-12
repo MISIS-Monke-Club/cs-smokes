@@ -4,10 +4,12 @@ services:
         build:
             context: ./tg-frontend
         volumes:
-            - ./tg-frontend:/app
+            - ./tg-frontend:/monorepo/tg-frontend
+            - ./.git:/monorepo/.git
         env_file: ./.env
         environment:
             - VITE_BACKEND_URL=${VITE_BACKEND_URL}
+            - HUSKY=${FRONTEND_LINTING:?Variable FRONTEND_LINTING is required}
         ports:
             - 8080:5173
         depends_on:
@@ -19,10 +21,11 @@ services:
         build:
             context: ./web-frontend
         volumes:
-            - ./web-frontend:/app
+            - ./web-frontend:/web-frontend
         env_file: ./.env
         environment:
             - VITE_BACKEND_URL=${VITE_BACKEND_URL}
+            - HUSKY=${FRONTEND_LINTING:?Variable FRONTEND_LINTING is required}
         ports:
             - 7777:5173
         depends_on:
@@ -39,7 +42,7 @@ services:
             - 3000:8000
         env_file: ./.env
         environment:
-            - DEBUG=${DJANGO_DEBUG}
+            - DEBUG=${DJANGO_DEBUG:?Variable DJANGO_DEBUG required}
             - SECRET_KEY=${SECRET_KEY}
             - DB_NAME=${DB_NAME}
             - DB_USER=${DB_USER}

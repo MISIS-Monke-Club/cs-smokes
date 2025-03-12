@@ -1,9 +1,38 @@
-#run husky pre-commit hook only if frontend changed
-if git diff --name-only --cached | grep 'frontend/'; then
-  echo "FRONTEND FOLDER CHANGED --> starting husky..."
-  cd ./frontend
-  npm run lint
+#run husky pre-commit hook only if frontend or web-frontend changed
+REPO_ROOT=$(git rev-parse --show-toplevel)
+CURRENT_DIR=$(pwd)
+
+CHANGED_FILES=$(git diff --cached --name-only)
+
+handle_error() {
+  echo "$1 failed in $2. Restoring staged changes..."
+  git restore --staged "$REPO_ROOT/$2"
+  exit 1
+}
+
+run_lint() {
+  echo "Testing $1 folder..."
+  cd "$REPO_ROOT/$1" || exit 1
+
+  npm run lint || handle_error "Linting" "$1"
   npm run lint:auto-fix
   npm run lint:format
+
   git add .
+  cd "$CURRENT_DIR" || exit 1
+}
+
+
+if echo "$CHANGED_FILES" | grep -qE '^tg-frontend/' && echo "$CHANGED_FILES" | grep -qE '^web-frontend/'; then
+  echo "BOTH FOLDERS: WEB-FRONTEND AND FRONTEND CHANGED -> running test for both of them..."
+  run_lint "tg-frontend"
+  run_lint "web-frontend"
+elif echo "$CHANGED_FILES" | grep -qE '^tg-frontend/'; then
+  echo "FRONTEND CHANGES DETECTED --> running tests..."
+  run_lint "tg-frontend"
+elif echo "$CHANGED_FILES" | grep -qE '^web-frontend/'; then
+  echo "WEB-FRONTEND CHANGES DETECTED --> running tests..."
+  run_lint "web-frontend"
+else
+  echo "No relevant changes detected. Skipping tests."
 fi

@@ -4,7 +4,7 @@
 		"../../docker-compose.yaml"
 	],
 	"service": "tg-frontend",
-	"workspaceFolder": "/frontend-app",
+	"workspaceFolder": "/monorepo/tg-frontend",
 	"customizations": {
 		"vscode": {
 			"extensions": [
