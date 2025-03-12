@@ -3,17 +3,23 @@ on: [push, pull_request]
 
 jobs:
   build:
-      runs-on: ubuntu-latest
-      steps:
-        - name: Checkout Repository
-          uses: actions/checkout@v2
-        - name: Setup NodeJS
-          uses: actions/setup-node@v4
-          with:
-            node-version: 20
-        - name: Install Dependencies
-          run: npm install
-        - name: Build Package
-          run: npm run build
-        - name: Run Linting
-          run: npm run lint
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        project: [frontend, web-frontend]
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Setup NodeJS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install Dependencies
+        run: npm install
+        working-directory: ./${{ matrix.project }}
+      - name: Build Package
+        run: npm run build
+        working-directory: ./${{ matrix.project }}
+      - name: Run Linting
+        run: npm run lint
+        working-directory: ./${{ matrix.project }}
