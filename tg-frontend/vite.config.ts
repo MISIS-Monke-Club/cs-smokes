@@ -17,6 +17,10 @@ export default defineConfig(({ mode }) => {
     envSchema.parse(env)
 
     return {
+        server: {
+            host: true,
+            allowedHosts: true,
+        },
         plugins: [react(), tailwindcss()],
         resolve: {
             alias: {

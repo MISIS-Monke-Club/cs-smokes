@@ -7,6 +7,7 @@ import { router } from "./router/router"
 import { QueryClientProvider } from "@tanstack/react-query"
 import { client } from "@shared/api"
 import { ThemeProvider } from "./providers/theme-provider"
+import { Toaster } from "sonner"
 
 export function App() {
     return (
@@ -18,6 +19,12 @@ export function App() {
                         future={{
                             v7_startTransition: true,
                         }}
+                    />
+                    <Toaster
+                        duration={3500}
+                        closeButton
+                        richColors
+                        theme='system'
                     />
                 </ThemeProvider>
             </QueryClientProvider>

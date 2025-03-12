@@ -23,7 +23,9 @@ export function Header() {
             </nav>
             <div className={classes.actions}>
                 <Button>Sign up</Button>
-                <Button variant='secondary'>Login</Button>
+                <Button variant='secondary' asChild>
+                    <Link to='/login'>Login</Link>
+                </Button>
             </div>
         </header>
     )

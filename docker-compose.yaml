@@ -10,6 +10,7 @@ services:
         environment:
             - VITE_BACKEND_URL=${VITE_BACKEND_URL}
             - HUSKY=${FRONTEND_LINTING:?Variable FRONTEND_LINTING is required}
+            - WEB_APP_URL=${WEB_APP_URL}
         ports:
             - 8080:5173
         depends_on:

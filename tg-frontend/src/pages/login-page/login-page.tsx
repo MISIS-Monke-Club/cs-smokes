@@ -5,9 +5,10 @@ import { Button } from "@shared/ui/button"
 import { Input } from "@shared/ui/input"
 import { useMutation } from "@tanstack/react-query"
 import { sessionApi } from "@entities/session"
+import { toast } from "sonner"
 
 export function LoginPage() {
-    const { mutate } = useMutation(sessionApi.loginTg())
+    const { mutateAsync } = useMutation(sessionApi.loginTg())
 
     function handleSubmit(e: FormEvent<HTMLFormElement>) {
         // Prevents page reload
@@ -22,7 +23,14 @@ export function LoginPage() {
             Object.fromEntries(formData.entries())
         )
 
-        mutate({ initData: formValues.login })
+        mutateAsync({ initData: formValues.login })
+            .then(() => {
+                toast.success("Данные успешно отправлены на /login/tg")
+            })
+            .catch((err) => {
+                console.error(err)
+                toast.error("Произошла ошибка отправки данных")
+            })
     }
 
     return (
