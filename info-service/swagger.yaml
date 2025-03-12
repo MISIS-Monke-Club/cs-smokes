@@ -7,10 +7,115 @@ servers:
   - url: 'http://localhost:3000/'
     description: Сервер бекенда
 
+tags:
+  - name: AUTH
+    description: Авторизация
+  - name: Maps
+    description: Карты
+  - name: Lineups
+    description: Раскидки
+  - name: LineupTypes
+    description: Типы раскидок
+  - name: GrenadeClasses
+    description: Классы гранат
+  - name: Users
+    description: Пользователи
+  - name: Admins
+    description: Администраторы
+  - name: Favorites
+    description: Избранное
+
 paths:
+  /login:
+    post:
+      tags:
+        - AUTH
+      summary: Логин
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Успешный логин
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jwt_token:
+                    type: string
+        '401':
+          description: Неправильный логин или пароль
+
+  /login/tg:
+    post:
+      tags:
+        - AUTH
+      summary: Логин через тг
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tg_token:
+                  type: string
+      responses:
+        '200':
+          description: Успешный логин
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+        '401':
+          description: Что-то пошло не так, попробуйте перезайти
+  /register:
+    post:
+      tags:
+        - AUTH
+      summary: Регистрация
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+                email:
+                  type: string
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+      responses:
+        '201':
+          description: Успешная регистрация
+        '400':
+          description: Неправильные данные
+
   /maps:
     get:
+      tags:
+        - Maps
       summary: Получить все карты
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: Список всех карт
@@ -21,20 +126,37 @@ paths:
                 items:
                   $ref: '#/components/schemas/Map'
     post:
+      tags:
+        - Maps
       summary: Создать новую карту
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Map'
+              type: object
+              properties:
+                name:
+                  type: string
+                link:
+                  type: string
+                image_link:
+                  type: string
       responses:
         '201':
           description: Карта успешно создана
+        '401':
+          description: Неавторизованный доступ
 
   /maps/{id}:
     get:
+      tags:
+        - Maps
       summary: Получить карту по ID
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -49,7 +171,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/Map'
     put:
+      tags:
+        - Maps
       summary: Полностью обновить карту по ID
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -61,12 +187,25 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Map'
+              type: object
+              properties:
+                name:
+                  type: string
+                link:
+                  type: string
+                image_link:
+                  type: string
       responses:
         '200':
           description: Карта успешно обновлена
+        '401':
+          description: Неавторизованный доступ
     patch:
+      tags:
+        - Maps
       summary: Частично обновить карту по ID
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -78,12 +217,25 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MapUpdate'
+              type: object
+              properties:
+                name:
+                  type: string
+                link:
+                  type: string
+                image_link:
+                  type: string
       responses:
         '200':
           description: Карта частично обновлена
+        '401':
+          description: Неавторизованный доступ
     delete:
+      tags:
+        - Maps
       summary: Удалить карту по ID
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -93,10 +245,16 @@ paths:
       responses:
         '204':
           description: Карта успешно удалена
+        '401':
+          description: Неавторизованный доступ
 
   /lineups:
     get:
+      tags:
+        - Lineups
       summary: Получить все раскидки
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: Список всех раскидок
@@ -107,20 +265,51 @@ paths:
                 items:
                   $ref: '#/components/schemas/Lineup'
     post:
+      tags:
+        - Lineups
       summary: Создать новую раскидку
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Lineup'
+              type: object
+              properties:
+                map_id:
+                  type: integer
+                grenade_class_id:
+                  type: integer
+                type_id:
+                  type: integer
+                link_to_video:
+                  type: string
+                user_id:
+                  type: integer
+                title:
+                  type: string
+                description:
+                  type: string
+                approved:
+                  type: boolean
+                views:
+                  type: integer
+                preview_image_link:
+                  type: string
       responses:
         '201':
           description: Раскидка успешно создана
+        '401':
+          description: Неавторизованный доступ
 
   /lineups/{id}:
     get:
+      tags:
+        - Lineups
       summary: Получить раскидку по ID
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -135,7 +324,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/Lineup'
     put:
+      tags:
+        - Lineups
       summary: Полностью обновить раскидку по ID
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -147,12 +340,39 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Lineup'
+              type: object
+              properties:
+                map_id:
+                  type: integer
+                grenade_class_id:
+                  type: integer
+                type_id:
+                  type: integer
+                link_to_video:
+                  type: string
+                user_id:
+                  type: integer
+                title:
+                  type: string
+                description:
+                  type: string
+                approved:
+                  type: boolean
+                views:
+                  type: integer
+                preview_image_link:
+                  type: string
       responses:
         '200':
           description: Раскидка успешно обновлена
+        '401':
+          description: Неавторизованный доступ
     patch:
+      tags:
+        - Lineups
       summary: Частично обновить раскидку по ID
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -164,12 +384,39 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LineupUpdate'
+              type: object
+              properties:
+                map_id:
+                  type: integer
+                grenade_class_id:
+                  type: integer
+                type_id:
+                  type: integer
+                link_to_video:
+                  type: string
+                user_id:
+                  type: integer
+                title:
+                  type: string
+                description:
+                  type: string
+                approved:
+                  type: boolean
+                views:
+                  type: integer
+                preview_image_link:
+                  type: string
       responses:
         '200':
           description: Раскидка частично обновлена
+        '401':
+          description: Неавторизованный доступ
     delete:
+      tags:
+        - Lineups
       summary: Удалить раскидку по ID
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -179,10 +426,16 @@ paths:
       responses:
         '204':
           description: Раскидка успешно удалена
+        '401':
+          description: Неавторизованный доступ
 
   /lineup-types:
     get:
+      tags:
+        - LineupTypes
       summary: Получить все типы раскидок
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: Список всех типов раскидок
@@ -193,82 +446,35 @@ paths:
                 items:
                   $ref: '#/components/schemas/LineupType'
     post:
+      tags:
+        - LineupTypes
       summary: Создать новый тип раскидки
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LineupType'
+              type: object
+              properties:
+                key_name:
+                  type: string
+                value_id:
+                  type: integer
       responses:
         '201':
           description: Тип раскидки успешно создан
-
-  /lineup-types/{id}:
-    get:
-      summary: Получить тип раскидки по ID
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Информация о типе раскидки
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/LineupType'
-    put:
-      summary: Полностью обновить тип раскидки по ID
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/LineupType'
-      responses:
-        '200':
-          description: Тип раскидки успешно обновлен
-    patch:
-      summary: Частично обновить тип раскидки по ID
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/LineupTypeUpdate'
-      responses:
-        '200':
-          description: Тип раскидки частично обновлен
-    delete:
-      summary: Удалить тип раскидки по ID
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '204':
-          description: Тип раскидки успешно удален
+        '401':
+          description: Неавторизованный доступ
 
   /lineup-type-values:
     get:
+      tags:
+        - LineupTypes
       summary: Получить все значения типов раскидок
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: Список всех значений типов раскидок
@@ -279,82 +485,33 @@ paths:
                 items:
                   $ref: '#/components/schemas/LineupTypeValues'
     post:
+      tags:
+        - LineupTypes
       summary: Создать новое значение типа раскидки
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LineupTypeValues'
+              type: object
+              properties:
+                value:
+                  type: string
       responses:
         '201':
           description: Значение типа раскидки успешно создано
-
-  /lineup-type-values/{id}:
-    get:
-      summary: Получить значение типа раскидки по ID
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Информация о значении типа раскидки
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/LineupTypeValues'
-    put:
-      summary: Полностью обновить значение типа раскидки по ID
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/LineupTypeValues'
-      responses:
-        '200':
-          description: Значение типа раскидки успешно обновлено
-    patch:
-      summary: Частично обновить значение типа раскидки по ID
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/LineupTypeValuesUpdate'
-      responses:
-        '200':
-          description: Значение типа раскидки частично обновлено
-    delete:
-      summary: Удалить значение типа раскидки по ID
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '204':
-          description: Значение типа раскидки успешно удалено
+        '401':
+          description: Неавторизованный доступ
 
   /grenade-classes:
     get:
+      tags:
+        - GrenadeClasses
       summary: Получить все классы гранат
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: Список всех классов гранат
@@ -365,82 +522,33 @@ paths:
                 items:
                   $ref: '#/components/schemas/GrenadeClass'
     post:
+      tags:
+        - GrenadeClasses
       summary: Создать новый класс гранаты
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/GrenadeClass'
+              type: object
+              properties:
+                name:
+                  type: string
       responses:
         '201':
           description: Класс гранаты успешно создан
-
-  /grenade-classes/{id}:
-    get:
-      summary: Получить класс гранаты по ID
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Информация о классе гранаты
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GrenadeClass'
-    put:
-      summary: Полностью обновить класс гранаты по ID
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/GrenadeClass'
-      responses:
-        '200':
-          description: Класс гранаты успешно обновлен
-    patch:
-      summary: Частично обновить класс гранаты по ID
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/GrenadeClassUpdate'
-      responses:
-        '200':
-          description: Класс гранаты частично обновлен
-    delete:
-      summary: Удалить класс гранаты по ID
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '204':
-          description: Класс гранаты успешно удален
+        '401':
+          description: Неавторизованный доступ
 
   /users:
     get:
+      tags:
+        - Users
       summary: Получить данные всех пользователей
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: Список всех пользователей (только id и username)
@@ -451,20 +559,47 @@ paths:
                 items:
                   $ref: '#/components/schemas/User'
     post:
+      tags:
+        - Users
       summary: Создать нового пользователя
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              type: object
+              properties:
+                username:
+                  type: string
+                avatar_url:
+                  type: string
+                steam_link:
+                  type: string
+                tg_id:
+                  type: integer
+                email:
+                  type: string
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                is_banned:
+                  type: boolean
       responses:
         '201':
           description: Пользователь успешно создан
+        '401':
+          description: Неавторизованный доступ
 
   /users/{id}:
     get:
+      tags:
+        - Users
       summary: Получить данные пользователя по ID
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -479,7 +614,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
     put:
+      tags:
+        - Users
       summary: Полностью обновить пользователя по ID
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -491,12 +630,35 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              type: object
+              properties:
+                username:
+                  type: string
+                avatar_url:
+                  type: string
+                steam_link:
+                  type: string
+                tg_id:
+                  type: integer
+                email:
+                  type: string
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                is_banned:
+                  type: boolean
       responses:
         '200':
           description: Пользователь успешно обновлен
+        '401':
+          description: Неавторизованный доступ
     patch:
+      tags:
+        - Users
       summary: Частично обновить пользователя по ID
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -508,12 +670,35 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserUpdate'
+              type: object
+              properties:
+                username:
+                  type: string
+                avatar_url:
+                  type: string
+                steam_link:
+                  type: string
+                tg_id:
+                  type: integer
+                email:
+                  type: string
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                is_banned:
+                  type: boolean
       responses:
         '200':
           description: Пользователь частично обновлен
+        '401':
+          description: Неавторизованный доступ
     delete:
+      tags:
+        - Users
       summary: Удалить пользователя по ID
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -523,10 +708,16 @@ paths:
       responses:
         '204':
           description: Пользователь успешно удален
+        '401':
+          description: Неавторизованный доступ
 
   /admins:
     get:
+      tags:
+        - Admins
       summary: Получить всех администраторов
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: Список всех администраторов
@@ -537,20 +728,35 @@ paths:
                 items:
                   $ref: '#/components/schemas/Admins'
     post:
+      tags:
+        - Admins
       summary: Назначить администратора
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Admins'
+              type: object
+              properties:
+                user_id:
+                  type: integer
+                admin_type_id:
+                  type: integer
       responses:
         '201':
           description: Администратор успешно назначен
+        '401':
+          description: Неавторизованный доступ
 
   /admins/{id}:
     get:
+      tags:
+        - Admins
       summary: Получить администратора по ID
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -565,7 +771,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/Admins'
     patch:
+      tags:
+        - Admins
       summary: Частично обновить администратора по ID
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -577,12 +787,21 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AdminsUpdate'
+              type: object
+              properties:
+                admin_type_id:
+                  type: integer
       responses:
         '200':
           description: Администратор частично обновлен
+        '401':
+          description: Неавторизованный доступ
     delete:
+      tags:
+        - Admins
       summary: Удалить администратора по ID
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -592,10 +811,16 @@ paths:
       responses:
         '204':
           description: Администратор успешно удален
+        '401':
+          description: Неавторизованный доступ
 
   /admin-types:
     get:
+      tags:
+        - Admins
       summary: Получить все типы администраторов
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: Список всех типов администраторов
@@ -606,20 +831,37 @@ paths:
                 items:
                   $ref: '#/components/schemas/AdminType'
     post:
+      tags:
+        - Admins
       summary: Создать новый тип администратора
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AdminType'
+              type: object
+              properties:
+                is_superuser:
+                  type: boolean
+                is_base_admin:
+                  type: boolean
+                is_editor:
+                  type: boolean
       responses:
         '201':
           description: Тип администратора успешно создан
+        '401':
+          description: Неавторизованный доступ
 
   /admin-types/{id}:
     get:
+      tags:
+        - Admins
       summary: Получить тип администратора по ID
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -634,7 +876,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/AdminType'
     put:
+      tags:
+        - Admins
       summary: Полностью обновить тип администратора по ID
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -646,12 +892,25 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AdminType'
+              type: object
+              properties:
+                is_superuser:
+                  type: boolean
+                is_base_admin:
+                  type: boolean
+                is_editor:
+                  type: boolean
       responses:
         '200':
           description: Тип администратора успешно обновлен
+        '401':
+          description: Неавторизованный доступ
     patch:
+      tags:
+        - Admins
       summary: Частично обновить тип администратора по ID
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -663,12 +922,25 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AdminTypeUpdate'
+              type: object
+              properties:
+                is_superuser:
+                  type: boolean
+                is_base_admin:
+                  type: boolean
+                is_editor:
+                  type: boolean
       responses:
         '200':
           description: Тип администратора частично обновлен
+        '401':
+          description: Неавторизованный доступ
     delete:
+      tags:
+        - Admins
       summary: Удалить тип администратора по ID
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -678,10 +950,16 @@ paths:
       responses:
         '204':
           description: Тип администратора успешно удален
+        '401':
+          description: Неавторизованный доступ
 
   /favorites:
     get:
+      tags:
+        - Favorites
       summary: Получить все избранные раскидки
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: Список всех избранных раскидок
@@ -692,20 +970,33 @@ paths:
                 items:
                   $ref: '#/components/schemas/Favorites'
     post:
+      tags:
+        - Favorites
       summary: Добавить раскидку в избранное
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Favorites'
+              type: object
+              properties:
+                grenade_id:
+                  type: integer
       responses:
         '201':
           description: Раскидка успешно добавлена в избранное
+        '401':
+          description: Неавторизованный доступ
 
   /favorites/{userId}:
     get:
+      tags:
+        - Favorites
       summary: Получить избранные раскидки пользователя
+      security:
+        - bearerAuth: []
       parameters:
         - name: userId
           in: path
@@ -724,7 +1015,11 @@ paths:
 
   /favorites/{userId}/{grenadeId}:
     patch:
+      tags:
+        - Favorites
       summary: Частично обновить избранную раскидку
+      security:
+        - bearerAuth: []
       parameters:
         - name: userId
           in: path
@@ -736,17 +1031,17 @@ paths:
           required: true
           schema:
             type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/FavoritesUpdate'
       responses:
         '200':
           description: Избранная раскидка частично обновлена
+        '401':
+          description: Неавторизованный доступ
     delete:
+      tags:
+        - Favorites
       summary: Удалить раскидку из избранного
+      security:
+        - bearerAuth: []
       parameters:
         - name: userId
           in: path
@@ -761,6 +1056,8 @@ paths:
       responses:
         '204':
           description: Раскидка успешно удалена из избранного
+        '401':
+          description: Неавторизованный доступ
 
 components:
   schemas:
@@ -980,3 +1277,13 @@ components:
         created_at:
           type: string
           format: date-time
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    basicAuth:
+      type: http
+      scheme: basic
+      description: Basic authentication with username and password
