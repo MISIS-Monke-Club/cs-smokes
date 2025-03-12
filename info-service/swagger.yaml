@@ -67,7 +67,7 @@ paths:
             schema:
               type: object
               properties:
-                tg_token:
+                initData:
                   type: string
       responses:
         '200':
