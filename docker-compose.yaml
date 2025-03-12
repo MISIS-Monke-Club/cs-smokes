@@ -1,10 +1,10 @@
 services:
-    frontend:
-        container_name: frontend
+    tg-frontend:
+        container_name: tg-frontend
         build:
-            context: ./frontend
+            context: ./tg-frontend
         volumes:
-            - ./frontend:/monorepo/frontend
+            - ./tg-frontend:/monorepo/tg-frontend
             - ./.git:/monorepo/.git
         env_file: ./.env
         environment:

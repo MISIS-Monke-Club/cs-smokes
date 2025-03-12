@@ -11,7 +11,7 @@
         "lint": "npx eslint .",
         "lint:auto-fix": "npx eslint ./src --fix",
         "lint:format": "npx prettier ./src --write",
-        "prepare": "cd .. && husky ./frontend/.husky"
+        "prepare": "cd .. && husky ./tg-frontend/.husky"
     },
     "dependencies": {
         "@radix-ui/react-dialog": "^1.1.6",

@@ -1,806 +1,1292 @@
 openapi: 3.0.3
 info:
-  title: Swagger Petstore - OpenAPI 3.0
-  description: |-
-    This is a sample Pet Store Server based on the OpenAPI 3.0 specification.  You can find out more about
-    Swagger at [https://swagger.io](https://swagger.io). In the third iteration of the pet store, we've switched to the design first approach!
-    You can now help us improve the API whether it's by making changes to the definition itself or to the code.
-    That way, with time, we can improve the API in general, and expose some of the new features in OAS3.
-
-    _If you're looking for the Swagger 2.0/OAS 2.0 version of Petstore, then click [here](https://editor.swagger.io/?url=https://petstore.swagger.io/v2/swagger.yaml). Alternatively, you can load via the `Edit > Load Petstore OAS 2.0` menu option!_
-    
-    Some useful links:
-    - [The Pet Store repository](https://github.com/swagger-api/swagger-petstore)
-    - [The source API definition for the Pet Store](https://github.com/swagger-api/swagger-petstore/blob/master/src/main/resources/openapi.yaml)
-  termsOfService: http://swagger.io/terms/
-  contact:
-    email: apiteam@swagger.io
-  license:
-    name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
-  version: 1.0.11
-externalDocs:
-  description: Find out more about Swagger
-  url: http://swagger.io
+  title: API for Maps, Lineups, and Users Management
+  version: 1.0.0
+  description: API for managing maps, lineups, grenade classes, users, admins, and favorites in a tactical game.
 servers:
-  - url: https://petstore3.swagger.io/api/v3
+  - url: 'http://localhost:3000/'
+    description: Сервер бекенда
+
 tags:
-  - name: pet
-    description: Everything about your Pets
-    externalDocs:
-      description: Find out more
-      url: http://swagger.io
-  - name: store
-    description: Access to Petstore orders
-    externalDocs:
-      description: Find out more about our store
-      url: http://swagger.io
-  - name: user
-    description: Operations about user
+  - name: AUTH
+    description: Авторизация
+  - name: Maps
+    description: Карты
+  - name: Lineups
+    description: Раскидки
+  - name: LineupTypes
+    description: Типы раскидок
+  - name: GrenadeClasses
+    description: Классы гранат
+  - name: Users
+    description: Пользователи
+  - name: Admins
+    description: Администраторы
+  - name: Favorites
+    description: Избранное
+
 paths:
-  /pet:
-    put:
+  /login:
+    post:
       tags:
-        - pet
-      summary: Update an existing pet
-      description: Update an existing pet by Id
-      operationId: updatePet
+        - AUTH
+      summary: Логин
       requestBody:
-        description: Update an existent pet in the store
+        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Pet'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/Pet'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Pet'
-        required: true
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
       responses:
         '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Pet'          
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Pet'
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Pet not found
-        '422':
-          description: Validation exception
-      security:
-        - petstore_auth:
-            - write:pets
-            - read:pets
-    post:
-      tags:
-        - pet
-      summary: Add a new pet to the store
-      description: Add a new pet to the store
-      operationId: addPet
-      requestBody:
-        description: Create a new pet in the store
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Pet'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/Pet'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Pet'
-        required: true
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Pet'          
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Pet'
-        '400':
-          description: Invalid input
-        '422':
-          description: Validation exception
-      security:
-        - petstore_auth:
-            - write:pets
-            - read:pets
-  /pet/findByStatus:
-    get:
-      tags:
-        - pet
-      summary: Finds Pets by status
-      description: Multiple status values can be provided with comma separated strings
-      operationId: findPetsByStatus
-      parameters:
-        - name: status
-          in: query
-          description: Status values that need to be considered for filter
-          required: false
-          explode: true
-          schema:
-            type: string
-            default: available
-            enum:
-              - available
-              - pending
-              - sold
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Pet'          
-            application/xml:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Pet'
-        '400':
-          description: Invalid status value
-      security:
-        - petstore_auth:
-            - write:pets
-            - read:pets
-  /pet/findByTags:
-    get:
-      tags:
-        - pet
-      summary: Finds Pets by tags
-      description: Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.
-      operationId: findPetsByTags
-      parameters:
-        - name: tags
-          in: query
-          description: Tags to filter by
-          required: false
-          explode: true
-          schema:
-            type: array
-            items:
-              type: string
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Pet'          
-            application/xml:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Pet'
-        '400':
-          description: Invalid tag value
-      security:
-        - petstore_auth:
-            - write:pets
-            - read:pets
-  /pet/{petId}:
-    get:
-      tags:
-        - pet
-      summary: Find pet by ID
-      description: Returns a single pet
-      operationId: getPetById
-      parameters:
-        - name: petId
-          in: path
-          description: ID of pet to return
-          required: true
-          schema:
-            type: integer
-            format: int64
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Pet'          
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Pet'
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Pet not found
-      security:
-        - api_key: []
-        - petstore_auth:
-            - write:pets
-            - read:pets
-    post:
-      tags:
-        - pet
-      summary: Updates a pet in the store with form data
-      description: ''
-      operationId: updatePetWithForm
-      parameters:
-        - name: petId
-          in: path
-          description: ID of pet that needs to be updated
-          required: true
-          schema:
-            type: integer
-            format: int64
-        - name: name
-          in: query
-          description: Name of pet that needs to be updated
-          schema:
-            type: string
-        - name: status
-          in: query
-          description: Status of pet that needs to be updated
-          schema:
-            type: string
-      responses:
-        '400':
-          description: Invalid input
-      security:
-        - petstore_auth:
-            - write:pets
-            - read:pets
-    delete:
-      tags:
-        - pet
-      summary: Deletes a pet
-      description: delete a pet
-      operationId: deletePet
-      parameters:
-        - name: api_key
-          in: header
-          description: ''
-          required: false
-          schema:
-            type: string
-        - name: petId
-          in: path
-          description: Pet id to delete
-          required: true
-          schema:
-            type: integer
-            format: int64
-      responses:
-        '400':
-          description: Invalid pet value
-      security:
-        - petstore_auth:
-            - write:pets
-            - read:pets
-  /pet/{petId}/uploadImage:
-    post:
-      tags:
-        - pet
-      summary: uploads an image
-      description: ''
-      operationId: uploadFile
-      parameters:
-        - name: petId
-          in: path
-          description: ID of pet to update
-          required: true
-          schema:
-            type: integer
-            format: int64
-        - name: additionalMetadata
-          in: query
-          description: Additional Metadata
-          required: false
-          schema:
-            type: string
-      requestBody:
-        content:
-          application/octet-stream:
-            schema:
-              type: string
-              format: binary
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponse'
-      security:
-        - petstore_auth:
-            - write:pets
-            - read:pets
-  /store/inventory:
-    get:
-      tags:
-        - store
-      summary: Returns pet inventories by status
-      description: Returns a map of status codes to quantities
-      operationId: getInventory
-      responses:
-        '200':
-          description: successful operation
+          description: Успешный логин
           content:
             application/json:
               schema:
                 type: object
-                additionalProperties:
-                  type: integer
-                  format: int32
+                properties:
+                  jwt_token:
+                    type: string
+        '401':
+          description: Неправильный логин или пароль
+
+  /login/tg:
+    post:
+      tags:
+        - AUTH
+      summary: Логин через тг
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tg_token:
+                  type: string
+      responses:
+        '200':
+          description: Успешный логин
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  User_ID:
+                    type: string
+
+                  token:
+                    type: string
+        '401':
+          description: Что-то пошло не так, попробуйте перезайти
+  /register:
+    post:
+      tags:
+        - AUTH
+      summary: Регистрация
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+                email:
+                  type: string
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+      responses:
+        '201':
+          description: Успешная регистрация
+        '400':
+          description: Неправильные данные
+
+  /maps:
+    get:
+      tags:
+        - Maps
+      summary: Получить все карты
       security:
-        - api_key: []
-  /store/order:
-    post:
-      tags:
-        - store
-      summary: Place an order for a pet
-      description: Place a new order in the store
-      operationId: placeOrder
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Order'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/Order'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Order'
+        - bearerAuth: []
       responses:
         '200':
-          description: successful operation
+          description: Список всех карт
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Order'
-        '400':
-          description: Invalid input
-        '422':
-          description: Validation exception
-  /store/order/{orderId}:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Map'
+    post:
+      tags:
+        - Maps
+      summary: Создать новую карту
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                link:
+                  type: string
+                image_link:
+                  type: string
+      responses:
+        '201':
+          description: Карта успешно создана
+        '401':
+          description: Неавторизованный доступ
+
+  /maps/{id}:
     get:
       tags:
-        - store
-      summary: Find purchase order by ID
-      description: For valid response try integer IDs with value <= 5 or > 10. Other values will generate exceptions.
-      operationId: getOrderById
+        - Maps
+      summary: Получить карту по ID
+      security:
+        - bearerAuth: []
       parameters:
-        - name: orderId
+        - name: id
           in: path
-          description: ID of order that needs to be fetched
           required: true
           schema:
             type: integer
-            format: int64
       responses:
         '200':
-          description: successful operation
+          description: Информация о карте
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Order'          
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Order'
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Order not found
-    delete:
-      tags:
-        - store
-      summary: Delete purchase order by ID
-      description: For valid response try integer IDs with value < 1000. Anything above 1000 or nonintegers will generate API errors
-      operationId: deleteOrder
-      parameters:
-        - name: orderId
-          in: path
-          description: ID of the order that needs to be deleted
-          required: true
-          schema:
-            type: integer
-            format: int64
-      responses:
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Order not found
-  /user:
-    post:
-      tags:
-        - user
-      summary: Create user
-      description: This can only be done by the logged in user.
-      operationId: createUser
-      requestBody:
-        description: Created user object
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/User'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/User'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/User'
-      responses:
-        default:
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/User'
-  /user/createWithList:
-    post:
-      tags:
-        - user
-      summary: Creates list of users with given input array
-      description: Creates list of users with given input array
-      operationId: createUsersWithListInput
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/User'
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'          
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/User'
-        default:
-          description: successful operation
-  /user/login:
-    get:
-      tags:
-        - user
-      summary: Logs user into the system
-      description: ''
-      operationId: loginUser
-      parameters:
-        - name: username
-          in: query
-          description: The user name for login
-          required: false
-          schema:
-            type: string
-        - name: password
-          in: query
-          description: The password for login in clear text
-          required: false
-          schema:
-            type: string
-      responses:
-        '200':
-          description: successful operation
-          headers:
-            X-Rate-Limit:
-              description: calls per hour allowed by the user
-              schema:
-                type: integer
-                format: int32
-            X-Expires-After:
-              description: date in UTC when token expires
-              schema:
-                type: string
-                format: date-time
-          content:
-            application/xml:
-              schema:
-                type: string
-            application/json:
-              schema:
-                type: string
-        '400':
-          description: Invalid username/password supplied
-  /user/logout:
-    get:
-      tags:
-        - user
-      summary: Logs out current logged in user session
-      description: ''
-      operationId: logoutUser
-      parameters: []
-      responses:
-        default:
-          description: successful operation
-  /user/{username}:
-    get:
-      tags:
-        - user
-      summary: Get user by user name
-      description: ''
-      operationId: getUserByName
-      parameters:
-        - name: username
-          in: path
-          description: 'The name that needs to be fetched. Use user1 for testing. '
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'          
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/User'
-        '400':
-          description: Invalid username supplied
-        '404':
-          description: User not found
+                $ref: '#/components/schemas/Map'
     put:
       tags:
-        - user
-      summary: Update user
-      description: This can only be done by the logged in user.
-      operationId: updateUser
+        - Maps
+      summary: Полностью обновить карту по ID
+      security:
+        - bearerAuth: []
       parameters:
-        - name: username
+        - name: id
           in: path
-          description: name that need to be deleted
           required: true
           schema:
-            type: string
+            type: integer
       requestBody:
-        description: Update an existent user in the store
+        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/User'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/User'
+              type: object
+              properties:
+                name:
+                  type: string
+                link:
+                  type: string
+                image_link:
+                  type: string
       responses:
-        default:
-          description: successful operation
-    delete:
+        '200':
+          description: Карта успешно обновлена
+        '401':
+          description: Неавторизованный доступ
+    patch:
       tags:
-        - user
-      summary: Delete user
-      description: This can only be done by the logged in user.
-      operationId: deleteUser
+        - Maps
+      summary: Частично обновить карту по ID
+      security:
+        - bearerAuth: []
       parameters:
-        - name: username
+        - name: id
           in: path
-          description: The name that needs to be deleted
           required: true
           schema:
-            type: string
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                link:
+                  type: string
+                image_link:
+                  type: string
       responses:
-        '400':
-          description: Invalid username supplied
-        '404':
-          description: User not found
+        '200':
+          description: Карта частично обновлена
+        '401':
+          description: Неавторизованный доступ
+    delete:
+      tags:
+        - Maps
+      summary: Удалить карту по ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Карта успешно удалена
+        '401':
+          description: Неавторизованный доступ
+
+  /lineups:
+    get:
+      tags:
+        - Lineups
+      summary: Получить все раскидки
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Список всех раскидок
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Lineup'
+    post:
+      tags:
+        - Lineups
+      summary: Создать новую раскидку
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                map_id:
+                  type: integer
+                grenade_class_id:
+                  type: integer
+                type_id:
+                  type: integer
+                link_to_video:
+                  type: string
+                user_id:
+                  type: integer
+                title:
+                  type: string
+                description:
+                  type: string
+                approved:
+                  type: boolean
+                views:
+                  type: integer
+                preview_image_link:
+                  type: string
+      responses:
+        '201':
+          description: Раскидка успешно создана
+        '401':
+          description: Неавторизованный доступ
+
+  /lineups/{id}:
+    get:
+      tags:
+        - Lineups
+      summary: Получить раскидку по ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Информация о раскидке
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Lineup'
+    put:
+      tags:
+        - Lineups
+      summary: Полностью обновить раскидку по ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                map_id:
+                  type: integer
+                grenade_class_id:
+                  type: integer
+                type_id:
+                  type: integer
+                link_to_video:
+                  type: string
+                user_id:
+                  type: integer
+                title:
+                  type: string
+                description:
+                  type: string
+                approved:
+                  type: boolean
+                views:
+                  type: integer
+                preview_image_link:
+                  type: string
+      responses:
+        '200':
+          description: Раскидка успешно обновлена
+        '401':
+          description: Неавторизованный доступ
+    patch:
+      tags:
+        - Lineups
+      summary: Частично обновить раскидку по ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                map_id:
+                  type: integer
+                grenade_class_id:
+                  type: integer
+                type_id:
+                  type: integer
+                link_to_video:
+                  type: string
+                user_id:
+                  type: integer
+                title:
+                  type: string
+                description:
+                  type: string
+                approved:
+                  type: boolean
+                views:
+                  type: integer
+                preview_image_link:
+                  type: string
+      responses:
+        '200':
+          description: Раскидка частично обновлена
+        '401':
+          description: Неавторизованный доступ
+    delete:
+      tags:
+        - Lineups
+      summary: Удалить раскидку по ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Раскидка успешно удалена
+        '401':
+          description: Неавторизованный доступ
+
+  /lineup-types:
+    get:
+      tags:
+        - LineupTypes
+      summary: Получить все типы раскидок
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Список всех типов раскидок
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LineupType'
+    post:
+      tags:
+        - LineupTypes
+      summary: Создать новый тип раскидки
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                key_name:
+                  type: string
+                value_id:
+                  type: integer
+      responses:
+        '201':
+          description: Тип раскидки успешно создан
+        '401':
+          description: Неавторизованный доступ
+
+  /lineup-type-values:
+    get:
+      tags:
+        - LineupTypes
+      summary: Получить все значения типов раскидок
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Список всех значений типов раскидок
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LineupTypeValues'
+    post:
+      tags:
+        - LineupTypes
+      summary: Создать новое значение типа раскидки
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                value:
+                  type: string
+      responses:
+        '201':
+          description: Значение типа раскидки успешно создано
+        '401':
+          description: Неавторизованный доступ
+
+  /grenade-classes:
+    get:
+      tags:
+        - GrenadeClasses
+      summary: Получить все классы гранат
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Список всех классов гранат
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GrenadeClass'
+    post:
+      tags:
+        - GrenadeClasses
+      summary: Создать новый класс гранаты
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+      responses:
+        '201':
+          description: Класс гранаты успешно создан
+        '401':
+          description: Неавторизованный доступ
+
+  /users:
+    get:
+      tags:
+        - Users
+      summary: Получить данные всех пользователей
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Список всех пользователей (только id и username)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+    post:
+      tags:
+        - Users
+      summary: Создать нового пользователя
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                avatar_url:
+                  type: string
+                steam_link:
+                  type: string
+                tg_id:
+                  type: integer
+                email:
+                  type: string
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                is_banned:
+                  type: boolean
+      responses:
+        '201':
+          description: Пользователь успешно создан
+        '401':
+          description: Неавторизованный доступ
+
+  /users/{id}:
+    get:
+      tags:
+        - Users
+      summary: Получить данные пользователя по ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Информация о пользователе
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    put:
+      tags:
+        - Users
+      summary: Полностью обновить пользователя по ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                avatar_url:
+                  type: string
+                steam_link:
+                  type: string
+                tg_id:
+                  type: integer
+                email:
+                  type: string
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                is_banned:
+                  type: boolean
+      responses:
+        '200':
+          description: Пользователь успешно обновлен
+        '401':
+          description: Неавторизованный доступ
+    patch:
+      tags:
+        - Users
+      summary: Частично обновить пользователя по ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                avatar_url:
+                  type: string
+                steam_link:
+                  type: string
+                tg_id:
+                  type: integer
+                email:
+                  type: string
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                is_banned:
+                  type: boolean
+      responses:
+        '200':
+          description: Пользователь частично обновлен
+        '401':
+          description: Неавторизованный доступ
+    delete:
+      tags:
+        - Users
+      summary: Удалить пользователя по ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Пользователь успешно удален
+        '401':
+          description: Неавторизованный доступ
+
+  /admins:
+    get:
+      tags:
+        - Admins
+      summary: Получить всех администраторов
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Список всех администраторов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Admins'
+    post:
+      tags:
+        - Admins
+      summary: Назначить администратора
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: integer
+                admin_type_id:
+                  type: integer
+      responses:
+        '201':
+          description: Администратор успешно назначен
+        '401':
+          description: Неавторизованный доступ
+
+  /admins/{id}:
+    get:
+      tags:
+        - Admins
+      summary: Получить администратора по ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Информация об администраторе
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Admins'
+    patch:
+      tags:
+        - Admins
+      summary: Частично обновить администратора по ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                admin_type_id:
+                  type: integer
+      responses:
+        '200':
+          description: Администратор частично обновлен
+        '401':
+          description: Неавторизованный доступ
+    delete:
+      tags:
+        - Admins
+      summary: Удалить администратора по ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Администратор успешно удален
+        '401':
+          description: Неавторизованный доступ
+
+  /admin-types:
+    get:
+      tags:
+        - Admins
+      summary: Получить все типы администраторов
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Список всех типов администраторов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AdminType'
+    post:
+      tags:
+        - Admins
+      summary: Создать новый тип администратора
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                is_superuser:
+                  type: boolean
+                is_base_admin:
+                  type: boolean
+                is_editor:
+                  type: boolean
+      responses:
+        '201':
+          description: Тип администратора успешно создан
+        '401':
+          description: Неавторизованный доступ
+
+  /admin-types/{id}:
+    get:
+      tags:
+        - Admins
+      summary: Получить тип администратора по ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Информация о типе администратора
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminType'
+    put:
+      tags:
+        - Admins
+      summary: Полностью обновить тип администратора по ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                is_superuser:
+                  type: boolean
+                is_base_admin:
+                  type: boolean
+                is_editor:
+                  type: boolean
+      responses:
+        '200':
+          description: Тип администратора успешно обновлен
+        '401':
+          description: Неавторизованный доступ
+    patch:
+      tags:
+        - Admins
+      summary: Частично обновить тип администратора по ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                is_superuser:
+                  type: boolean
+                is_base_admin:
+                  type: boolean
+                is_editor:
+                  type: boolean
+      responses:
+        '200':
+          description: Тип администратора частично обновлен
+        '401':
+          description: Неавторизованный доступ
+    delete:
+      tags:
+        - Admins
+      summary: Удалить тип администратора по ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Тип администратора успешно удален
+        '401':
+          description: Неавторизованный доступ
+
+  /favorites:
+    get:
+      tags:
+        - Favorites
+      summary: Получить все избранные раскидки
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Список всех избранных раскидок
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Favorites'
+    post:
+      tags:
+        - Favorites
+      summary: Добавить раскидку в избранное
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                grenade_id:
+                  type: integer
+      responses:
+        '201':
+          description: Раскидка успешно добавлена в избранное
+        '401':
+          description: Неавторизованный доступ
+
+  /favorites/{userId}:
+    get:
+      tags:
+        - Favorites
+      summary: Получить избранные раскидки пользователя
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Список избранных раскидок пользователя
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Favorites'
+
+  /favorites/{userId}/{grenadeId}:
+    patch:
+      tags:
+        - Favorites
+      summary: Частично обновить избранную раскидку
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: grenadeId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Избранная раскидка частично обновлена
+        '401':
+          description: Неавторизованный доступ
+    delete:
+      tags:
+        - Favorites
+      summary: Удалить раскидку из избранного
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: grenadeId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Раскидка успешно удалена из избранного
+        '401':
+          description: Неавторизованный доступ
+
 components:
   schemas:
-    Order:
+    Map:
       type: object
       properties:
-        id:
+        map_id:
           type: integer
-          format: int64
-          example: 10
-        petId:
-          type: integer
-          format: int64
-          example: 198772
-        quantity:
-          type: integer
-          format: int32
-          example: 7
-        shipDate:
-          type: string
-          format: date-time
-        status:
-          type: string
-          description: Order Status
-          example: approved
-          enum:
-            - placed
-            - approved
-            - delivered
-        complete:
-          type: boolean
-      xml:
-        name: order
-    Customer:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-          example: 100000
-        username:
-          type: string
-          example: fehguy
-        address:
-          type: array
-          xml:
-            name: addresses
-            wrapped: true
-          items:
-            $ref: '#/components/schemas/Address'
-      xml:
-        name: customer
-    Address:
-      type: object
-      properties:
-        street:
-          type: string
-          example: 437 Lytton
-        city:
-          type: string
-          example: Palo Alto
-        state:
-          type: string
-          example: CA
-        zip:
-          type: string
-          example: '94301'
-      xml:
-        name: address
-    Category:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-          example: 1
         name:
           type: string
-          example: Dogs
-      xml:
-        name: category
+        link:
+          type: string
+        image_link:
+          type: string
+
+    Lineup:
+      type: object
+      properties:
+        grenade_id:
+          type: integer
+        map_id:
+          type: integer
+        grenade_class_id:
+          type: integer
+        type_id:
+          type: integer
+        link_to_video:
+          type: string
+        user_id:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        title:
+          type: string
+        description:
+          type: string
+        approved:
+          type: boolean
+        views:
+          type: integer
+        preview_image_link:
+          type: string
+
+    LineupType:
+      type: object
+      properties:
+        type_id:
+          type: integer
+        key_name:
+          type: string
+        value_id:
+          type: integer
+
+    LineupTypeValues:
+      type: object
+      properties:
+        value_id:
+          type: integer
+        value:
+          type: string
+
+    GrenadeClass:
+      type: object
+      properties:
+        grenade_class_id:
+          type: integer
+        name:
+          type: string
+
     User:
       type: object
       properties:
-        id:
+        user_id:
           type: integer
-          format: int64
-          example: 10
         username:
           type: string
-          example: theUser
-        firstName:
+        avatar_url:
           type: string
-          example: John
-        lastName:
+        steam_link:
           type: string
-          example: James
+        tg_id:
+          type: integer
         email:
           type: string
-          example: john@email.com
-        password:
+        first_name:
           type: string
-          example: '12345'
-        phone:
+        last_name:
           type: string
-          example: '12345'
-        userStatus:
-          type: integer
-          description: User Status
-          format: int32
-          example: 1
-      xml:
-        name: user
-    Tag:
+        is_banned:
+          type: boolean
+
+    Admins:
       type: object
       properties:
-        id:
+        user_id:
           type: integer
-          format: int64
+        admin_type_id:
+          type: integer
+
+    AdminType:
+      type: object
+      properties:
+        admin_type_id:
+          type: integer
+        is_superuser:
+          type: boolean
+        is_base_admin:
+          type: boolean
+        is_editor:
+          type: boolean
+
+    Favorites:
+      type: object
+      properties:
+        user_id:
+          type: integer
+        grenade_id:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+
+    MapUpdate:
+      type: object
+      properties:
         name:
           type: string
-      xml:
-        name: tag
-    Pet:
-      required:
-        - name
-        - photoUrls
+        link:
+          type: string
+        image_link:
+          type: string
+
+    LineupUpdate:
       type: object
       properties:
-        id:
+        map_id:
           type: integer
-          format: int64
-          example: 10
+        grenade_class_id:
+          type: integer
+        type_id:
+          type: integer
+        link_to_video:
+          type: string
+        user_id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        approved:
+          type: boolean
+        views:
+          type: integer
+        preview_image_link:
+          type: string
+
+    LineupTypeUpdate:
+      type: object
+      properties:
+        key_name:
+          type: string
+        value_id:
+          type: integer
+
+    LineupTypeValuesUpdate:
+      type: object
+      properties:
+        value:
+          type: string
+
+    GrenadeClassUpdate:
+      type: object
+      properties:
         name:
           type: string
-          example: doggie
-        category:
-          $ref: '#/components/schemas/Category'
-        photoUrls:
-          type: array
-          xml:
-            wrapped: true
-          items:
-            type: string
-            xml:
-              name: photoUrl
-        tags:
-          type: array
-          xml:
-            wrapped: true
-          items:
-            $ref: '#/components/schemas/Tag'
-        status:
-          type: string
-          description: pet status in the store
-          enum:
-            - available
-            - pending
-            - sold
-      xml:
-        name: pet
-    ApiResponse:
+
+    UserUpdate:
       type: object
       properties:
-        code:
+        username:
+          type: string
+        avatar_url:
+          type: string
+        steam_link:
+          type: string
+        tg_id:
           type: integer
-          format: int32
-        type:
+        email:
           type: string
-        message:
+        first_name:
           type: string
-      xml:
-        name: '##default'
-  requestBodies:
-    Pet:
-      description: Pet object that needs to be added to the store
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Pet'
-        application/xml:
-          schema:
-            $ref: '#/components/schemas/Pet'
-    UserArray:
-      description: List of user object
-      content:
-        application/json:
-          schema:
-            type: array
-            items:
-              $ref: '#/components/schemas/User'
+        last_name:
+          type: string
+        is_banned:
+          type: boolean
+
+    AdminsUpdate:
+      type: object
+      properties:
+        admin_type_id:
+          type: integer
+
+    AdminTypeUpdate:
+      type: object
+      properties:
+        is_superuser:
+          type: boolean
+        is_base_admin:
+          type: boolean
+        is_editor:
+          type: boolean
+
+    FavoritesUpdate:
+      type: object
+      properties:
+        created_at:
+          type: string
+          format: date-time
+
   securitySchemes:
-    petstore_auth:
-      type: oauth2
-      flows:
-        implicit:
-          authorizationUrl: https://petstore3.swagger.io/oauth/authorize
-          scopes:
-            write:pets: modify pets in your account
-            read:pets: read your pets
-    api_key:
-      type: apiKey
-      name: api_key
-      in: header
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    basicAuth:
+      type: http
+      scheme: basic
+      description: Basic authentication with username and password
