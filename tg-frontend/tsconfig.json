@@ -1,7 +1,11 @@
 {
     "compilerOptions": {
         "target": "ES2020",
-        "lib": ["ES2020", "DOM", "DOM.Iterable"],
+        "lib": [
+            "ES2020",
+            "DOM",
+            "DOM.Iterable"
+        ],
         "plugins": [
             {
                 "name": "typescript-plugin-css-modules"
@@ -21,15 +25,32 @@
         "jsx": "react-jsx",
         "baseUrl": "./",
         "paths": {
-            "@app/*": ["src/app/*"],
-            "@pages/*": ["src/pages/*"],
-            "@widgets/*": ["src/widgets/*"],
-            "@features/*": ["src/features/*"],
-            "@entities/*": ["src/entities/*"],
-            "@shared/*": ["src/shared/*"]
-        }
+            "@app/*": [
+                "src/app/*"
+            ],
+            "@pages/*": [
+                "src/pages/*"
+            ],
+            "@widgets/*": [
+                "src/widgets/*"
+            ],
+            "@features/*": [
+                "src/features/*"
+            ],
+            "@entities/*": [
+                "src/entities/*"
+            ],
+            "@shared/*": [
+                "src/shared/*"
+            ]
+        },
+        "types": [
+            "./node_modules/telegram-webapps"
+        ]
     },
-    "include": ["src"],
+    "include": [
+        "src"
+    ],
     "references": [
         {
             "path": "./tsconfig.node.json"

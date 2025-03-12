@@ -22,10 +22,10 @@ dp = Dispatcher()
 @dp.message(CommandStart())
 async def start(message: types.Message):
     keyboard = InlineKeyboardMarkup(
-        inline_keyboard=[
+        keyboard=[
             [
                 InlineKeyboardButton(
-                    text="Смотреть смоки", web_app=WebAppInfo(url=WEB_APP_URL)
+                    text="Открыть веб-приложение", web_app=WebAppInfo(url=WEB_APP_URL)
                 )
             ]
         ]
