@@ -1,0 +1,21 @@
+{
+	"name": "Monorepo Dev Environment",
+	"dockerComposeFile": [
+		"../docker-compose.yaml",
+		"./docker-compose.dev.yaml"
+	],
+	"service": "backend",
+	"workspaceFolder": "/workspace",
+	"customizations": {
+		"vscode": {
+			"settings": {
+				"terminal.integrated.shell.linux": "/bin/bash"
+			}
+		}
+	},
+	"forwardPorts": [
+		3000,
+		5000,
+		8000
+	],
+}

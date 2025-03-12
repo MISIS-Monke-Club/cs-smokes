@@ -1,0 +1,16 @@
+.landingSection {
+    display: flex;
+
+    .main {
+        display: flex;
+    }
+
+    .header {
+        text-align: center;
+    }
+
+    .title {
+        font-size: 3rem;
+        font-weight: 800;
+    }
+}
