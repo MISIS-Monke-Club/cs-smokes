@@ -1,10 +1,10 @@
 services:
-    frontend:
-        container_name: frontend
+    tg-frontend:
+        container_name: tg-frontend
         build:
-            context: ./frontend
+            context: ./tg-frontend
         volumes:
-            - ./frontend:/app
+            - ./tg-frontend:/app
         env_file: ./.env
         environment:
             - VITE_BACKEND_URL=${VITE_BACKEND_URL}
@@ -83,6 +83,10 @@ services:
             context: ./bot
         volumes:
             - ./bot:/bot
+        env_file: ./.env
+        environment:
+            - TOKEN=${TOKEN}
+            - WEB_APP_URL=${WEB_APP_URL}
         depends_on:
             - backend
         command: sh -c "python bot.py"

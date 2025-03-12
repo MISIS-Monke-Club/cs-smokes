@@ -1,11 +1,17 @@
 import logging
 import asyncio
+import os
+
+from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher, types
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
 from aiogram.filters import CommandStart
 
-TOKEN = "7226023253:AAHcvwhAjEnSGM-ABVNdV3Nu0KDBnIV2spc"
-WEB_APP_URL = "https://misis.ru"  # ссылка на наш вебап(пока что рандомная)
+# Getting environment variables from .env file
+load_dotenv(override=False)
+
+TOKEN = os.getenv("TOKEN", "bot_token")
+WEB_APP_URL = os.getenv("WEB_APP_URL", "https://google.com")
 
 logging.basicConfig(level=logging.INFO)
 

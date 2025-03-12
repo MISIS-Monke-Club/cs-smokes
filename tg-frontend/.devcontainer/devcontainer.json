@@ -1,0 +1,34 @@
+{
+	"name": "Backend Dev Container",
+	"dockerComposeFile": [
+		"../../docker-compose.yaml"
+	],
+	"service": "tg-frontend",
+	"workspaceFolder": "/frontend-app",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"streetsidesoftware.code-spell-checker",
+				"dbaeumer.vscode-eslint",
+				"esbenp.prettier-vscode",
+				"christian-kohler.path-intellisense",
+				"vunguyentuan.vscode-css-variables",
+				"mrmlnc.vscode-scss"
+			],
+			"settings": {
+				"cSpell.language": "en,ru",
+				"emmet.triggerExpansionOnTab": true,
+				"files.autoSave": "afterDelay",
+				"editor.defaultFormatter": "esbenp.prettier-vscode",
+				"emmet.preferences": {
+					"output.reverseAttributes": true
+				},
+				"prettier.requireConfig": true,
+				"eslint.enable": true,
+			},
+		}
+	},
+	"forwardPorts": [
+		8080
+	],
+}
