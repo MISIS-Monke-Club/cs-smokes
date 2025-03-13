@@ -7,7 +7,7 @@ import { z } from "zod"
 import tailwindcss from "@tailwindcss/vite"
 
 const envSchema = z.object({
-    VITE_BACKEND_URL: z.string().url(),
+    VITE_BACKEND_URL: z.string(),
 })
 
 // https://vitejs.dev/config/
