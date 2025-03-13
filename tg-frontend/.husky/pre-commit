@@ -6,7 +6,6 @@ CHANGED_FILES=$(git diff --cached --name-only)
 
 handle_error() {
   echo "$1 failed in $2. Restoring staged changes..."
-  git restore --staged "$REPO_ROOT/$2"
   exit 1
 }
 
