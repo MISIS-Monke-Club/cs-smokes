@@ -14,9 +14,10 @@ run_lint() {
   echo "Testing $1 folder..."
   cd "$REPO_ROOT/$1" || exit 1
 
-  npm run lint || handle_error "Linting" "$1"
-  npm run lint:auto-fix
-  npm run lint:format
+  STAGED_FILES=$(git diff --cached --name-only --relative)
+
+  npx eslint $STAGED_FILES || handle_error "Linting" "$1"
+  npm run lint:format || handle_error "Linting" "$1"
 
   git add .
   cd "$CURRENT_DIR" || exit 1
