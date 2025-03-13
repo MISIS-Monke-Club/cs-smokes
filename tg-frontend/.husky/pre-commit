@@ -19,7 +19,7 @@ run_lint() {
   npx eslint $STAGED_FILES || handle_error "Linting" "$1"
   npm run lint:format || handle_error "Linting" "$1"
 
-  echo "$STAGED_FILES_BEFORE" | xargs git add
+  echo "$STAGED_FILES" | xargs git add
   
   cd "$CURRENT_DIR" || exit 1
 }
