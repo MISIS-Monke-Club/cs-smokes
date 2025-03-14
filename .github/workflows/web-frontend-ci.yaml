@@ -1,5 +1,5 @@
 name: CI for frontend and web-frontend
-on: [push, pull_request]
+on: push
 
 jobs:
   build:

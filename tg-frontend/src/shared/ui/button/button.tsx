@@ -1,10 +1,11 @@
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
-import { cva, type VariantProps } from "class-variance-authority"
+import { cva } from "class-variance-authority"
 
-import { cn } from "../lib/utils"
+import { cn } from "../../lib/utils"
+import { useMemo } from "react"
 
-const buttonVariants = cva(
+export const buttonVariants = cva(
     "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-[color,box-shadow] disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
     {
         variants: {
@@ -34,25 +35,49 @@ const buttonVariants = cva(
     }
 )
 
-function Button({
+type ButtonProps = React.ComponentProps<"button"> & {
+    variant?:
+        | "default"
+        | "destructive"
+        | "outline"
+        | "secondary"
+        | "ghost"
+        | "link"
+    size?: "default" | "sm" | "lg" | "icon"
+    asChild?: boolean
+}
+
+export function Button({
     className,
     variant,
     size,
     asChild = false,
     ...props
-}: React.ComponentProps<"button"> &
-    VariantProps<typeof buttonVariants> & {
-        asChild?: boolean
-    }) {
-    const Comp = asChild ? Slot : "button"
+}: ButtonProps) {
+    const combinedButtonClass: string = useMemo(() => {
+        const draftClass: string = cn(
+            buttonVariants({ variant, size, className })
+        )
+
+        return draftClass
+    }, [variant, size])
+
+    if (asChild) {
+        return (
+            <Slot
+                data-slot='button'
+                className={combinedButtonClass}
+                {...props}
+            />
+        )
+    }
 
     return (
-        <Comp
+        <button
+            type='button'
             data-slot='button'
-            className={cn(buttonVariants({ variant, size, className }))}
+            className={combinedButtonClass}
             {...props}
         />
     )
 }
-
-export { Button, buttonVariants }

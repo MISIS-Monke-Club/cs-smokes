@@ -1,4 +1,3 @@
-/* eslint-disable import/no-default-export */
 import type { Meta, StoryObj } from "@storybook/react"
 import { fn } from "@storybook/test"
 

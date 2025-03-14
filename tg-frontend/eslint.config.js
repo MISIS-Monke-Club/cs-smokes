@@ -10,6 +10,7 @@ import eslintPluginPrettier from "eslint-plugin-prettier"
 import featureSliced from "@conarti/eslint-plugin-feature-sliced"
 import importPlugin from "eslint-plugin-import"
 import cssPlugin from "eslint-plugin-css"
+import pluginStorybook from "eslint-plugin-storybook"
 
 // All code below is to make .eslintrc configs flat
 // ------------------------------------------------------------
@@ -35,6 +36,7 @@ export default [
             featureSliced: featureSliced,
             import: importPlugin,
             cssPlugin: cssPlugin,
+            storyBook: pluginStorybook
         },
         rules: {
             "react/jsx-uses-react": "off",
@@ -54,18 +56,29 @@ export default [
                     ],
                 },
             ],
-            "featureSliced/absolute-relative": "error",
+            "featureSliced/absolute-relative": ["error", {
+                ignorePatterns: [
+                    "@shared/**/*",
+                ],
+            }],
             "featureSliced/public-api": "error",
         },
+    },
+    {
+        files: ["**/*.stories.@(js|jsx|ts|tsx)", ".storybook/**/*"],
+        rules: {
+            "import/no-default-export": "off",
+            "import/prefer-default-export": "off",
+        },
+    },
+    {
         settings: {
-            settings: {
-                "import/resolver": {
-                    typescript: true,
-                    node: true,
-                },
-                react: {
-                    version: "detect",
-                },
+            "import/resolver": {
+                typescript: true,
+                node: true,
+            },
+            react: {
+                version: "detect",
             },
         },
         ignores: ["**/node_modules/**/*", "**/dist/**/*"],

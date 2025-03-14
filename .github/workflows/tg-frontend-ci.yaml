@@ -1,8 +1,9 @@
 name: CI for frontend and web-frontend
-on: [push, pull_request]
+on: push
 
 jobs:
   build:
+    name: run ci for tg-frontend
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -17,3 +18,8 @@ jobs:
       - name: Linters
         run: npm run lint
         working-directory: ./tg-frontend
+      - name: Publish tg-frontend to Chromatic
+        uses: chromaui/action@latest
+        with:
+          projectToken: ${{ secrets.CHROMATIC_TG_FRONTEND_TOKEN }}
+          workingDir: packages/project_2
