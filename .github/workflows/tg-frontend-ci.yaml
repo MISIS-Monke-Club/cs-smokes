@@ -22,4 +22,4 @@ jobs:
         uses: chromaui/action@latest
         with:
           projectToken: ${{ secrets.CHROMATIC_TG_FRONTEND_TOKEN }}
-          workingDir: packages/project_2
+          workingDir: ./tg-frontend
