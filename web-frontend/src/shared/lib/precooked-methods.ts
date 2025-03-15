@@ -7,7 +7,9 @@ export const typedQuery = <T extends ZodSchema>(
 ): Promise<Zod.infer<typeof dataSchema>> =>
     request.then((response) => {
         try {
-            const data = dataSchema.parse(response.data)
+            const data: Zod.infer<typeof dataSchema> = dataSchema.parse(
+                response.data
+            )
 
             return data
         } catch (err) {

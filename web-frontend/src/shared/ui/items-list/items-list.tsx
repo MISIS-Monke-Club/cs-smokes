@@ -1,5 +1,5 @@
-import classes from "./items-list.module.scss"
 import { ReactNode } from "react"
+import classes from "./items-list.module.scss"
 
 type ItemsListProps<T> = {
     elements: T[]

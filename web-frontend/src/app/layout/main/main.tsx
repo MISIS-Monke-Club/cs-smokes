@@ -1,6 +1,6 @@
 import classes from "./main.module.scss"
 
-interface Props {
+type Props = {
     children?: React.ReactNode
 }
 

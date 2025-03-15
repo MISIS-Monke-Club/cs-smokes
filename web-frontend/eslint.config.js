@@ -1,73 +1,85 @@
 /* eslint-disable import/no-default-export */
-// import { FlatCompat } from "@eslint/eslintrc"
-// import path from "path"
-// import { fileURLToPath } from "url"
+import globals from "globals"
 import pluginJs from "@eslint/js"
 import tseslint from "typescript-eslint"
 import pluginReact from "eslint-plugin-react"
-import eslintConfigPrettier from "eslint-config-prettier"
-import eslintPluginPrettier from "eslint-plugin-prettier"
-import featureSliced from "@conarti/eslint-plugin-feature-sliced"
+import prettier from "eslint-plugin-prettier"
 import importPlugin from "eslint-plugin-import"
-import cssPlugin from "eslint-plugin-css"
-
-// All code below is to make .eslintrc configs flat
-// ------------------------------------------------------------
-// const __filename = fileURLToPath(import.meta.url)
-// const __dirname = path.dirname(__filename)
-
-// const compat = new FlatCompat({
-//     baseDirectory: __dirname,
-// })
-// ------------------------------------------------------------
+import fsdEslint from "@conarti/eslint-plugin-feature-sliced"
+import pluginReactHooks from "eslint-plugin-react-hooks"
 
 /** @type {import('eslint').Linter.Config[]} */
 export default [
+    {
+        files: ["**/src/**/*.{js,mjs,cjs,ts,jsx,tsx}"],
+        ignores: ["node_modules/**/*", "dist/**/*"],
+    },
+    {
+        settings: {
+            react: {
+                version: "detect",
+            },
+        },
+        languageOptions: {
+            globals: globals.browser,
+            parserOptions: {
+                projectService: true,
+                tsconfigRootDir: import.meta.dirname,
+            },
+        },
+    },
     pluginJs.configs.recommended,
-    ...tseslint.configs.recommended,
-    eslintConfigPrettier,
-    pluginReact.configs.flat.recommended,
-    { files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"] },
+    ...tseslint.configs.recommendedTypeChecked,
+    pluginReact.configs.flat["jsx-runtime"],
     {
         plugins: {
             react: pluginReact,
-            prettier: eslintPluginPrettier,
-            featureSliced: featureSliced,
+            prettier: prettier,
             import: importPlugin,
-            cssPlugin: cssPlugin,
+            "@conarti/feature-sliced": fsdEslint,
+            "react-hooks": pluginReactHooks,
         },
         rules: {
-            "react/jsx-uses-react": "off",
-            "react/react-in-jsx-scope": "off",
-            semi: ["error", "never"],
-            "import/no-default-export": "error",
-            "import/no-unresolved": "off",
-            "prettier/prettier": "warn",
-            "cssPlugin/no-dupe-properties": "error",
-            "featureSliced/layers-slices": [
+            "react/prop-types": ["error"],
+            "react-hooks/rules-of-hooks": "error",
+            "react-hooks/exhaustive-deps": "error",
+            "@typescript-eslint/consistent-type-definitions": ["error", "type"],
+            "@typescript-eslint/consistent-type-imports": [
                 "error",
                 {
-                    ignorePatterns: [
-                        "@shared/**/*",
-                        "@app/**/*",
-                        "@widgets/**/*",
-                    ],
+                    prefer: "no-type-imports",
                 },
             ],
-            "featureSliced/absolute-relative": "error",
-            "featureSliced/public-api": "error",
+            "@typescript-eslint/no-unsafe-assignment": "off",
+            "@typescript-eslint/no-unsafe-member-access": "off",
+            "prettier/prettier": "warn",
+            "import/no-default-export": "error",
+            "import/no-unresolved": "error",
+            "import/default": "error",
+            "import/order": "warn",
+            "@conarti/feature-sliced/layers-slices": "error",
+            "@conarti/feature-sliced/absolute-relative": "error",
+            "@conarti/feature-sliced/public-api": "error",
         },
+    },
+    {
+        // Overriding rules and disabling no-default-export for .stories
+        files: ["**/*.stories.@(js|jsx|ts|tsx)", ".storybook/**/*"],
+        rules: {
+            "import/no-default-export": "off",
+        },
+    },
+    {
         settings: {
-            settings: {
-                "import/resolver": {
-                    typescript: true,
-                    node: true,
+            "import/resolver": {
+                typescript: {
+                    alwaysTryTypes: true,
+                    project: "./tsconfig.json",
                 },
-                react: {
-                    version: "detect",
+                node: {
+                    extensions: [".js", ".jsx", ".ts", ".tsx"],
                 },
             },
         },
-        ignores: ["./node_modules/**/*", "./dist/**/*"],
     },
 ]
