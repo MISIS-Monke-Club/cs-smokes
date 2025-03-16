@@ -1,11 +1,11 @@
 import { FormEvent } from "react"
-import classes from "./login-page.module.scss"
 import { z } from "zod"
+import { useMutation } from "@tanstack/react-query"
+import { toast } from "sonner"
+import classes from "./login-page.module.scss"
 import { Button } from "@shared/ui/button"
 import { Input } from "@shared/ui/input"
-import { useMutation } from "@tanstack/react-query"
 import { sessionApi } from "@entities/session"
-import { toast } from "sonner"
 
 export function LoginPage() {
     const { mutateAsync } = useMutation(sessionApi.loginTg())

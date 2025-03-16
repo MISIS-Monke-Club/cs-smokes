@@ -1,6 +1,6 @@
+import { Outlet } from "react-router-dom"
 import { Main } from "./main"
 import classes from "./layout.module.scss"
-import { Outlet } from "react-router-dom"
 import { Header } from "./header"
 
 export function Layout() {

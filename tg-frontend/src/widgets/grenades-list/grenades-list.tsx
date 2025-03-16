@@ -1,5 +1,5 @@
-import { grenadeApi, grenadeMaper } from "@entities/grenade"
 import { useQuery } from "@tanstack/react-query"
+import { grenadeApi, grenadeMaper } from "@entities/grenade"
 import { ItemsList } from "@shared/ui/items-list/items-list"
 
 export function GrenadesList() {

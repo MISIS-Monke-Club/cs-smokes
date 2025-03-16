@@ -1,6 +1,31 @@
 .list {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, 200px);
-    gap: 16px;
     width: 100%;
+}
+
+/* TYPE */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 1fr);
+}
+.column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* GAP */
+.smGap {
+    gap: toRem(8);
+}
+.mdGap {
+    gap: toRem(16);
+}
+.lgGap {
+    gap: toRem(20);
+}
+
+.emptyList {
+    align-items: center;
+    align-content: center;
+    justify-content: center;
 }

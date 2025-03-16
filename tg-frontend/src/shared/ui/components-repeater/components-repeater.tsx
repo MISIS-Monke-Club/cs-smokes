@@ -1,6 +1,7 @@
-import React, { ReactNode } from "react"
+import { ReactNode } from "react"
+import React from "react"
 
-type ComponentRepeaterProps = {
+type ComponentsRepeaterProps = {
     children?: ReactNode
     length: number
     randomizedWidth?: boolean
@@ -8,13 +9,13 @@ type ComponentRepeaterProps = {
     maxWidthValue?: number
 }
 
-export function ComponentRepeater({
+export function ComponentsRepeater({
     children,
     length,
     randomizedWidth,
     maxWidthValue = 100,
     minWidthValue = 0,
-}: ComponentRepeaterProps) {
+}: ComponentsRepeaterProps) {
     if (randomizedWidth) {
         return (
             <>
@@ -28,6 +29,7 @@ export function ComponentRepeater({
                     return (
                         <div
                             style={{ width: width.toString() + "%" }}
+                            aria-label='copied-element'
                             key={crypto.randomUUID()}
                         >
                             {children}

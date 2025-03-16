@@ -1,5 +1,5 @@
 import { HTMLProps, useEffect, useMemo, useState } from "react"
-import { Skeleton } from "./skeleton"
+import { Skeleton } from "../skeleton"
 import classes from "./image.module.scss"
 
 type ImageProps = HTMLProps<HTMLImageElement> & {
@@ -29,7 +29,7 @@ export function ImageComponent({
         }
 
         return draftClass
-    }, [url])
+    }, [url, className])
 
     if (!url) {
         return <img className={combinedClass} {...rest} />

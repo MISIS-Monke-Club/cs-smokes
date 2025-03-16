@@ -13,10 +13,14 @@ run_lint() {
   echo "Testing $1 folder..."
   cd "$REPO_ROOT/$1" || exit 1
 
-  STAGED_FILES=$(git diff --cached --name-only --relative | grep '^src/')
+  STAGED_FILES=$(git diff --cached --name-only --relative --diff-filter=ACM | grep '^src/')
 
   npx eslint $STAGED_FILES || handle_error "Linting" "$1"
-  npm run lint:format || handle_error "Linting" "$1"
+  echo ""
+  echo "Fixing auto-fixable problems..."
+  npx eslint $STAGED_FILES --fix || handle_error "Linting" "$1"
+  echo "Applying formatter..."
+  npx prettier $STAGED_FILES --write  || handle_error "Linting" "$1"
 
   echo "$STAGED_FILES" | xargs git add
   

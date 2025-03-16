@@ -1,9 +1,9 @@
-import { GoBack } from "@features/go-back"
-import { GrenadeOverview } from "@widgets/grenade-overview/grenade-overview"
-import classes from "./grenade-page.module.scss"
 import { useMemo } from "react"
 import { useParams } from "react-router-dom"
 import { grenadePageParamsSchema } from "../domain"
+import classes from "./grenade-page.module.scss"
+import { GrenadeOverview } from "@widgets/grenade-overview/grenade-overview"
+import { GoBack } from "@features/go-back"
 // import { useParams } from "react-router-dom"
 
 export function GrenadePage() {
@@ -19,7 +19,7 @@ export function GrenadePage() {
         }
 
         return draftId
-    }, [])
+    }, [params])
 
     return (
         <>

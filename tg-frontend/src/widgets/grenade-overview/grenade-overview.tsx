@@ -1,9 +1,9 @@
+import { useState } from "react"
+import { useQuery } from "@tanstack/react-query"
+import { Loader2, Plus } from "lucide-react"
 import classes from "./grenade-overview.module.scss"
 import { grenadeApi } from "@entities/grenade"
 import { Button } from "@shared/ui/button"
-import { Loader2, Plus } from "lucide-react"
-import { useQuery } from "@tanstack/react-query"
-import { useState } from "react"
 
 type GrenadeOverviewProps = {
     grenadeId: number
@@ -49,7 +49,7 @@ export function GrenadeOverview({ grenadeId }: GrenadeOverviewProps) {
                     </div>
                     {isLoading ? (
                         <Button disabled>
-                            Добавить в избранное{" "}
+                            Добавить в избранное
                             <Loader2 className='animate-spin' />
                         </Button>
                     ) : (
