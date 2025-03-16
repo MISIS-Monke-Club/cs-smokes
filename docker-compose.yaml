@@ -12,10 +12,9 @@ services:
             - HUSKY=${FRONTEND_LINTING:?Variable FRONTEND_LINTING is required}
         ports:
             - 8080:5173
-            - 6006:6006
         depends_on:
             - backend
-        command: sh -c "npm i && npm run host & npm run storybook:static"
+        command: sh -c "npm i && npm run host"
 
     web-frontend:
         container_name: web-frontend
