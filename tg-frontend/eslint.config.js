@@ -11,7 +11,7 @@ import pluginReactHooks from "eslint-plugin-react-hooks"
 /** @type {import('eslint').Linter.Config[]} */
 export default [
     {
-        files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"],
+        files: ["**/src/**/*.{js,mjs,cjs,ts,jsx,tsx}"],
         ignores: ["node_modules/**/*", "dist/**/*"],
     },
     {
@@ -29,7 +29,8 @@ export default [
         },
     },
     pluginJs.configs.recommended,
-    ...tseslint.configs.recommendedTypeChecked,
+    ...tseslint.configs.strict,
+    ...tseslint.configs.stylistic,
     pluginReact.configs.flat["jsx-runtime"],
     {
         plugins: {
@@ -73,11 +74,10 @@ export default [
         settings: {
             "import/resolver": {
                 typescript: {
-                    alwaysTryTypes: true,
                     project: "./tsconfig.json",
-                    node: {
-                        extensions: [".js", ".jsx", ".ts", ".tsx"],
-                    },
+                },
+                node: {
+                    extensions: [".js", ".jsx", ".ts", ".tsx"],
                 },
             },
         },

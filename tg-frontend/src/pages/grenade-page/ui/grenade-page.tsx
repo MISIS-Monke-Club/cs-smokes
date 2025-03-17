@@ -10,7 +10,7 @@ export function GrenadePage() {
     const params = useParams()
 
     const grenadeId = useMemo(() => {
-        let draftId: number = 1
+        let draftId = 1
 
         try {
             draftId = grenadePageParamsSchema.parse(params).grenadeId

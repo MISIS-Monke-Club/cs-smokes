@@ -1,4 +1,4 @@
-FROM node:22
+FROM node:current-alpine3.21
 
 WORKDIR /monorepo/tg-frontend
 COPY package*.json .

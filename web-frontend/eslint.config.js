@@ -29,7 +29,8 @@ export default [
         },
     },
     pluginJs.configs.recommended,
-    ...tseslint.configs.recommendedTypeChecked,
+    ...tseslint.configs.strict,
+    ...tseslint.configs.stylistic,
     pluginReact.configs.flat["jsx-runtime"],
     {
         plugins: {
@@ -73,7 +74,6 @@ export default [
         settings: {
             "import/resolver": {
                 typescript: {
-                    alwaysTryTypes: true,
                     project: "./tsconfig.json",
                 },
                 node: {

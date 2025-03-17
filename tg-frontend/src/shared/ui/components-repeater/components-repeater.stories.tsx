@@ -58,7 +58,7 @@ export const RandomizedWidth: Story = {
 
         await expect(
             elements.every((el) => {
-                const width: number = Number(el.style.width.replace("%", ""))
+                const width = Number(el.style.width.replace("%", ""))
 
                 return width >= 60 && width <= 100
             })
