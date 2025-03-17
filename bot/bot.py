@@ -1,13 +1,11 @@
 import logging
 import asyncio
 import os
-
 from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher, types
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
-from aiogram.filters import CommandStart
+from aiogram.filters import Command
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, WebAppInfo
 
-# Getting environment variables from .env file
 load_dotenv(override=False)
 
 TOKEN = os.getenv("TOKEN", "bot_token")
@@ -19,20 +17,17 @@ bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
 
-@dp.message(CommandStart())
-async def start(message: types.Message):
-    keyboard = InlineKeyboardMarkup(
-        keyboard=[
-            [
-                InlineKeyboardButton(
-                    text="Открыть веб-приложение", web_app=WebAppInfo(url=WEB_APP_URL)
-                )
-            ]
-        ]
+@dp.message(Command("start"))
+async def cmd_start(message: types.Message):
+
+    web_app_button = KeyboardButton(
+        text="Смотреть раскидки", web_app=WebAppInfo(url=WEB_APP_URL)
     )
+
+    keyboard = ReplyKeyboardMarkup(keyboard=[[web_app_button]], resize_keyboard=True)
+
     await message.answer(
-        "Нажми на кнопочку ниже и посмотри все интересующие тебя смоки:",
-        reply_markup=keyboard,
+        "Нажмите кнопку ниже, чтобы открыть наш сайт", reply_markup=keyboard
     )
 
 
@@ -41,4 +36,6 @@ async def main():
 
 
 if __name__ == "__main__":
+    import asyncio
+
     asyncio.run(main())
