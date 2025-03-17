@@ -69,6 +69,7 @@
         "eslint-plugin-react-hooks": "^5.2.0",
         "globals": "^15.12.0",
         "husky": "^9.1.7",
+        "lint-staged": "^15.5.0",
         "playwright": "^1.51.0",
         "prettier": "^3.3.3",
         "sass": "^1.79.2",
@@ -85,5 +86,12 @@
         "extends": [
             "plugin:storybook/recommended"
         ]
+    },
+    "lint-staged": {
+        "src/**/*.{js,jsx,ts,tsx,html}": [
+            "prettier --write",
+            "eslint --fix"
+        ],
+        "src/**/*.{scss,css}": "prettier --write"
     }
 }
