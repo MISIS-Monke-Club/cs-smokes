@@ -4,7 +4,7 @@ import os
 from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, WebAppInfo
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
 
 load_dotenv(override=False)
 
@@ -19,12 +19,10 @@ dp = Dispatcher()
 
 @dp.message(Command("start"))
 async def cmd_start(message: types.Message):
-
-    web_app_button = KeyboardButton(
+    web_app_button = InlineKeyboardButton(
         text="Смотреть раскидки", web_app=WebAppInfo(url=WEB_APP_URL)
     )
-
-    keyboard = ReplyKeyboardMarkup(keyboard=[[web_app_button]], resize_keyboard=True)
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[[web_app_button]])
 
     await message.answer(
         "Нажмите кнопку ниже, чтобы открыть наш сайт", reply_markup=keyboard
@@ -36,6 +34,4 @@ async def main():
 
 
 if __name__ == "__main__":
-    import asyncio
-
     asyncio.run(main())
