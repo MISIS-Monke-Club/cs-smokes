@@ -1,6 +1,6 @@
-import { Button } from "@shared/ui/button"
-import classes from "./home-page.module.scss"
 import { Link } from "react-router-dom"
+import classes from "./home-page.module.scss"
+import { Button } from "@shared/ui/button"
 
 export function Homepage() {
     return (

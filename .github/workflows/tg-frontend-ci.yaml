@@ -1,12 +1,15 @@
 name: CI for frontend and web-frontend
-on: [push, pull_request]
+on: push
 
 jobs:
   build:
+    name: run ci for tg-frontend
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Setup NodeJS
         uses: actions/setup-node@v4
         with:
@@ -17,3 +20,8 @@ jobs:
       - name: Linters
         run: npm run lint
         working-directory: ./tg-frontend
+      - name: Publish tg-frontend to Chromatic
+        uses: chromaui/action@latest
+        with:
+          projectToken: ${{ secrets.CHROMATIC_TG_FRONTEND_TOKEN }}
+          workingDir: ./tg-frontend

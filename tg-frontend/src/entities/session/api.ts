@@ -1,7 +1,8 @@
-import { instance } from "@shared/api"
-import { typedQuery } from "@shared/lib/precooked-methods"
 import { MutationOptions } from "@tanstack/react-query"
-import { loginTgDTOschema, LoginTgModel, LoginTgPostModel } from "./model"
+import { LoginTgModel, LoginTgPostModel } from "./model"
+import { loginTgDTOschema } from "./model"
+import { typedQuery } from "@shared/lib/precooked-methods"
+import { instance } from "@shared/api"
 
 export const api = {
     baseKey: "session",

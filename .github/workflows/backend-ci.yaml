@@ -1,8 +1,6 @@
 name: CI for backend and Telegram Bot
 
-on:
-  push:
-  pull_request:
+on: push  
 
 jobs:
   DRF_bot_test:

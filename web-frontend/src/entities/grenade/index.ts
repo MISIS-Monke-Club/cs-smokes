@@ -1,5 +1,0 @@
-export { Grenade } from "./ui/grenade"
-export { api as grenadeApi } from "./api"
-export type { GrenadeModel } from "./domain"
-export { grenadeDTOSchema } from "./domain"
-export { maper as grenadeMaper } from "./lib"

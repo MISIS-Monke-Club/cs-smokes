@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom"
+import { useMemo } from "react"
 import { GrenadeModel } from "../domain"
 import {
     Card,
@@ -8,7 +9,6 @@ import {
     CardHeader,
     CardTitle,
 } from "@shared/ui/card"
-import { useMemo } from "react"
 
 type GrenadeProps = {
     grenade: GrenadeModel

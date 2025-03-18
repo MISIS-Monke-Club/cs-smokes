@@ -1,7 +1,7 @@
-import { Grenades } from "@pages/grenades"
-import { Layout } from "../layout"
-import { Homepage } from "@pages/home-page"
 import { createBrowserRouter } from "react-router-dom"
+import { Layout } from "../layout"
+import { Grenades } from "@pages/grenades"
+import { Homepage } from "@pages/home-page"
 import { GrenadePage } from "@pages/grenade-page"
 import { LoginPage } from "@pages/login-page"
 
