@@ -20,6 +20,9 @@ jobs:
       - name: Linters
         run: npm run lint
         working-directory: ./tg-frontend
+      - name: Prepare tests
+        run: npm run test:prepare
+        working-directory: ./tg-frontend
       - name: Tests
         run: npm run test
         working-directory: ./tg-frontend
