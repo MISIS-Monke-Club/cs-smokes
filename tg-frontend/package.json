@@ -86,12 +86,5 @@
         "extends": [
             "plugin:storybook/recommended"
         ]
-    },
-    "lint-staged": {
-        "src/**/*.{js,jsx,ts,tsx,html}": [
-            "prettier --write",
-            "eslint --fix"
-        ],
-        "src/**/*.{scss,css}": "prettier --write"
     }
 }
