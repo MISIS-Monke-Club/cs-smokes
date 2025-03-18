@@ -4,8 +4,8 @@ services:
         build:
             context: ./tg-frontend
         volumes:
-            - ./tg-frontend:/monorepo/tg-frontend
-            - ./.git:/monorepo/.git
+            - ./tg-frontend:/tg-frontend
+            - ./tg-frontend/node_modules:/tg-frontend/node_modules
         env_file: ./.env
         environment:
             - VITE_BACKEND_URL=${VITE_BACKEND_URL}
@@ -14,7 +14,7 @@ services:
             - 8080:5173
         depends_on:
             - backend
-        command: sh -c "npm i && npm run host"
+        command: sh -c "npm install && npm audit fix --force && npm run host"
 
     backend:
         container_name: backend

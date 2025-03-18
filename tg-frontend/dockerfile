@@ -1,12 +1,13 @@
 FROM node:22
 
-WORKDIR /monorepo/tg-frontend
-COPY package*.json .
+WORKDIR /tg-frontend
+COPY package*.json /tg-frontend
 
 RUN npm install
+RUN npm audit fix --force
 
-COPY . .
+COPY . /tg-frontend
 
 EXPOSE 8080
 
-CMD [ "npm", "run", "host"]
+CMD [ "npm", "install", "&&", "npm", "run", "host"]
