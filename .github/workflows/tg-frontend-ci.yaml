@@ -20,6 +20,9 @@ jobs:
       - name: Linters
         run: npm run lint
         working-directory: ./tg-frontend
+      - name: Tests
+        run: npm run test
+        working-directory: ./tg-frontend
       - name: Publish tg-frontend to Chromatic
         uses: chromaui/action@latest
         with:
