@@ -17,7 +17,9 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path
+from auth_app.views import TelegramAuthView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("login/tg/", TelegramAuthView.as_view(), name="telegram-auth"),
 ]
