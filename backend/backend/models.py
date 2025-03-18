@@ -43,7 +43,7 @@ class User(models.Model):
     avatar_url = models.CharField(max_length=255)
     steam_link = models.CharField(max_length=255)
     tg_id = models.IntegerField()
-    email = models.EmailFieldField(max_length=255)
+    email = models.EmailField(max_length=255)
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
     is_banned = models.BooleanField(default=False)
