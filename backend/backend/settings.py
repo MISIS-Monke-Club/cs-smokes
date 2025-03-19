@@ -30,7 +30,7 @@ SECRET_KEY = os.getenv("SECRET_KEY", "key")
 
 # Application definition
 
-CORS_ALLOW_ALL_ORIGINS = True # перед продакшеном обязательно поменять!!!
+CORS_ALLOW_ALL_ORIGINS = True  # перед продакшеном обязательно поменять!!!
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOW_METHODS = [

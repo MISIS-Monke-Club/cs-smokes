@@ -17,21 +17,21 @@ class TelegramAuthView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        init_data = request.data.get("init_data")  # данные из Telegram Web App
-        if not init_data:
-            return Response({"error": "init_data is required"}, status=400)
+        initData = request.data.get("initData")  # данные из Telegram Web App
+        if not initData:
+            return Response({"error": "initData is required"}, status=400)
 
-        # Логирование полученного init_data
-        print(f"Received init_data: {init_data}")
+        # Логирование полученного initData
+        print(f"Received initData: {initData}")
 
         # Проверка подписи
-        if not self.check_webapp_signature(TELEGRAM_BOT_TOKEN, init_data):
+        if not self.check_webapp_signature(TELEGRAM_BOT_TOKEN, initData):
             return Response(
                 {"error": "Invalid hash. Data has been tampered with."}, status=400
             )
 
-        # Разбираем параметры init_data
-        params = dict(urllib.parse.parse_qsl(init_data))
+        # Разбираем параметры initData
+        params = dict(urllib.parse.parse_qsl(initData))
 
         # Логирование параметров
         print(f"Parsed parameters: {params}")
@@ -85,18 +85,18 @@ class TelegramAuthView(APIView):
             }
         )
 
-    def check_webapp_signature(self, token: str, init_data: str) -> bool:
+    def check_webapp_signature(self, token: str, initData: str) -> bool:
         """
         Check incoming WebApp init data signature
 
         Source: https://core.telegram.org/bots/webapps#validating-data-received-via-the-web-app
 
         :param token:
-        :param init_data:
+        :param initData:
         :return:
         """
         try:
-            parsed_data = dict(urllib.parse.parse_qsl(init_data))
+            parsed_data = dict(urllib.parse.parse_qsl(initData))
         except ValueError:
             # Init data is not a valid query string
             return False
