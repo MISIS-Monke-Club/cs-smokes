@@ -10,12 +10,9 @@ import pluginReactHooks from "eslint-plugin-react-hooks"
 
 /** @type {import('eslint').Linter.Config[]} */
 export default [
+    { ignores: ["node_modules/**/*", "dist/**/*", ".storybook/**/*"], },
     {
-        files: [
-            "**/src/**/*.{js,mjs,cjs,ts,jsx,tsx}",
-            "**/*.{js,mjs,cjs,ts,jsx,tsx}",
-        ],
-        ignores: ["node_modules/**/*", "dist/**/*"],
+        files: ["src/*.{js,mjs,cjs,ts,jsx,tsx}"],
     },
     {
         settings: {
