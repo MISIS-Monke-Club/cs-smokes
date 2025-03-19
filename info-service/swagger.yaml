@@ -227,7 +227,7 @@ paths:
                 link:
                   type: string
                 image_link:
-                  type: string
+                  type: string           
       responses:
         '200':
           description: Карта частично обновлена
@@ -282,10 +282,6 @@ paths:
               properties:
                 map_id:
                   type: integer
-                grenade_class_id:
-                  type: integer
-                type_id:
-                  type: integer
                 link_to_video:
                   type: string
                 user_id:
@@ -300,6 +296,18 @@ paths:
                   type: integer
                 preview_image_link:
                   type: string
+                property:
+                  type: object
+                  properties:
+                    info_about:
+                      type: string
+                    info_value:
+                      type: string
+                  grenade_class:
+                    type: object
+                    properties:
+                      greande_info:
+                        type: string
       responses:
         '201':
           description: Раскидка успешно создана
@@ -365,6 +373,19 @@ paths:
                   type: integer
                 preview_image_link:
                   type: string
+                property:
+                  type: object
+                  properties:
+                    info_about:
+                      type: string
+                    info_value:
+                      type: string
+              grenade_class:
+                type: object
+                properties:
+                  greande_info:
+                    type: string
+                
       responses:
         '200':
           description: Раскидка успешно обновлена
@@ -409,6 +430,19 @@ paths:
                   type: integer
                 preview_image_link:
                   type: string
+                property:
+                  type: object
+                  properties:
+                    info_about:
+                      type: string
+                    info_value:
+                      type: string
+              grenade_class:
+                type: object
+                properties:
+                  greande_info:
+                    type: string
+                
       responses:
         '200':
           description: Раскидка частично обновлена
@@ -471,42 +505,6 @@ paths:
         '401':
           description: Неавторизованный доступ
 
-  /lineup-type-values:
-    get:
-      tags:
-        - LineupTypes
-      summary: Получить все значения типов раскидок
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Список всех значений типов раскидок
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/LineupTypeValues'
-    post:
-      tags:
-        - LineupTypes
-      summary: Создать новое значение типа раскидки
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                value:
-                  type: string
-      responses:
-        '201':
-          description: Значение типа раскидки успешно создано
-        '401':
-          description: Неавторизованный доступ
 
   /grenade-classes:
     get:
@@ -1017,28 +1015,6 @@ paths:
                   $ref: '#/components/schemas/Favorites'
 
   /favorites/{userId}/{grenadeId}:
-    patch:
-      tags:
-        - Favorites
-      summary: Частично обновить избранную раскидку
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type: integer
-        - name: grenadeId
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Избранная раскидка частично обновлена
-        '401':
-          description: Неавторизованный доступ
     delete:
       tags:
         - Favorites
@@ -1075,6 +1051,13 @@ components:
           type: string
         image_link:
           type: string
+        map_lineups:
+            type: object
+            properties:
+              lineup_id:
+                type: integer
+              lineup_info:
+                type: string
 
     Lineup:
       type: object
@@ -1082,8 +1065,6 @@ components:
         grenade_id:
           type: integer
         map_id:
-          type: integer
-        grenade_class_id:
           type: integer
         type_id:
           type: integer
@@ -1098,12 +1079,25 @@ components:
           type: string
         description:
           type: string
-        approved:
+        is_approved:
           type: boolean
         views:
           type: integer
         preview_image_link:
           type: string
+        property:
+          type: object
+          properties:
+            info_about:
+                  type: string
+            info_value:
+                  type: string
+        grenade_class:
+          type: object
+          properties:
+            greande_info:
+              type: string
+
 
     LineupType:
       type: object
@@ -1114,15 +1108,8 @@ components:
           type: string
         value_id:
           type: integer
-
-    LineupTypeValues:
-      type: object
-      properties:
-        value_id:
-          type: integer
-        value:
-          type: string
-
+        
+          
     GrenadeClass:
       type: object
       properties:
@@ -1156,10 +1143,36 @@ components:
     Admins:
       type: object
       properties:
-        user_id:
-          type: integer
-        admin_type_id:
-          type: integer
+        user_info:
+          type: object
+          properties:
+              user_id:
+                type: integer
+              username:
+                type: string
+              avatar_url:
+                type: string
+              tg_id:
+                type: integer
+              email:
+                type: string
+              first_name:
+                type: string
+              last_name:
+                type: string
+              is_banned:
+                type: boolean
+        admine_info:
+          type: object
+          properties:
+            admin_type_id:
+              type: integer
+            is_superuser:
+              type: boolean
+            is_base_admin:
+              type: boolean
+            is_editor:
+              type: boolean
 
     AdminType:
       type: object
@@ -1225,12 +1238,6 @@ components:
           type: string
         value_id:
           type: integer
-
-    LineupTypeValuesUpdate:
-      type: object
-      properties:
-        value:
-          type: string
 
     GrenadeClassUpdate:
       type: object
