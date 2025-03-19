@@ -11,7 +11,10 @@ import pluginReactHooks from "eslint-plugin-react-hooks"
 /** @type {import('eslint').Linter.Config[]} */
 export default [
     {
-        files: ["**/src/**/*.{js,mjs,cjs,ts,jsx,tsx}"],
+        files: [
+            "**/src/**/*.{js,mjs,cjs,ts,jsx,tsx}",
+            "**/*.{js,mjs,cjs,ts,jsx,tsx}",
+        ],
         ignores: ["node_modules/**/*", "dist/**/*"],
     },
     {
@@ -25,6 +28,13 @@ export default [
             parserOptions: {
                 projectService: true,
                 tsconfigRootDir: import.meta.dirname,
+                allowDefaultProject: [
+                    "*.js",
+                    "*.mjs",
+                    "*.ts",
+                    "*.tsx",
+                    "*.jsx",
+                ],
             },
         },
     },
