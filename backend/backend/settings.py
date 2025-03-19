@@ -52,9 +52,9 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'SIGNING_KEY': SECRET_KEY,
-    'USER_ID_FIELD': 'tg_id', 
-    'USER_ID_CLAIM': 'user_id',
+    "SIGNING_KEY": SECRET_KEY,
+    "USER_ID_FIELD": "tg_id",
+    "USER_ID_CLAIM": "user_id",
     "ACCESS_TOKEN_LIFETIME": timedelta(days=7),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
 }

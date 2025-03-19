@@ -10,13 +10,14 @@ from .models import User as CustomUser
 from auth_app.serializers import UserSerializer
 
 # Получаем токен из переменной окружения
-TELEGRAM_BOT_TOKEN = os.getenv('TOKEN')
+TELEGRAM_BOT_TOKEN = os.getenv("TOKEN")
+
 
 class TelegramAuthView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        init_data = request.data.get('init_data')  # данные из Telegram Web App
+        init_data = request.data.get("init_data")  # данные из Telegram Web App
         if not init_data:
             return Response({"error": "init_data is required"}, status=400)
 
@@ -25,7 +26,9 @@ class TelegramAuthView(APIView):
 
         # Проверка подписи
         if not self.check_webapp_signature(TELEGRAM_BOT_TOKEN, init_data):
-            return Response({"error": "Invalid hash. Data has been tampered with."}, status=400)
+            return Response(
+                {"error": "Invalid hash. Data has been tampered with."}, status=400
+            )
 
         # Разбираем параметры init_data
         params = dict(urllib.parse.parse_qsl(init_data))
@@ -34,8 +37,8 @@ class TelegramAuthView(APIView):
         print(f"Parsed parameters: {params}")
 
         # Декодируем параметр 'user', чтобы избежать экранированных символов
-        user_data = urllib.parse.unquote(params.get('user'))
-        params['user'] = user_data  # Обновляем параметр 'user' в params
+        user_data = urllib.parse.unquote(params.get("user"))
+        params["user"] = user_data  # Обновляем параметр 'user' в params
 
         # Логирование декодированных данных пользователя
         print(f"Decoded user data: {user_data}")
@@ -49,35 +52,38 @@ class TelegramAuthView(APIView):
         # Логирование данных пользователя
         print(f"User data: {user_data}")
 
-        tg_id = user_data.get('id')
-        username = user_data.get('username')
-        first_name = user_data.get('first_name')
-        last_name = user_data.get('last_name')
-        avatar_url = user_data.get('photo_url')
+        tg_id = user_data.get("id")
+        username = user_data.get("username")
+        first_name = user_data.get("first_name")
+        last_name = user_data.get("last_name")
+        avatar_url = user_data.get("photo_url")
 
         # Создание или получение пользователя
         user, created = CustomUser.objects.get_or_create(
             tg_id=tg_id,
             defaults={
-                'username': username,
-                'first_name': first_name,
-                'last_name': last_name,
-                'avatar_url': avatar_url
-            }
+                "username": username,
+                "first_name": first_name,
+                "last_name": last_name,
+                "avatar_url": avatar_url,
+            },
         )
 
         serializer = UserSerializer(user)
 
         # Получение JWT токенов
         from rest_framework_simplejwt.tokens import RefreshToken
+
         refresh = RefreshToken.for_user(user)
         access_token = str(refresh.access_token)
 
-        return Response({
-            'user': serializer.data,
-            'access_token': access_token,
-            'refresh_token': str(refresh)
-        })
+        return Response(
+            {
+                "user": serializer.data,
+                "access_token": access_token,
+                "refresh_token": str(refresh),
+            }
+        )
 
     def check_webapp_signature(self, token: str, init_data: str) -> bool:
         """
@@ -98,7 +104,7 @@ class TelegramAuthView(APIView):
             # Hash is not present in init data
             return False
 
-        hash_ = parsed_data.pop('hash')
+        hash_ = parsed_data.pop("hash")
         data_check_string = "\n".join(
             f"{k}={v}" for k, v in sorted(parsed_data.items())
         )
@@ -106,6 +112,8 @@ class TelegramAuthView(APIView):
             key=b"WebAppData", msg=token.encode(), digestmod=hashlib.sha256
         )
         calculated_hash = hmac.new(
-            key=secret_key.digest(), msg=data_check_string.encode(), digestmod=hashlib.sha256
+            key=secret_key.digest(),
+            msg=data_check_string.encode(),
+            digestmod=hashlib.sha256,
         ).hexdigest()
         return calculated_hash == hash_
