@@ -24,9 +24,9 @@ load_dotenv(override=False)
 # SECURITY WARNING: keep the secret key used in production secret!
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = (os.getenv("DJANGO_DEBUG", True),)
+DEBUG = os.getenv("DJANGO_DEBUG", "True") == "True"
 ALLOWED_HOSTS = (os.getenv("DJANGO_ALLOWED_HOSTS", "localhost"),)
-SECRET_KEY = (os.getenv("SECRET_KEY", "key"),)
+SECRET_KEY = os.getenv("SECRET_KEY", "key")
 
 # Application definition
 
@@ -52,6 +52,9 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
+    'SIGNING_KEY': SECRET_KEY,
+    'USER_ID_FIELD': 'tg_id', 
+    'USER_ID_CLAIM': 'user_id',
     "ACCESS_TOKEN_LIFETIME": timedelta(days=7),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
 }
