@@ -20,6 +20,9 @@ export function Header() {
                 <Button asChild variant='link'>
                     <Link to='/grenades'>Grenades</Link>
                 </Button>
+                <Button asChild variant='link'>
+                    <Link to='/profile'>Profile</Link>
+                </Button>
             </nav>
             <div className={classes.actions}>
                 <Button>Sign up</Button>
