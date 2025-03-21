@@ -13,8 +13,6 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 import os
 from dotenv import load_dotenv
-from datetime import timedelta
-
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -24,9 +22,9 @@ load_dotenv(override=False)
 # SECURITY WARNING: keep the secret key used in production secret!
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DJANGO_DEBUG", "True") == "True"
+DEBUG = (os.getenv("DJANGO_DEBUG", True),)
 ALLOWED_HOSTS = (os.getenv("DJANGO_ALLOWED_HOSTS", "localhost"),)
-SECRET_KEY = os.getenv("SECRET_KEY", "key")
+SECRET_KEY = (os.getenv("SECRET_KEY", "key"),)
 
 # Application definition
 
@@ -39,26 +37,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.postgres",
     "backend",
-    "rest_framework",
-    "rest_framework_simplejwt",
-    "auth_app",
 ]
-
-
-REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
-    ),
-}
-
-SIMPLE_JWT = {
-    "SIGNING_KEY": SECRET_KEY,
-    "USER_ID_FIELD": "tg_id",
-    "USER_ID_CLAIM": "user_id",
-    "ACCESS_TOKEN_LIFETIME": timedelta(days=7),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
-}
-
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",

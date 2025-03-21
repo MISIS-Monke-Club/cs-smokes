@@ -16,12 +16,8 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path, include
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from auth_app.views import TelegramAuthView
-
+from django.urls import path
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/", include("auth_app.urls")),
 ]
