@@ -4,7 +4,7 @@ info:
   version: 1.0.0
   description: API for managing maps, lineups, grenade classes, users, admins, and favorites in a tactical game.
 servers:
-  - url: 'http://localhost:3000/'
+  - url: "http://localhost:3000/api/"
     description: Сервер бекенда
 
 tags:
@@ -43,16 +43,20 @@ paths:
                 password:
                   type: string
       responses:
-        '200':
+        "200":
           description: Успешный логин
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  jwt_token:
+                  user_id: 
+                    type: int
+                  auth_token:
                     type: string
-        '401':
+                  refresh_token:
+                    type: string
+        "401":
           description: Неправильный логин или пароль
 
   /login/tg:
@@ -67,22 +71,23 @@ paths:
             schema:
               type: object
               properties:
-                initData:
+                init_data:
                   type: string
       responses:
-        '200':
+        "200":
           description: Успешный логин
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  User_ID:
+                  user_id:
+                    type: int
+                  auth_token:
                     type: string
-
-                  token:
+                  refresh_token:
                     type: string
-        '401':
+        "401":
           description: Что-то пошло не так, попробуйте перезайти
   /register:
     post:
@@ -107,9 +112,9 @@ paths:
                 last_name:
                   type: string
       responses:
-        '201':
+        "201":
           description: Успешная регистрация
-        '400':
+        "400":
           description: Неправильные данные
 
   /maps:
@@ -120,14 +125,21 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Список всех карт
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Map'
+                type: object
+                properties:
+                  map_id:
+                    type: integer
+                  name:
+                    type: string
+                  link:
+                    type: string
+                  image_link:
+                    type: string
     post:
       tags:
         - Maps
@@ -148,9 +160,9 @@ paths:
                 image_link:
                   type: string
       responses:
-        '201':
+        "201":
           description: Карта успешно создана
-        '401':
+        "401":
           description: Неавторизованный доступ
 
   /maps/{id}:
@@ -167,12 +179,12 @@ paths:
           schema:
             type: integer
       responses:
-        '200':
+        "200":
           description: Информация о карте
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Map'
+                $ref: "#/components/schemas/Map"
     put:
       tags:
         - Maps
@@ -199,9 +211,9 @@ paths:
                 image_link:
                   type: string
       responses:
-        '200':
+        "200":
           description: Карта успешно обновлена
-        '401':
+        "401":
           description: Неавторизованный доступ
     patch:
       tags:
@@ -227,11 +239,11 @@ paths:
                 link:
                   type: string
                 image_link:
-                  type: string           
+                  type: string
       responses:
-        '200':
+        "200":
           description: Карта частично обновлена
-        '401':
+        "401":
           description: Неавторизованный доступ
     delete:
       tags:
@@ -246,9 +258,9 @@ paths:
           schema:
             type: integer
       responses:
-        '204':
+        "204":
           description: Карта успешно удалена
-        '401':
+        "401":
           description: Неавторизованный доступ
 
   /lineups:
@@ -259,14 +271,14 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Список всех раскидок
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Lineup'
+                  $ref: "#/components/schemas/Lineup"
     post:
       tags:
         - Lineups
@@ -309,9 +321,9 @@ paths:
                       greande_info:
                         type: string
       responses:
-        '201':
+        "201":
           description: Раскидка успешно создана
-        '401':
+        "401":
           description: Неавторизованный доступ
 
   /lineups/{id}:
@@ -328,12 +340,12 @@ paths:
           schema:
             type: integer
       responses:
-        '200':
+        "200":
           description: Информация о раскидке
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Lineup'
+                $ref: "#/components/schemas/Lineup"
     put:
       tags:
         - Lineups
@@ -385,11 +397,11 @@ paths:
                 properties:
                   greande_info:
                     type: string
-                
+
       responses:
-        '200':
+        "200":
           description: Раскидка успешно обновлена
-        '401':
+        "401":
           description: Неавторизованный доступ
     patch:
       tags:
@@ -442,11 +454,11 @@ paths:
                 properties:
                   greande_info:
                     type: string
-                
+
       responses:
-        '200':
+        "200":
           description: Раскидка частично обновлена
-        '401':
+        "401":
           description: Неавторизованный доступ
     delete:
       tags:
@@ -461,50 +473,12 @@ paths:
           schema:
             type: integer
       responses:
-        '204':
+        "204":
           description: Раскидка успешно удалена
-        '401':
+        "401":
           description: Неавторизованный доступ
 
-  /lineup-types:
-    get:
-      tags:
-        - LineupTypes
-      summary: Получить все типы раскидок
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Список всех типов раскидок
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/LineupType'
-    post:
-      tags:
-        - LineupTypes
-      summary: Создать новый тип раскидки
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                key_name:
-                  type: string
-                value_id:
-                  type: integer
-      responses:
-        '201':
-          description: Тип раскидки успешно создан
-        '401':
-          description: Неавторизованный доступ
-
+  
 
   /grenade-classes:
     get:
@@ -514,14 +488,14 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Список всех классов гранат
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/GrenadeClass'
+                  $ref: "#/components/schemas/GrenadeClass"
     post:
       tags:
         - GrenadeClasses
@@ -538,9 +512,9 @@ paths:
                 name:
                   type: string
       responses:
-        '201':
+        "201":
           description: Класс гранаты успешно создан
-        '401':
+        "401":
           description: Неавторизованный доступ
 
   /users:
@@ -551,14 +525,14 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Список всех пользователей (только id и username)
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/User'
+                  $ref: "#/components/schemas/User"
     post:
       tags:
         - Users
@@ -589,9 +563,9 @@ paths:
                 is_banned:
                   type: boolean
       responses:
-        '201':
+        "201":
           description: Пользователь успешно создан
-        '401':
+        "401":
           description: Неавторизованный доступ
 
   /users/{id}:
@@ -608,12 +582,12 @@ paths:
           schema:
             type: integer
       responses:
-        '200':
+        "200":
           description: Информация о пользователе
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: "#/components/schemas/User"
     put:
       tags:
         - Users
@@ -650,9 +624,9 @@ paths:
                 is_banned:
                   type: boolean
       responses:
-        '200':
+        "200":
           description: Пользователь успешно обновлен
-        '401':
+        "401":
           description: Неавторизованный доступ
     patch:
       tags:
@@ -690,9 +664,9 @@ paths:
                 is_banned:
                   type: boolean
       responses:
-        '200':
+        "200":
           description: Пользователь частично обновлен
-        '401':
+        "401":
           description: Неавторизованный доступ
     delete:
       tags:
@@ -707,9 +681,9 @@ paths:
           schema:
             type: integer
       responses:
-        '204':
+        "204":
           description: Пользователь успешно удален
-        '401':
+        "401":
           description: Неавторизованный доступ
 
   /admins:
@@ -720,14 +694,14 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Список всех администраторов
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Admins'
+                  $ref: "#/components/schemas/Admins"
     post:
       tags:
         - Admins
@@ -746,9 +720,9 @@ paths:
                 admin_type_id:
                   type: integer
       responses:
-        '201':
+        "201":
           description: Администратор успешно назначен
-        '401':
+        "401":
           description: Неавторизованный доступ
 
   /admins/{id}:
@@ -765,12 +739,12 @@ paths:
           schema:
             type: integer
       responses:
-        '200':
+        "200":
           description: Информация об администраторе
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Admins'
+                $ref: "#/components/schemas/Admins"
     patch:
       tags:
         - Admins
@@ -793,9 +767,9 @@ paths:
                 admin_type_id:
                   type: integer
       responses:
-        '200':
+        "200":
           description: Администратор частично обновлен
-        '401':
+        "401":
           description: Неавторизованный доступ
     delete:
       tags:
@@ -810,9 +784,9 @@ paths:
           schema:
             type: integer
       responses:
-        '204':
+        "204":
           description: Администратор успешно удален
-        '401':
+        "401":
           description: Неавторизованный доступ
 
   /admin-types:
@@ -823,14 +797,14 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Список всех типов администраторов
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/AdminType'
+                  $ref: "#/components/schemas/AdminType"
     post:
       tags:
         - Admins
@@ -851,9 +825,9 @@ paths:
                 is_editor:
                   type: boolean
       responses:
-        '201':
+        "201":
           description: Тип администратора успешно создан
-        '401':
+        "401":
           description: Неавторизованный доступ
 
   /admin-types/{id}:
@@ -870,12 +844,12 @@ paths:
           schema:
             type: integer
       responses:
-        '200':
+        "200":
           description: Информация о типе администратора
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AdminType'
+                $ref: "#/components/schemas/AdminType"
     put:
       tags:
         - Admins
@@ -902,9 +876,9 @@ paths:
                 is_editor:
                   type: boolean
       responses:
-        '200':
+        "200":
           description: Тип администратора успешно обновлен
-        '401':
+        "401":
           description: Неавторизованный доступ
     patch:
       tags:
@@ -932,9 +906,9 @@ paths:
                 is_editor:
                   type: boolean
       responses:
-        '200':
+        "200":
           description: Тип администратора частично обновлен
-        '401':
+        "401":
           description: Неавторизованный доступ
     delete:
       tags:
@@ -949,9 +923,9 @@ paths:
           schema:
             type: integer
       responses:
-        '204':
+        "204":
           description: Тип администратора успешно удален
-        '401':
+        "401":
           description: Неавторизованный доступ
 
   /favorites:
@@ -962,14 +936,14 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Список всех избранных раскидок
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Favorites'
+                  $ref: "#/components/schemas/Favorites"
     post:
       tags:
         - Favorites
@@ -986,9 +960,9 @@ paths:
                 grenade_id:
                   type: integer
       responses:
-        '201':
+        "201":
           description: Раскидка успешно добавлена в избранное
-        '401':
+        "401":
           description: Неавторизованный доступ
 
   /favorites/{userId}:
@@ -1005,14 +979,14 @@ paths:
           schema:
             type: integer
       responses:
-        '200':
+        "200":
           description: Список избранных раскидок пользователя
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Favorites'
+                  $ref: "#/components/schemas/Favorites"
 
   /favorites/{userId}/{grenadeId}:
     delete:
@@ -1033,9 +1007,9 @@ paths:
           schema:
             type: integer
       responses:
-        '204':
+        "204":
           description: Раскидка успешно удалена из избранного
-        '401':
+        "401":
           description: Неавторизованный доступ
 
 components:
@@ -1052,12 +1026,9 @@ components:
         image_link:
           type: string
         map_lineups:
-            type: object
-            properties:
-              lineup_id:
-                type: integer
-              lineup_info:
-                type: string
+          type: array
+          items:
+            $ref: "#/components/schemas/Lineup"
 
     Lineup:
       type: object
@@ -1086,18 +1057,22 @@ components:
         preview_image_link:
           type: string
         property:
-          type: object
-          properties:
-            info_about:
-                  type: string
-            info_value:
-                  type: string
+          type: array
+          items:
+            properties:
+              key:
+                type: string
+              value:
+                type: string
         grenade_class:
           type: object
           properties:
-            greande_info:
+            name:
               type: string
-
+            description:
+              type: string
+            price:
+              type: int
 
     LineupType:
       type: object
@@ -1108,8 +1083,7 @@ components:
           type: string
         value_id:
           type: integer
-        
-          
+
     GrenadeClass:
       type: object
       properties:
@@ -1146,22 +1120,22 @@ components:
         user_info:
           type: object
           properties:
-              user_id:
-                type: integer
-              username:
-                type: string
-              avatar_url:
-                type: string
-              tg_id:
-                type: integer
-              email:
-                type: string
-              first_name:
-                type: string
-              last_name:
-                type: string
-              is_banned:
-                type: boolean
+            user_id:
+              type: integer
+            username:
+              type: string
+            avatar_url:
+              type: string
+            tg_id:
+              type: integer
+            email:
+              type: string
+            first_name:
+              type: string
+            last_name:
+              type: string
+            is_banned:
+              type: boolean
         admine_info:
           type: object
           properties:
