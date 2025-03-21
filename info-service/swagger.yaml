@@ -51,7 +51,7 @@ paths:
                 type: object
                 properties:
                   user_id: 
-                    type: int
+                    type: integer
                   auth_token:
                     type: string
                   refresh_token:
@@ -82,7 +82,7 @@ paths:
                 type: object
                 properties:
                   user_id:
-                    type: int
+                    type: integer
                   auth_token:
                     type: string
                   refresh_token:
@@ -98,19 +98,7 @@ paths:
         required: true
         content:
           application/json:
-            schema:
-              type: object
-              properties:
-                username:
-                  type: string
-                password:
-                  type: string
-                email:
-                  type: string
-                first_name:
-                  type: string
-                last_name:
-                  type: string
+              
       responses:
         "201":
           description: Успешная регистрация
@@ -308,7 +296,7 @@ paths:
                   type: integer
                 preview_image_link:
                   type: string
-                property:
+                property_list:
                   type: object
                   properties:
                     info_about:
@@ -548,7 +536,7 @@ paths:
               properties:
                 username:
                   type: string
-                avatar_url:
+                avatar_link:
                   type: string
                 steam_link:
                   type: string
@@ -609,7 +597,7 @@ paths:
               properties:
                 username:
                   type: string
-                avatar_url:
+                avatar_link:
                   type: string
                 steam_link:
                   type: string
@@ -649,7 +637,7 @@ paths:
               properties:
                 username:
                   type: string
-                avatar_url:
+                avatar_link:
                   type: string
                 steam_link:
                   type: string
@@ -929,21 +917,6 @@ paths:
           description: Неавторизованный доступ
 
   /favorites:
-    get:
-      tags:
-        - Favorites
-      summary: Получить все избранные раскидки
-      security:
-        - bearerAuth: []
-      responses:
-        "200":
-          description: Список всех избранных раскидок
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Favorites"
     post:
       tags:
         - Favorites
@@ -988,7 +961,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/Favorites"
 
-  /favorites/{userId}/{grenadeId}:
+  /favorites/{grenadeId}:
     delete:
       tags:
         - Favorites
@@ -996,12 +969,7 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type: integer
-        - name: grenadeId
+        - name: grenade_id
           in: path
           required: true
           schema:
@@ -1049,14 +1017,19 @@ components:
         title:
           type: string
         description:
-          type: string
+          type: 
+            - string
+            - null
         is_approved:
           type: boolean
         views:
           type: integer
         preview_image_link:
-          type: string
-        property:
+          type: 
+            - string
+            - null
+
+        property_list:
           type: array
           items:
             properties:
@@ -1072,7 +1045,7 @@ components:
             description:
               type: string
             price:
-              type: int
+              type: integer
 
     LineupType:
       type: object
@@ -1099,18 +1072,28 @@ components:
           type: integer
         username:
           type: string
-        avatar_url:
-          type: string
+        avatar_link:
+          type: 
+            - string
+            - null
         steam_link:
-          type: string
+          type: 
+            - string
+            - null
         tg_id:
           type: integer
         email:
-          type: string
+          type: 
+            - string
+            - null
         first_name:
-          type: string
+          type: 
+            - string
+            - null
         last_name:
-          type: string
+          type: 
+            - string
+            - null
         is_banned:
           type: boolean
 
@@ -1124,8 +1107,10 @@ components:
               type: integer
             username:
               type: string
-            avatar_url:
-              type: string
+            avatar_link:
+              type: 
+                - string
+                - null
             tg_id:
               type: integer
             email:
@@ -1161,15 +1146,9 @@ components:
           type: boolean
 
     Favorites:
-      type: object
-      properties:
-        user_id:
-          type: integer
-        grenade_id:
-          type: integer
-        created_at:
-          type: string
-          format: date-time
+      type: array
+      items:
+        $ref: "#/components/schemas/Lineup"
 
     MapUpdate:
       type: object
@@ -1197,13 +1176,17 @@ components:
         title:
           type: string
         description:
-          type: string
+          ttype: 
+            - string
+            - null
         approved:
           type: boolean
         views:
           type: integer
         preview_image_link:
-          type: string
+          type: 
+            - string
+            - null
 
     LineupTypeUpdate:
       type: object
@@ -1224,18 +1207,29 @@ components:
       properties:
         username:
           type: string
-        avatar_url:
-          type: string
+        avatar_link:
+          type: 
+            - string
+            - null
+
         steam_link:
-          type: string
+          type: 
+            - string
+            - null
         tg_id:
           type: integer
         email:
-          type: string
+          type: 
+            - string
+            - null
         first_name:
-          type: string
+          type: 
+            - string
+            - null
         last_name:
-          type: string
+          ttype: 
+            - string
+            - null
         is_banned:
           type: boolean
 
