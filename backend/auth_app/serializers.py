@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import (
+from auth_app.models import (
     Map,
     GrenadeClass,
     LineupTypeValues,

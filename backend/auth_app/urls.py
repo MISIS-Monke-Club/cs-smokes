@@ -16,12 +16,13 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from auth_app.views import TelegramAuthView
 
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
-    path("api/", include("auth_app.urls")),
+    path("login/tg/", TelegramAuthView.as_view(), name="telegram-auth"),
+    path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
 ]
