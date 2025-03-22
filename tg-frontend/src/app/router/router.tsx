@@ -35,6 +35,10 @@ export const router = createBrowserRouter(
                     path: "/profile",
                     element: <ProfilePage />,
                 },
+                {
+                    path: "/guest/profile/:id",
+                    element: <ProfilePage />,
+                },
             ],
         },
     ],

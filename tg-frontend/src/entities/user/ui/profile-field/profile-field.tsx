@@ -1,14 +1,13 @@
 import React from "react"
-import classes from "./profileField.module.scss"
 
 type ProfileFieldProps = {
     label: string
     value: React.ReactNode
 }
 
-export const ProfileField: React.FC<ProfileFieldProps> = ({ label, value }) => {
+export function ProfileField({ label, value }: ProfileFieldProps) {
     return (
-        <label className={classes.label}>
+        <label>
             <span>{label}:</span>
             <span>{value}</span>
         </label>

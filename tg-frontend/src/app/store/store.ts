@@ -1,8 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit"
-import { reducer } from "./reducer"
+import { userReducer } from "@entities/session"
 
 export const store = configureStore({
-    reducer: reducer,
+    reducer: {
+        user: userReducer,
+    },
     middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(),
 })
 

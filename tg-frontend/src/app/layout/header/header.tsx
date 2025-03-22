@@ -7,9 +7,9 @@ export function Header() {
         <header className={classes.header}>
             <img
                 className={classes.logo}
-                src='/'
+                src=''
                 alt='logo'
-                width='300'
+                width='150'
                 height='150'
                 loading='lazy'
             />
