@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom"
 import { useMemo } from "react"
-import { GrenadeModel } from "../domain"
+import { GrenadeModel } from "../../domain"
 import {
     Card,
     CardContent,
@@ -18,11 +18,11 @@ export function Grenade({ grenade }: GrenadeProps) {
     const navigate = useNavigate()
 
     function clickHandler() {
-        navigate(`/grenades/${grenade.grenade_id}`)
+        navigate(`/grenades/${grenade.grenadeId}`)
     }
 
     const date = useMemo(() => {
-        const dateInterface = new Date(grenade.created_at)
+        const dateInterface = new Date(grenade.createdAt)
 
         const day = dateInterface.getDate()
         const month = dateInterface.getMonth() + 1
@@ -35,7 +35,7 @@ export function Grenade({ grenade }: GrenadeProps) {
             <CardHeader>
                 <CardTitle>
                     <span>Grenade id:</span>
-                    <span>{grenade.grenade_id}</span>
+                    <span>{grenade.grenadeId}</span>
                 </CardTitle>
                 <CardDescription>view cool grenade</CardDescription>
             </CardHeader>

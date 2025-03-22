@@ -1,97 +1,57 @@
 import { queryOptions } from "@tanstack/react-query"
-import { GrenadeModel } from "./domain"
+import { z } from "zod"
+import { AxiosResponse } from "axios"
+import { grenadeDTOschema } from "./domain"
+import { fromGrenadeArrayDTO, fromGrenadeDTO } from "./lib/dto-transformer"
+import { typedQuery } from "@shared/lib/precooked-methods"
 
 // TODO: remove mock
-const mockGrenades: GrenadeModel[] = [
+const mockGrenades: z.infer<ReturnType<typeof grenadeDTOschema.array>> = [
     {
         grenade_id: 1,
-        map_id: 1,
-        grenade_class_id: 1,
-        type_id: 1,
-        link_to_video: "http://example.com/video1",
-        user_id: 1,
-        created_at: new Date(),
+        map_id: 101,
+        type_id: 5,
+        grenade_class: {
+            name: "Flashbang",
+            description: "A grenade that blinds enemies.",
+            price: 200,
+        },
+        properties: [
+            { key: "effect_duration", values: "2.5s" },
+            { key: "radius", values: "400 units" },
+        ],
+        link_to_video: "https://example.com/flashbang-guide",
+        user_id: 42,
+        created_at: "2024-03-22T12:00:00Z",
+        title: "Perfect Flash for Mid Push",
+        description:
+            "This flashbang is great for rushing mid without getting seen.",
+        is_approved: true,
+        views: 1342,
+        preview_image_link: "https://example.com/flashbang-preview.jpg",
     },
     {
         grenade_id: 2,
-        map_id: 2,
-        grenade_class_id: 2,
-        type_id: 2,
-        link_to_video: "http://example.com/video2",
-        user_id: 2,
-        created_at: new Date(),
-    },
-    {
-        grenade_id: 3,
-        map_id: 3,
-        grenade_class_id: 3,
-        type_id: 3,
-        link_to_video: "http://example.com/video3",
-        user_id: 3,
-        created_at: new Date(),
-    },
-    {
-        grenade_id: 4,
-        map_id: 4,
-        grenade_class_id: 4,
-        type_id: 4,
-        link_to_video: "http://example.com/video4",
-        user_id: 4,
-        created_at: new Date(),
-    },
-    {
-        grenade_id: 5,
-        map_id: 5,
-        grenade_class_id: 5,
-        type_id: 5,
-        link_to_video: "http://example.com/video5",
-        user_id: 5,
-        created_at: new Date(),
-    },
-    {
-        grenade_id: 6,
-        map_id: 6,
-        grenade_class_id: 6,
+        map_id: 102,
         type_id: 6,
-        link_to_video: "http://example.com/video6",
-        user_id: 6,
-        created_at: new Date(),
-    },
-    {
-        grenade_id: 7,
-        map_id: 7,
-        grenade_class_id: 7,
-        type_id: 7,
-        link_to_video: "http://example.com/video7",
-        user_id: 7,
-        created_at: new Date(),
-    },
-    {
-        grenade_id: 8,
-        map_id: 8,
-        grenade_class_id: 8,
-        type_id: 8,
-        link_to_video: "http://example.com/video8",
-        user_id: 8,
-        created_at: new Date(),
-    },
-    {
-        grenade_id: 9,
-        map_id: 9,
-        grenade_class_id: 9,
-        type_id: 9,
-        link_to_video: "http://example.com/video9",
-        user_id: 9,
-        created_at: new Date(),
-    },
-    {
-        grenade_id: 10,
-        map_id: 10,
-        grenade_class_id: 10,
-        type_id: 10,
-        link_to_video: "http://example.com/video10",
-        user_id: 10,
-        created_at: new Date(),
+        grenade_class: {
+            name: "Smoke Grenade",
+            description:
+                "A grenade that creates a vision-blocking smoke screen.",
+            price: 300,
+        },
+        properties: [
+            { key: "duration", values: "18s" },
+            { key: "radius", values: "500 units" },
+        ],
+        link_to_video: "https://example.com/smoke-setup",
+        user_id: 67,
+        created_at: "2024-03-20T15:30:00Z",
+        title: "One-Way Smoke on Mirage",
+        description: "A powerful one-way smoke for jungle control.",
+        is_approved: false,
+        views: 823,
+        preview_image_link: "https://example.com/smoke-preview.jpg",
     },
 ]
 
@@ -100,36 +60,39 @@ export const api = {
     getGrenades: () =>
         queryOptions({
             queryKey: [api.baseKey, "list"],
-            // queryFn: () =>
-            //     typedQuery(instance.get("/grenades"), grenadeDTOSchema.array())
-            //         .then(() => {})
-            //         .catch((err) => {
-            //             console.error(err)
-
-            //             throw err
-            //         }),
-            // TODO: remove this placeholder
             queryFn: () =>
-                Promise.resolve(mockGrenades).catch((err) => {
-                    console.error(err)
-
-                    throw err
+                typedQuery({
+                    // request: instance.get("/grenades")
+                    // TODO: Remove this mocks
+                    request: Promise.resolve({
+                        data: mockGrenades,
+                        headers: {},
+                        request: {},
+                        status: 0,
+                        statusText: "",
+                        config: {} as any,
+                    } satisfies AxiosResponse),
+                    dtoSchema: grenadeDTOschema.array(),
+                    fromDTO: fromGrenadeArrayDTO,
                 }),
         }),
     getGrenadeById: ({ grenadeId }: { grenadeId: number }) =>
         queryOptions({
             queryKey: [api.baseKey, "ById", grenadeId],
-            // queryFn: () =>
-            //     typedQuery(
-            //         instance.get(`/grenades/${grenadeId}`),
-            //         grenadeDTOSchema
-            //     ),
-            // TODO: remove this mock
             queryFn: () =>
-                Promise.resolve(mockGrenades[grenadeId - 1]).catch((err) => {
-                    console.error(err)
-
-                    throw err
+                typedQuery({
+                    // request: instance.get(`/grenades/${grenadeId}`),
+                    // TODO: remove this mock
+                    request: Promise.resolve({
+                        data: mockGrenades[grenadeId - 1],
+                        headers: {},
+                        request: {},
+                        status: 0,
+                        statusText: "",
+                        config: {} as any,
+                    } satisfies AxiosResponse),
+                    dtoSchema: grenadeDTOschema,
+                    fromDTO: fromGrenadeDTO,
                 }),
         }),
 }
