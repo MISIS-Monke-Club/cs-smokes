@@ -50,7 +50,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  user_id: 
+                  user_id:
                     type: integer
                   auth_token:
                     type: string
@@ -98,7 +98,7 @@ paths:
         required: true
         content:
           application/json:
-              
+
       responses:
         "201":
           description: Успешная регистрация
@@ -126,8 +126,10 @@ paths:
                     type: string
                   link:
                     type: string
+                    nullable: true
                   image_link:
                     type: string
+          nullable: true
     post:
       tags:
         - Maps
@@ -145,8 +147,10 @@ paths:
                   type: string
                 link:
                   type: string
+                  nullable: true
                 image_link:
                   type: string
+                  nullable: true
       responses:
         "201":
           description: Карта успешно создана
@@ -196,8 +200,10 @@ paths:
                   type: string
                 link:
                   type: string
+                  nullable: true
                 image_link:
                   type: string
+                  nullable: true
       responses:
         "200":
           description: Карта успешно обновлена
@@ -226,8 +232,10 @@ paths:
                   type: string
                 link:
                   type: string
+                  nullable: true
                 image_link:
                   type: string
+                  nullable: true
       responses:
         "200":
           description: Карта частично обновлена
@@ -284,18 +292,21 @@ paths:
                   type: integer
                 link_to_video:
                   type: string
+                  nullable: true
                 user_id:
                   type: integer
                 title:
                   type: string
                 description:
                   type: string
+                  nullable: true
                 approved:
                   type: boolean
                 views:
                   type: integer
                 preview_image_link:
                   type: string
+                  nullable: true
                 property_list:
                   type: object
                   properties:
@@ -361,18 +372,21 @@ paths:
                   type: integer
                 link_to_video:
                   type: string
+                  nullable: true
                 user_id:
                   type: integer
                 title:
                   type: string
                 description:
                   type: string
+                  nullable: true
                 approved:
                   type: boolean
                 views:
                   type: integer
                 preview_image_link:
                   type: string
+                  nullable: true
                 property:
                   type: object
                   properties:
@@ -418,18 +432,21 @@ paths:
                   type: integer
                 link_to_video:
                   type: string
+                  nullable: true
                 user_id:
                   type: integer
                 title:
                   type: string
                 description:
                   type: string
+                  nullable: true
                 approved:
                   type: boolean
                 views:
                   type: integer
                 preview_image_link:
                   type: string
+                  nullable: true
                 property:
                   type: object
                   properties:
@@ -465,8 +482,6 @@ paths:
           description: Раскидка успешно удалена
         "401":
           description: Неавторизованный доступ
-
-  
 
   /grenade-classes:
     get:
@@ -538,16 +553,21 @@ paths:
                   type: string
                 avatar_link:
                   type: string
+                  nullable: true
                 steam_link:
                   type: string
+                  nullable: true
                 tg_id:
                   type: integer
                 email:
                   type: string
+                  nullable: true
                 first_name:
                   type: string
+                  nullable: true
                 last_name:
                   type: string
+                  nullable: true
                 is_banned:
                   type: boolean
       responses:
@@ -599,16 +619,21 @@ paths:
                   type: string
                 avatar_link:
                   type: string
+                  nullable: true
                 steam_link:
                   type: string
+                  nullable: true
                 tg_id:
                   type: integer
                 email:
                   type: string
+                  nullable: true
                 first_name:
                   type: string
+                  nullable: true
                 last_name:
                   type: string
+                  nullable: true
                 is_banned:
                   type: boolean
       responses:
@@ -639,16 +664,21 @@ paths:
                   type: string
                 avatar_link:
                   type: string
+                  nullable: true
                 steam_link:
                   type: string
+                  nullable: true
                 tg_id:
                   type: integer
                 email:
                   type: string
+                  nullable: true
                 first_name:
                   type: string
+                  nullable: true
                 last_name:
                   type: string
+                  nullable: true
                 is_banned:
                   type: boolean
       responses:
@@ -991,8 +1021,10 @@ components:
           type: string
         link:
           type: string
+          nullable: true
         image_link:
           type: string
+          nullable: true
         map_lineups:
           type: array
           items:
@@ -1009,6 +1041,7 @@ components:
           type: integer
         link_to_video:
           type: string
+          nullable: true
         user_id:
           type: integer
         created_at:
@@ -1017,35 +1050,26 @@ components:
         title:
           type: string
         description:
-          type: 
-            - string
-            - null
+          type: string
+          nullable: true
         is_approved:
           type: boolean
         views:
           type: integer
         preview_image_link:
-          type: 
-            - string
-            - null
-
+          type: string
+          nullable: true
         property_list:
           type: array
           items:
+            type: object
             properties:
               key:
                 type: string
               value:
                 type: string
         grenade_class:
-          type: object
-          properties:
-            name:
-              type: string
-            description:
-              type: string
-            price:
-              type: integer
+          $ref: "#/components/schemas/GrenadeClass"
 
     LineupType:
       type: object
@@ -1064,6 +1088,11 @@ components:
           type: integer
         name:
           type: string
+        description:
+          type: string
+          nullable: true
+        price:
+          type: integer
 
     User:
       type: object
@@ -1073,27 +1102,22 @@ components:
         username:
           type: string
         avatar_link:
-          type: 
-            - string
-            - null
+          type: string
+          nullable: true
         steam_link:
-          type: 
-            - string
-            - null
+          type: string
+          nullable: true
         tg_id:
           type: integer
         email:
-          type: 
-            - string
-            - null
+          type: string
+          nullable: true
         first_name:
-          type: 
-            - string
-            - null
+          type: string
+          nullable: true
         last_name:
-          type: 
-            - string
-            - null
+          type: string
+          nullable: true
         is_banned:
           type: boolean
 
@@ -1101,37 +1125,9 @@ components:
       type: object
       properties:
         user_info:
-          type: object
-          properties:
-            user_id:
-              type: integer
-            username:
-              type: string
-            avatar_link:
-              type: 
-                - string
-                - null
-            tg_id:
-              type: integer
-            email:
-              type: string
-            first_name:
-              type: string
-            last_name:
-              type: string
-            is_banned:
-              type: boolean
-        admine_info:
-          type: object
-          properties:
-            admin_type_id:
-              type: integer
-            is_superuser:
-              type: boolean
-            is_base_admin:
-              type: boolean
-            is_editor:
-              type: boolean
+          $ref: "#/components/schemas/User"
+        admin_info:
+          $ref: "#/components/schemas/AdminType"
 
     AdminType:
       type: object
@@ -1155,10 +1151,13 @@ components:
       properties:
         name:
           type: string
+          nullable: true
         link:
           type: string
+          nullable: true
         image_link:
           type: string
+          nullable: true
 
     LineupUpdate:
       type: object
@@ -1171,22 +1170,21 @@ components:
           type: integer
         link_to_video:
           type: string
+          nullable: true
         user_id:
           type: integer
         title:
           type: string
         description:
-          ttype: 
-            - string
-            - null
-        approved:
+          type: string
+          nullable: true
+        is_approved:
           type: boolean
         views:
           type: integer
         preview_image_link:
-          type: 
-            - string
-            - null
+          type: string
+          nullable: true
 
     LineupTypeUpdate:
       type: object
@@ -1207,29 +1205,24 @@ components:
       properties:
         username:
           type: string
+          nullable: true
         avatar_link:
-          type: 
-            - string
-            - null
-
+          type: string
+          nullable: true
         steam_link:
-          type: 
-            - string
-            - null
+          type: string
+          nullable: true
         tg_id:
           type: integer
         email:
-          type: 
-            - string
-            - null
+          type: string
+          nullable: true
         first_name:
-          type: 
-            - string
-            - null
+          type: string
+          nullable: true
         last_name:
-          ttype: 
-            - string
-            - null
+          type: string
+          nullable: true
         is_banned:
           type: boolean
 
@@ -1264,4 +1257,3 @@ components:
     basicAuth:
       type: http
       scheme: basic
-      description: Basic authentication with username and password
