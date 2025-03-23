@@ -17,6 +17,9 @@ jobs:
       - name: Dependencies
         run: npm install
         working-directory: ./tg-frontend
+      - name: Types
+        run: npm run type-check
+        working-directory: ./tg-frontend
       - name: Linters
         run: npm run lint
         working-directory: ./tg-frontend

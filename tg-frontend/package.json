@@ -13,9 +13,8 @@
         "lint:format": "npx prettier ./src --write",
         "prepare": "cd .. && husky ./tg-frontend/.husky",
         "storybook": "storybook dev -p 6006",
-        "storybook:static": "storybook dev -p 6006 --no-open",
-        "build-storybook": "storybook build",
         "test": "npx vitest run",
+        "type-check": "tsc --noEmit --pretty -p tsconfig.json",
         "test:prepare": "npx playwright install",
         "test-storybook": "npx test-storybook"
     },

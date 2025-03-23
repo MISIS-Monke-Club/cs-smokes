@@ -7,10 +7,9 @@ import prettier from "eslint-plugin-prettier"
 import importPlugin from "eslint-plugin-import"
 import fsdEslint from "@conarti/eslint-plugin-feature-sliced"
 import pluginReactHooks from "eslint-plugin-react-hooks"
-
 /** @type {import('eslint').Linter.Config[]} */
 export default [
-    { ignores: ["node_modules/**/*", "dist/**/*", ".storybook/**/*"], },
+    { ignores: ["node_modules/**/*", "dist/**/*", ".storybook/**/*"] },
     {
         files: ["src/*.{js,mjs,cjs,ts,jsx,tsx}"],
     },
@@ -36,8 +35,9 @@ export default [
         },
     },
     pluginJs.configs.recommended,
-    ...tseslint.configs.strict,
-    ...tseslint.configs.stylistic,
+    // ...tseslint.configs.strict,
+    // ...tseslint.configs.stylistic,
+    ...tseslint.configs.recommendedTypeCheckedOnly,
     pluginReact.configs.flat["jsx-runtime"],
     {
         plugins: {
@@ -48,10 +48,31 @@ export default [
             "react-hooks": pluginReactHooks,
         },
         rules: {
+            "no-console": ["error", { allow: ["warn", "error"] }],
             "react/prop-types": ["error"],
             "react-hooks/rules-of-hooks": "error",
             "react-hooks/exhaustive-deps": "error",
+            "@typescript-eslint/no-duplicate-type-constituents": "error",
             "@typescript-eslint/consistent-type-definitions": ["error", "type"],
+            "@typescript-eslint/no-unsafe-argument": "off",
+            "no-unused-vars": "off",
+            "@typescript-eslint/no-unused-vars": [
+                "error",
+                {
+                    args: "all",
+                    argsIgnorePattern: "^_",
+                    caughtErrors: "all",
+                    caughtErrorsIgnorePattern: "^_",
+                    destructuredArrayIgnorePattern: "^_",
+                    varsIgnorePattern: "^_",
+                    ignoreRestSiblings: true,
+                },
+            ],
+            "@typescript-eslint/consistent-generic-constructors": [
+                "error",
+                "type-annotation",
+            ],
+            "@typescript-eslint/no-floating-promises": "off",
             "@typescript-eslint/consistent-type-imports": [
                 "error",
                 {
@@ -60,9 +81,9 @@ export default [
             ],
             "@typescript-eslint/no-unsafe-assignment": "off",
             "@typescript-eslint/no-unsafe-member-access": "off",
+            "@typescript-eslint/restrict-template-expressions": "off",
             "prettier/prettier": "warn",
             "import/no-default-export": "error",
-            "import/no-unresolved": "error",
             "import/default": "error",
             "import/order": "warn",
             "@conarti/feature-sliced/layers-slices": "error",
