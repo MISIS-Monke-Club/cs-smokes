@@ -4,6 +4,8 @@ import { Grenades } from "@pages/grenades"
 import { Homepage } from "@pages/home-page"
 import { GrenadePage } from "@pages/grenade-page"
 import { LoginPage } from "@pages/login-page"
+import { Maps } from "@pages/maps"
+import { MapPage } from "@pages/map-page"
 
 export const router = createBrowserRouter(
     [
@@ -29,6 +31,14 @@ export const router = createBrowserRouter(
                 {
                     path: "grenades/:grenadeId",
                     element: <GrenadePage />,
+                },
+                {
+                    path: "maps",
+                    element: <Maps />,
+                },
+                {
+                    path: "maps/:mapId",
+                    element: <MapPage />,
                 },
             ],
         },

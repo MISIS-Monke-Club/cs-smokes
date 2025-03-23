@@ -9,7 +9,7 @@ type ItemsListProps<T> = React.ComponentProps<"div"> & {
     isLoading?: boolean
     loadingItemsLength?: number
     type?: "grid" | "column"
-    gap: "small" | "medium" | "large"
+    gap?: "small" | "medium" | "large"
     columnsAmount?: number
     displayedLoadingItem?: ReactNode
 }

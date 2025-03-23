@@ -1,0 +1,30 @@
+.grenadeCard {
+    cursor: pointer;
+    border: 2px solid transparent;
+    background:
+        linear-gradient(var(--color-background), var(--color-background))
+            padding-box,
+        linear-gradient(
+                var(--mapBorderAngle),
+                #070707,
+                var(--color-accent),
+                var(--color-main)
+            )
+            border-box;
+    animation-duration: 8s;
+    animation-timing-function: linear;
+    animation-name: rotate;
+    animation-iteration-count: infinite;
+}
+
+@keyframes rotate {
+    to {
+        --mapBorderAngle: 360deg;
+    }
+}
+
+@property --mapBorderAngle {
+    syntax: "<angle>";
+    initial-value: 0deg;
+    inherits: false;
+}

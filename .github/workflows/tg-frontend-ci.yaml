@@ -17,11 +17,15 @@ jobs:
       - name: Dependencies
         run: npm install
         working-directory: ./tg-frontend
+      - name: Prepare for tests
+        run: npm run test:prepare
+        working-directory: ./tg-frontend
+      - name: Types
+        run: npm run type-check
+        working-directory: ./tg-frontend
       - name: Linters
         run: npm run lint
         working-directory: ./tg-frontend
-      - name: Publish tg-frontend to Chromatic
-        uses: chromaui/action@latest
-        with:
-          projectToken: ${{ secrets.CHROMATIC_TG_FRONTEND_TOKEN }}
-          workingDir: ./tg-frontend
+      - name: Tests
+        run: npm run test
+        working-directory: ./tg-frontend

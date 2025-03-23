@@ -1,15 +1,21 @@
 import { queryOptions } from "@tanstack/react-query"
 import { z } from "zod"
 import { AxiosResponse } from "axios"
-import { grenadeDTOschema } from "./domain"
-import { fromGrenadeArrayDTO, fromGrenadeDTO } from "./lib/dto-transformer"
+import { toast } from "sonner"
+import { fromMapArrayDTO, fromMapPageDTO } from "./lib/dto-transformer"
+import { mapDTOschema, MapModel, mapPageDTOschema } from "./model"
 import { typedQuery } from "@shared/lib/precooked-methods"
+// TODO: remove this
+// eslint-disable-next-line @conarti/feature-sliced/layers-slices
+import { grenadeDTOschema } from "@entities/grenade"
 
-// TODO: remove mock
-const mockGrenades: z.infer<ReturnType<typeof grenadeDTOschema.array>> = [
+// TODO: remove this mocks
+export const mockGrenadeData: z.infer<
+    ReturnType<typeof grenadeDTOschema.array>
+> = [
     {
         grenade_id: 1,
-        map_id: 101,
+        map_id: 1,
         type_id: 5,
         grenade_class: {
             name: "Flashbang",
@@ -32,7 +38,7 @@ const mockGrenades: z.infer<ReturnType<typeof grenadeDTOschema.array>> = [
     },
     {
         grenade_id: 2,
-        map_id: 102,
+        map_id: 2,
         type_id: 6,
         grenade_class: {
             name: "Smoke Grenade",
@@ -54,45 +60,89 @@ const mockGrenades: z.infer<ReturnType<typeof grenadeDTOschema.array>> = [
         preview_image_link: "https://example.com/smoke-preview.jpg",
     },
 ]
+export const mockMapData: z.infer<ReturnType<typeof mapDTOschema.array>> = [
+    {
+        map_id: 1,
+        name: "Dust II",
+        image_link: "https://example.com/maps/dust2.jpg",
+        link: "https://example.com/maps/dust2.jpg",
+    },
+    {
+        map_id: 2,
+        name: "Inferno",
+        image_link: "https://example.com/maps/inferno.jpg",
+        link: "https://example.com/maps/inferno.jpg",
+    },
+    {
+        map_id: 3,
+        name: "Mirage",
+        image_link: "https://example.com/maps/mirage.jpg",
+        link: "https://example.com/maps/mirage.jpg",
+    },
+    {
+        map_id: 4,
+        name: "Nuke",
+        image_link: "https://example.com/maps/nuke.jpg",
+        link: "https://example.com/maps/nuke.jpg",
+    },
+    {
+        map_id: 5,
+        name: "Overpass",
+        image_link: "https://example.com/maps/overpass.jpg",
+        link: "https://example.com/maps/overpass.jpg",
+    },
+]
+export const mockMapPageData: z.infer<ReturnType<typeof mapDTOschema.array>> =
+    mockMapData.map((map) => ({
+        ...map,
+        map_lineups: mockGrenadeData.filter(
+            (grenade) => grenade.map_id === map.map_id
+        ),
+    }))
 
 export const api = {
-    baseKey: "grenade",
-    getGrenades: () =>
+    baseKey: "map",
+    getMaps: () =>
         queryOptions({
             queryKey: [api.baseKey, "list"],
             queryFn: () =>
                 typedQuery({
-                    // request: instance.get("/grenades")
+                    // request: instance.get("/maps"),
                     // TODO: Remove this mocks
                     request: Promise.resolve({
-                        data: mockGrenades,
+                        data: mockMapData,
                         headers: {},
                         request: {},
                         status: 0,
                         statusText: "",
                         config: {} as any,
                     } satisfies AxiosResponse),
-                    dtoSchema: grenadeDTOschema.array(),
-                    fromDTO: fromGrenadeArrayDTO,
+                    dtoSchema: mapDTOschema.array(),
+                    fromDTO: fromMapArrayDTO,
                 }),
         }),
-    getGrenadeById: ({ grenadeId }: { grenadeId: number }) =>
+    getMapById: (mapId: MapModel["mapId"]) =>
         queryOptions({
-            queryKey: [api.baseKey, "ById", grenadeId],
+            queryKey: [api.baseKey, "ById", mapId],
             queryFn: () =>
                 typedQuery({
-                    // request: instance.get(`/grenades/${grenadeId}`),
-                    // TODO: remove this mock
+                    // request: instance.get(`/maps/${mapId}`),
+                    // TODO: remove this mocks
                     request: Promise.resolve({
-                        data: mockGrenades[grenadeId - 1],
+                        data: mockMapPageData[mapId - 1],
                         headers: {},
                         request: {},
                         status: 0,
                         statusText: "",
                         config: {} as any,
                     } satisfies AxiosResponse),
-                    dtoSchema: grenadeDTOschema,
-                    fromDTO: fromGrenadeDTO,
+                    dtoSchema: mapPageDTOschema,
+                    fromDTO: fromMapPageDTO,
+                }).catch((err) => {
+                    toast.error("Error acquired while getting map from server")
+                    console.error(err)
+
+                    throw err
                 }),
         }),
 }
