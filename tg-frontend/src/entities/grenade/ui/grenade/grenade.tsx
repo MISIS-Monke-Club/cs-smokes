@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom"
 import { useMemo } from "react"
 import { GrenadeModel } from "../../domain"
+import classes from "./grenade.module.scss"
 import {
     Card,
     CardContent,
@@ -31,7 +32,7 @@ export function Grenade({ grenade }: GrenadeProps) {
     }, [grenade])
 
     return (
-        <Card onClick={clickHandler}>
+        <Card className={classes.grenadeCard} onClick={clickHandler}>
             <CardHeader>
                 <CardTitle>
                     <span>Grenade id:</span>
