@@ -13,11 +13,11 @@
         "lint:format": "npx prettier ./src --write",
         "prepare": "cd .. && husky ./tg-frontend/.husky",
         "storybook": "storybook dev -p 6006",
-        "build-storybook": "storybook build",
+        "test:prepare": "npx playwright install --with-deps",
         "test": "npx vitest run",
         "type-check": "tsc --noEmit --pretty -p tsconfig.json",
-        "test:prepare": "npx playwright install",
-        "test-storybook": "npx test-storybook"
+        "test-storybook": "npx test-storybook",
+        "build-storybook": "storybook build"
     },
     "dependencies": {
         "@radix-ui/react-dialog": "^1.1.6",
