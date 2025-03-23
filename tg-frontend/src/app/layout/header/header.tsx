@@ -18,7 +18,10 @@ export function Header() {
                     <Link to='/'>Home</Link>
                 </Button>
                 <Button asChild variant='link'>
-                    <Link to='/grenades'>Grenades</Link>
+                    <Link to='/maps'>Maps</Link>
+                </Button>
+                <Button asChild variant='link'>
+                    <Link to='/grenades'>All grenades</Link>
                 </Button>
             </nav>
             <div className={classes.actions}>

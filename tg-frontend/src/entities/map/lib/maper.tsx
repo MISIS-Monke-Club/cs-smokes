@@ -1,6 +1,6 @@
 import { ReactNode } from "react"
 import { MapModel } from "../model"
-import { MapCard } from "../ui/map-card"
+import { MapCard } from "../ui/map-card/map-card"
 
 export const mapsMaper = (maps: MapModel[]): ReactNode => {
     return (

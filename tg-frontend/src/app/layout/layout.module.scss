@@ -24,3 +24,11 @@
     // Не позволяет растягиваться контенту по всему экрану огромного монитора
     max-width: calc(#{$desktop-min}px - 2 * var(--site-padding-x));
 }
+
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding-top: 150px;
+}

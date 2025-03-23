@@ -15,7 +15,7 @@ export const mockGrenadeData: z.infer<
 > = [
     {
         grenade_id: 1,
-        map_id: 101,
+        map_id: 1,
         type_id: 5,
         grenade_class: {
             name: "Flashbang",
@@ -38,7 +38,7 @@ export const mockGrenadeData: z.infer<
     },
     {
         grenade_id: 2,
-        map_id: 102,
+        map_id: 2,
         type_id: 6,
         grenade_class: {
             name: "Smoke Grenade",
@@ -62,13 +62,13 @@ export const mockGrenadeData: z.infer<
 ]
 export const mockMapData: z.infer<ReturnType<typeof mapDTOschema.array>> = [
     {
-        map_id: 101,
+        map_id: 1,
         name: "Dust II",
         image_link: "https://example.com/maps/dust2.jpg",
         link: "https://example.com/maps/dust2.jpg",
     },
     {
-        map_id: 102,
+        map_id: 2,
         name: "Inferno",
         image_link: "https://example.com/maps/inferno.jpg",
         link: "https://example.com/maps/inferno.jpg",

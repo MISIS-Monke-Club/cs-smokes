@@ -31,17 +31,17 @@ export function GrenadeOverview({ grenadeId }: GrenadeOverviewProps) {
     return (
         <div className={classes.grenade}>
             <h2 className={classes.title}>
-                Граната с ID: <span>{grenade?.grenade_id}</span>
+                Граната с ID: <span>{grenade?.grenadeId}</span>
             </h2>
             <div className={classes.content}>
                 <div className={classes.textInfo}>
                     <div className={classes.user}>
                         <span>Создана пользователем: </span>
-                        <span>{grenade?.user_id}</span>
+                        <span>{grenade?.userId}</span>
                     </div>
                     <div className={classes.type}>
                         <span>Тип гранаты: </span>
-                        <span>{grenade?.type_id}</span>
+                        <span>{grenade?.typeId}</span>
                     </div>
                     <div className={classes.video}>
                         <span>Ссылка на видео: </span>
