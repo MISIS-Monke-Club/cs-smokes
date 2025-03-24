@@ -129,7 +129,7 @@ paths:
                     nullable: true
                   image_link:
                     type: string
-          nullable: true
+                    nullable: true
     post:
       tags:
         - Maps
@@ -559,6 +559,7 @@ paths:
                   nullable: true
                 tg_id:
                   type: integer
+                  nullable: true
                 email:
                   type: string
                   nullable: true
@@ -625,6 +626,7 @@ paths:
                   nullable: true
                 tg_id:
                   type: integer
+                  nullable: true
                 email:
                   type: string
                   nullable: true
@@ -670,6 +672,7 @@ paths:
                   nullable: true
                 tg_id:
                   type: integer
+                  nullable: true
                 email:
                   type: string
                   nullable: true
@@ -1109,6 +1112,7 @@ components:
           nullable: true
         tg_id:
           type: integer
+          nullable: true
         email:
           type: string
           nullable: true
