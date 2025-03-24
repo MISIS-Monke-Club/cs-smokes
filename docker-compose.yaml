@@ -34,6 +34,7 @@ services:
             - DB_HOST=${DB_HOST}
             - DB_PORT=${DB_PORT}
             - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
+            - TOKEN=${TOKEN}
         depends_on:
             - db
         command: sh ./run-server.sh
