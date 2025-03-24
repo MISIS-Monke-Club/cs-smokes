@@ -26,7 +26,7 @@ tags:
     description: Избранное
 
 paths:
-  /login:
+  /login/:
     post:
       tags:
         - AUTH
@@ -59,7 +59,7 @@ paths:
         "401":
           description: Неправильный логин или пароль
 
-  /login/tg:
+  /login/tg/:
     post:
       tags:
         - AUTH
@@ -89,7 +89,7 @@ paths:
                     type: string
         "401":
           description: Что-то пошло не так, попробуйте перезайти
-  /register:
+  /register/:
     post:
       tags:
         - AUTH
@@ -113,7 +113,7 @@ paths:
         "400":
           description: Неправильные данные
 
-  /maps:
+  /maps/:
     get:
       tags:
         - Maps
@@ -165,7 +165,7 @@ paths:
         "401":
           description: Неавторизованный доступ
 
-  /maps/{id}:
+  /maps/{id}/:
     get:
       tags:
         - Maps
@@ -267,7 +267,7 @@ paths:
         "401":
           description: Неавторизованный доступ
 
-  /lineups:
+  /lineups/:
     get:
       tags:
         - Lineups
@@ -333,7 +333,7 @@ paths:
         "401":
           description: Неавторизованный доступ
 
-  /lineups/{id}:
+  /lineups/{id}/:
     get:
       tags:
         - Lineups
@@ -491,7 +491,7 @@ paths:
         "401":
           description: Неавторизованный доступ
 
-  /grenade-classes:
+  /grenade-classes/:
     get:
       tags:
         - GrenadeClasses
@@ -528,7 +528,7 @@ paths:
         "401":
           description: Неавторизованный доступ
 
-  /users:
+  /users/:
     get:
       tags:
         - Users
@@ -585,7 +585,7 @@ paths:
         "401":
           description: Неавторизованный доступ
 
-  /users/{id}:
+  /users/{id}/:
     get:
       tags:
         - Users
@@ -715,7 +715,7 @@ paths:
         "401":
           description: Неавторизованный доступ
 
-  /admins:
+  /admins/:
     get:
       tags:
         - Admins
@@ -754,7 +754,7 @@ paths:
         "401":
           description: Неавторизованный доступ
 
-  /admins/{id}:
+  /admins/{id}/:
     get:
       tags:
         - Admins
@@ -818,7 +818,7 @@ paths:
         "401":
           description: Неавторизованный доступ
 
-  /admin-types:
+  /admin-types/:
     get:
       tags:
         - Admins
@@ -859,7 +859,7 @@ paths:
         "401":
           description: Неавторизованный доступ
 
-  /admin-types/{id}:
+  /admin-types/{id}/:
     get:
       tags:
         - Admins
@@ -957,7 +957,7 @@ paths:
         "401":
           description: Неавторизованный доступ
 
-  /favorites:
+  /favorites/:
     post:
       tags:
         - Favorites
@@ -979,7 +979,7 @@ paths:
         "401":
           description: Неавторизованный доступ
 
-  /favorites/{userId}:
+  /favorites/{userId}/:
     get:
       tags:
         - Favorites
@@ -1002,7 +1002,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/Favorites"
 
-  /favorites/{grenadeId}:
+  /favorites/{grenadeId}/:
     delete:
       tags:
         - Favorites
