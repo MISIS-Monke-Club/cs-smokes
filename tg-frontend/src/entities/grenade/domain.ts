@@ -12,17 +12,17 @@ export const grenadeDTOschema = z.object({
     properties: z
         .object({
             key: z.string(),
-            values: z.string(),
+            value: z.string(),
         })
         .array(),
-    link_to_video: z.string().url(),
+    link_to_video: z.string().url().nullable(),
     user_id: z.number().positive(),
     created_at: z.string().datetime(),
     title: z.string(),
-    description: z.string(),
+    description: z.string().nullable(),
     is_approved: z.boolean(),
     views: z.number().positive(),
-    preview_image_link: z.string(),
+    preview_image_link: z.string().nullable(),
 })
 
 export type GrenadeModel = {
@@ -36,14 +36,14 @@ export type GrenadeModel = {
     }
     properties: {
         key: string
-        values: string
+        value: string
     }[]
-    linkToVideo: string
+    linkToVideo: string | null
     userId: number
     createdAt: string
     title: string
-    description: string
+    description: string | null
     isApproved: boolean
     views: number
-    previewImageLink: string
+    previewImageLink: string | null
 }

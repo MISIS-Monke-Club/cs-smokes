@@ -23,7 +23,7 @@ export function LoginPage() {
             Object.fromEntries(formData.entries())
         )
 
-        mutateAsync({ initData: formValues.login })
+        mutateAsync({ init_data: formValues.login })
             .then(() => {
                 toast.success("Данные успешно отправлены на /login/tg")
             })
