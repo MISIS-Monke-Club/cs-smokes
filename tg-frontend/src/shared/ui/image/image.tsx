@@ -3,13 +3,13 @@ import { Skeleton } from "../skeleton"
 import classes from "./image.module.scss"
 
 type ImageProps = HTMLProps<HTMLImageElement> & {
-    url?: string
+    url?: string | null
     skeletonClasses?: string
     isLoading?: boolean
 }
 
 export function ImageComponent({
-    url,
+    url = "",
     className = "",
     skeletonClasses = "",
     isLoading = false,
@@ -52,7 +52,7 @@ export function ImageComponent({
         return draftWidth
     }, [rest.height, rest.width])
 
-    if (isLoading || !url) {
+    if (isLoading || !url || url.length === 0) {
         return (
             <Skeleton
                 className={placeholderClass}

@@ -10,5 +10,5 @@ export const loginTgDTOschema = z.object({
 })
 
 export type LoginTgPostModel = {
-    initData: string
+    init_data: string
 }

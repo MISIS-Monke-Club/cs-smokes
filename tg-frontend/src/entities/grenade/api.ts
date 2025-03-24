@@ -17,8 +17,8 @@ const mockGrenades: z.infer<ReturnType<typeof grenadeDTOschema.array>> = [
             price: 200,
         },
         properties: [
-            { key: "effect_duration", values: "2.5s" },
-            { key: "radius", values: "400 units" },
+            { key: "effect_duration", value: "2.5s" },
+            { key: "radius", value: "400 units" },
         ],
         link_to_video: "https://example.com/flashbang-guide",
         user_id: 42,
@@ -41,8 +41,8 @@ const mockGrenades: z.infer<ReturnType<typeof grenadeDTOschema.array>> = [
             price: 300,
         },
         properties: [
-            { key: "duration", values: "18s" },
-            { key: "radius", values: "500 units" },
+            { key: "duration", value: "18s" },
+            { key: "radius", value: "500 units" },
         ],
         link_to_video: "https://example.com/smoke-setup",
         user_id: 67,

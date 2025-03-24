@@ -15,7 +15,7 @@
         "storybook": "storybook dev -p 6006",
         "test:prepare": "npx playwright install --with-deps",
         "test": "npx vitest run",
-        "type-check": "tsc --noEmit --pretty -p tsconfig.json",
+        "type-check": "tsc --noEmit --pretty --skipLibCheck -p tsconfig.json",
         "test-storybook": "npx test-storybook",
         "build-storybook": "storybook build"
     },

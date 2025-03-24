@@ -16,7 +16,7 @@ export const fromGrenadeDTO = (
         },
         properties: dto.properties.map((el) => ({
             key: el.key,
-            values: el.values,
+            value: el.value,
         })),
         linkToVideo: dto.link_to_video,
         userId: dto.user_id,

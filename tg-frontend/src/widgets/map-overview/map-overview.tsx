@@ -3,9 +3,10 @@ import classes from "./map-overview.module.scss"
 import { GrenadesList } from "@entities/grenade"
 import { mapApi, MapPageModel } from "@entities/map"
 import { PlaceholderBlock } from "@shared/ui/placeholder-block"
+import { ImageComponent } from "@shared/ui/image"
 
 export function MapOverview({ mapId }: { mapId: MapPageModel["mapId"] }) {
-    const { data, isError } = useQuery(mapApi.getMapById(mapId))
+    const { data, isError, isLoading } = useQuery(mapApi.getMapById(mapId))
 
     if (!data && !isError) {
         return <div>Unexpected state...</div>
@@ -22,13 +23,13 @@ export function MapOverview({ mapId }: { mapId: MapPageModel["mapId"] }) {
     return (
         <>
             <h1 className={classes.title}>{data?.name}</h1>
-            <img
+            <ImageComponent
                 className={classes.mapImage}
-                src={data?.imageLink}
+                src={data?.imageLink || ""}
                 alt='card image'
                 width='200'
                 height='200'
-                loading='lazy'
+                isLoading={isLoading}
             />
             <GrenadesList grenades={data.mapLineups} />
         </>
