@@ -98,7 +98,15 @@ paths:
         required: true
         content:
           application/json:
-
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
       responses:
         "201":
           description: Успешная регистрация
@@ -314,11 +322,11 @@ paths:
                       type: string
                     info_value:
                       type: string
-                  grenade_class:
-                    type: object
-                    properties:
-                      greande_info:
-                        type: string
+                    grenade_class:
+                      type: object
+                      properties:
+                        greande_info:
+                          type: string
       responses:
         "201":
           description: Раскидка успешно создана
@@ -394,11 +402,11 @@ paths:
                       type: string
                     info_value:
                       type: string
-              grenade_class:
-                type: object
-                properties:
-                  greande_info:
-                    type: string
+                grenade_class:
+                  type: object
+                  properties:
+                    greande_info:
+                      type: string
 
       responses:
         "200":
@@ -454,11 +462,11 @@ paths:
                       type: string
                     info_value:
                       type: string
-              grenade_class:
-                type: object
-                properties:
-                  greande_info:
-                    type: string
+                grenade_class:
+                  type: object
+                  properties:
+                    greande_info:
+                      type: string
 
       responses:
         "200":
