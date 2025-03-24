@@ -29,14 +29,14 @@ ALLOWED_HOSTS = (os.getenv("DJANGO_ALLOWED_HOSTS", "localhost"),)
 SECRET_KEY = os.getenv("SECRET_KEY", "key")
 
 
-CORS_ALLOW_ALL_ORIGINS = True # перед продакшеном обязательно поменять!!!
+CORS_ALLOW_ALL_ORIGINS = True  # перед продакшеном обязательно поменять!!!
 
 CORS_ALLOW_CREDENTIALS = True
 
 # перед продакшеном обязательно внести в массивы наши хосты
-# CORS_ALLOWED_ORIGINS = [   
+# CORS_ALLOWED_ORIGINS = [
 #     'http://localhost:3030',
-# ] 
+# ]
 # CORS_ALLOWED_ORIGIN_REGEXES = [
 #     'http://localhost:3030',
 # ]
