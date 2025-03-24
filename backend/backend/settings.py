@@ -28,7 +28,27 @@ DEBUG = os.getenv("DJANGO_DEBUG", "True") == "True"
 ALLOWED_HOSTS = (os.getenv("DJANGO_ALLOWED_HOSTS", "localhost"),)
 SECRET_KEY = os.getenv("SECRET_KEY", "key")
 
-# Application definition
+
+CORS_ALLOW_ALL_ORIGINS = True # перед продакшеном обязательно поменять!!!
+
+CORS_ALLOW_CREDENTIALS = True
+
+# перед продакшеном обязательно внести в массивы наши хосты
+# CORS_ALLOWED_ORIGINS = [   
+#     'http://localhost:3030',
+# ] 
+# CORS_ALLOWED_ORIGIN_REGEXES = [
+#     'http://localhost:3030',
+# ]
+
+CORS_ALLOW_METHODS = [
+    "GET",
+    "POST",
+    "PUT",
+    "PATCH",
+    "DELETE",
+    "OPTIONS",
+]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -37,13 +57,13 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "corsheaders",
     "django.contrib.postgres",
     "backend",
     "rest_framework",
     "rest_framework_simplejwt",
     "auth_app",
 ]
-
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
@@ -63,13 +83,13 @@ SIMPLE_JWT = {
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
-
 ROOT_URLCONF = "backend.urls"
 
 TEMPLATES = [
