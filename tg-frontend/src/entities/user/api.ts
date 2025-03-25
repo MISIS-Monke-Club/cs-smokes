@@ -38,9 +38,18 @@ export const userApi = {
                 new Promise<UserModel | undefined>((resolve, reject) => {
                     setTimeout(() => {
                         try {
-                            const user = userId
-                                ? mockUsers.find((u) => u.user_id === userId)
-                                : mockUsers[0]
+                            const userIndex = userId
+                                ? mockUsers.findIndex(
+                                      (u) => u.user_id === userId
+                                  )
+                                : 0
+
+                            if (userIndex === -1) {
+                                reject(new Error("Пользователь не найден"))
+                                return
+                            }
+
+                            const user = mockUsers[userIndex]
 
                             resolve(
                                 typedQuery(
@@ -54,7 +63,41 @@ export const userApi = {
                             console.error(err)
                             reject(err)
                         }
-                    }, 2000)
+                    }, 300)
                 }),
         }),
+
+    updateUser: async (userData: Partial<UserModel> & { userId: number }) => {
+        return new Promise<UserModel>((resolve, reject) => {
+            setTimeout(() => {
+                try {
+                    const userIndex = mockUsers.findIndex(
+                        (u) => u.user_id === userData.userId
+                    )
+                    if (userIndex === -1) {
+                        reject(new Error("Пользователь не найден"))
+                        return
+                    }
+
+                    mockUsers[userIndex] = {
+                        ...mockUsers[userIndex],
+                        ...userData,
+                    }
+
+                    const user = mockUsers[userIndex]
+
+                    resolve(
+                        typedQuery(
+                            Promise.resolve({
+                                data: user,
+                            } as AxiosResponse),
+                            userDTOShema
+                        )
+                    )
+                } catch (err) {
+                    reject(err)
+                }
+            }, 300)
+        })
+    },
 }

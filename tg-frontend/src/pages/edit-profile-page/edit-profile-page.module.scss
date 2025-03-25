@@ -1,0 +1,29 @@
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.title {
+    font-size: toRem(32);
+    text-align: center;
+    margin-bottom: 1.3rem;
+}
+
+.input {
+    display: flex;
+    padding: 10px;
+    border: 1px solid #615f5f;
+    border-radius: 4px;
+
+    &:disabled {
+        background-color: rgb(32, 32, 32);
+        border: 1px solid #1b1b1b;
+        cursor: not-allowed;
+    }
+}
+
+.buttons {
+    display: flex;
+    justify-content: space-between;
+}

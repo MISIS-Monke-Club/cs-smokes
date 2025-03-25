@@ -7,7 +7,7 @@ export function Header() {
         <header className={classes.header}>
             <img
                 className={classes.logo}
-                src=''
+                src='/'
                 alt='logo'
                 width='150'
                 height='150'

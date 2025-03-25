@@ -5,6 +5,7 @@ import { Homepage } from "@pages/home-page"
 import { GrenadePage } from "@pages/grenade-page"
 import { LoginPage } from "@pages/login-page"
 import { ProfilePage } from "@pages/profile-page"
+import { EditProfilePage } from "@pages/edit-profile-page"
 
 export const router = createBrowserRouter(
     [
@@ -38,6 +39,10 @@ export const router = createBrowserRouter(
                 {
                     path: "/guest/profile/:id",
                     element: <ProfilePage />,
+                },
+                {
+                    path: "/profile/edit",
+                    element: <EditProfilePage />,
                 },
             ],
         },
