@@ -28,11 +28,6 @@ class MapDetailView(APIView):
     @extend_schema(
         description="Получить детальную информацию о конкретной карте",
         responses={200: MapSerializer},
-        parameters=[
-            OpenApiParameter(
-                name="pk", description="ID карты", required=True, type=int
-            ),
-        ],
     )
     def get(self, request, pk):
         maps = get_object_or_404(Map, pk=pk)
@@ -78,11 +73,6 @@ class MapRUDView(APIView):
             200: MapSerializer,
             401: None,
         },
-        parameters=[
-            OpenApiParameter(
-                name="pk", description="ID карты", required=True, type=int
-            ),
-        ],
     )
     def put(self, request, pk):
         maps = get_object_or_404(Map, pk=pk)
@@ -99,11 +89,6 @@ class MapRUDView(APIView):
             200: MapSerializer,
             401: None,
         },
-        parameters=[
-            OpenApiParameter(
-                name="pk", description="ID карты", required=True, type=int
-            ),
-        ],
     )
     def patch(self, request, pk):
         maps = get_object_or_404(Map, pk=pk)
@@ -118,11 +103,6 @@ class MapRUDView(APIView):
         responses={
             204: None,
         },
-        parameters=[
-            OpenApiParameter(
-                name="pk", description="ID карты", required=True, type=int
-            ),
-        ],
     )
     def delete(self, request, pk):
         maps = get_object_or_404(Map, pk=pk)
