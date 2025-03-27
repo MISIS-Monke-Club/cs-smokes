@@ -93,6 +93,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "backend.wsgi.application"
 
+# Routing with/without slash. Работает только для ViewSets(мы использвуем почти всегда API-VIEW)
+APPEND_SLASH = False
+
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases

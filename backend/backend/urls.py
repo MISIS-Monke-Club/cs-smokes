@@ -16,7 +16,7 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import re_path, include
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from auth_app.views import TelegramAuthView
 from drf_spectacular.views import (
@@ -26,13 +26,13 @@ from drf_spectacular.views import (
 
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
-    path("api/", include("auth_app.urls")),
-    path("api/", include("lineups.urls")),
-    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+    re_path("admin/", admin.site.urls),
+    re_path("api/", include("auth_app.urls")),
+    re_path("api/", include("lineups.urls")),
+    re_path(r"api/schema/?$", SpectacularAPIView.as_view(), name="schema"),
     # Swagger UI
-    path(
-        "api/docs/",
+    re_path(
+        r"api/docs/?$",
         SpectacularSwaggerView.as_view(url_name="schema"),
         name="swagger-ui",
     ),
