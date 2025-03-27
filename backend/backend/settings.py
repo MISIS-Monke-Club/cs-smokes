@@ -24,21 +24,30 @@ load_dotenv(override=False)
 # SECURITY WARNING: keep the secret key used in production secret!
 
 # SECURITY WARNING: don't run with debug turned on in production!
+
+
+def get_list_from_env(name, default=None):
+    value = os.getenv(name, default)
+    if value:
+        return [item.strip() for item in value.split(",") if item.strip()]
+    return []
+
+
 DEBUG = os.getenv("DJANGO_DEBUG", "True") == "True"
 ALLOWED_HOSTS = (os.getenv("DJANGO_ALLOWED_HOSTS", "localhost"),)
 SECRET_KEY = os.getenv("SECRET_KEY", "key")
+CORS_ALLOW_ALL_ORIGINS = True  # не для продакшена
 
+CORS_ALLOWED_ORIGINS = get_list_from_env(
+    name="CORS_ALLOWED_ORIGINS",
+    default="https://.ngrok-free.app,https://web.telegram.org,http://localhost:3000,https://localhost:3000",
+)
+CSRF_TRUSTED_ORIGINS = get_list_from_env(
+    "CSRF_TRUSTED_ORIGINS",
+    default="https://.ngrok-free.app,https://web.telegram.org,http://localhost:3000,https://localhost:3000",
+)
 # Application definition
-CORS_ALLOW_ALL_ORIGINS = True  # перед продакшеном обязательно поменять!!!
 CORS_ALLOW_CREDENTIALS = True
-
-# перед продакшеном поменять на эти массивы с хостами
-# CORS_ALLOWED_ORIGINS = [
-#     'http://localhost:3030',
-# ] # If this is used, then not need to use `CORS_ALLOW_ALL_ORIGINS = True`
-# CORS_ALLOWED_ORIGIN_REGEXES = [
-#     'http://localhost:3030',
-# ]
 
 CORS_ALLOW_METHODS = [
     "GET",
@@ -47,6 +56,18 @@ CORS_ALLOW_METHODS = [
     "PATCH",
     "DELETE",
     "OPTIONS",
+]
+
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
 ]
 
 INSTALLED_APPS = [
@@ -80,9 +101,9 @@ SIMPLE_JWT = {
 
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
