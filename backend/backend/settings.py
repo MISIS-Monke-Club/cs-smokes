@@ -17,7 +17,7 @@ from datetime import timedelta
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+AUTH_USER_MODEL = "auth_app.User"
 load_dotenv(override=False)
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
