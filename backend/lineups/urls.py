@@ -1,13 +1,7 @@
 from django.urls import path, re_path
-from .maps_views import MapsListView, MapCreateView, MapRUDView, MapDetailView
+from .maps_views import MapsView, MapDetailRUDView
 
 urlpatterns = [
-    re_path(r"maps/?$", MapsListView.as_view(), name="View all maps"),
-    re_path(r"maps/?$", MapCreateView.as_view(), name="Post new map"),
-    re_path(r"maps/<int:pk>/?$", MapDetailView.as_view(), name="Map info by ID"),
-    re_path(
-        r"maps/<int:pk>/?$",
-        MapRUDView.as_view(),
-        name="RUD(read,update,delete) operations with maps",
-    ),
+    re_path(r"maps/?$", MapsView.as_view(), name="maps-list-create"),
+    re_path(r"maps/(?P<pk>\d+)/?$", MapDetailRUDView.as_view(), name="map-detail-rud"),
 ]
