@@ -4,9 +4,8 @@ from rest_framework import status
 from django.shortcuts import get_object_or_404
 from auth_app.models import Map
 from auth_app.serializers import MapSerializer
-from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
-from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExample
-from drf_spectacular.types import OpenApiTypes
+from rest_framework.permissions import AllowAny
+from drf_spectacular.utils import extend_schema, OpenApiExample
 
 
 class MapsListView(APIView):

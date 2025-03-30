@@ -1,5 +1,4 @@
 from django.db import models
-from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
 
@@ -56,7 +55,7 @@ class User(AbstractBaseUser):
     last_name = models.CharField(max_length=255, default="", blank=True)
     avatar_url = models.CharField(max_length=255, default="", blank=True)
     steam_link = models.CharField(max_length=255, default="", blank=True)
-    tg_id = models.IntegerField(default=0, blank=True)
+    tg_id = models.IntegerField(null=True, blank=True)
     is_banned = models.BooleanField(default=False)
     objects = UserManager()
     USERNAME_FIELD = "username"
