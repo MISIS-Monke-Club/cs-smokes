@@ -10,8 +10,6 @@ export const api = {
     loginTg: (): MutationOptions<LoginTgModel, unknown, LoginTgPostModel> => ({
         mutationKey: [api.baseKey],
         mutationFn: (data) =>
-            // typedQuery(instance.post("/login/tg", data), loginTgDTOschema),
-            // TODO: delete this mock
             typedQuery({
                 request: instance.post("/login/tg", data),
                 dtoSchema: loginTgDTOschema,
