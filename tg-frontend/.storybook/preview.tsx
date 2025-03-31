@@ -26,11 +26,11 @@ const preview: Preview = {
     },
     decorators: [
         (Story) => (
-            <MemoryRouter initialEntries={["/"]}>
-                <ThemeProvider>
+            <ThemeProvider>
+                <MemoryRouter initialEntries={["/"]}>
                     <Story />
-                </ThemeProvider>
-            </MemoryRouter>
+                </MemoryRouter>
+            </ThemeProvider>
         ),
     ],
     tags: ["autodocs"],
