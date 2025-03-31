@@ -23,6 +23,4 @@ from auth_app.views import TelegramAuthView
 
 urlpatterns = [
     re_path(r"^login/tg/?$", TelegramAuthView.as_view(), name="telegram-auth"),
-    re_path(r"^token/?$", TokenObtainPairView.as_view(), name="token_obtain_pair"),
-    re_path(r"^token/refresh/?$", TokenRefreshView.as_view(), name="token_refresh"),
 ]
