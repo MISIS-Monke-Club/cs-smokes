@@ -16,7 +16,7 @@ const mockGrenades: z.infer<ReturnType<typeof grenadeDTOschema.array>> = [
             description: "A grenade that blinds enemies.",
             price: 200,
         },
-        properties: [
+        property_list: [
             { key: "effect_duration", value: "2.5s" },
             { key: "radius", value: "400 units" },
         ],
@@ -40,7 +40,7 @@ const mockGrenades: z.infer<ReturnType<typeof grenadeDTOschema.array>> = [
                 "A grenade that creates a vision-blocking smoke screen.",
             price: 300,
         },
-        properties: [
+        property_list: [
             { key: "duration", value: "18s" },
             { key: "radius", value: "500 units" },
         ],

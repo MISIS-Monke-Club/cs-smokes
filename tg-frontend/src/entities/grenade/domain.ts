@@ -9,7 +9,7 @@ export const grenadeDTOschema = z.object({
         description: z.string(),
         price: z.number().positive().min(1),
     }),
-    properties: z
+    property_list: z
         .object({
             key: z.string(),
             value: z.string(),
