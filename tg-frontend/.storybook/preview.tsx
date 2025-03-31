@@ -1,7 +1,9 @@
 import type { Preview } from "@storybook/react"
 import "../src/app/tailwind.css"
-import { background, themes } from "storybook/internal/theming"
+import "../src/app/index.scss"
+import { themes } from "storybook/internal/theming"
 import { ThemeProvider } from "../src/app/providers/theme-provider"
+import { MemoryRouter } from "react-router-dom"
 import React from "react"
 
 const preview: Preview = {
@@ -24,9 +26,11 @@ const preview: Preview = {
     },
     decorators: [
         (Story) => (
-            <ThemeProvider>
-                <Story />
-            </ThemeProvider>
+            <MemoryRouter initialEntries={["/"]}>
+                <ThemeProvider>
+                    <Story />
+                </ThemeProvider>
+            </MemoryRouter>
         ),
     ],
     tags: ["autodocs"],
