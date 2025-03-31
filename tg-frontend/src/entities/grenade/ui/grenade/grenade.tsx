@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom"
-import { useMemo } from "react"
+import React, { useMemo } from "react"
 import { GrenadeModel } from "../../domain"
 import classes from "./grenade.module.scss"
 import {
@@ -10,12 +10,14 @@ import {
     CardHeader,
     CardTitle,
 } from "@shared/ui/card"
+import { dateFormatter } from "@shared/lib/date-formatter"
 
-type GrenadeProps = {
+type GrenadeProps = React.ComponentProps<"div"> & {
     grenade: GrenadeModel
+    className?: string
 }
 
-export function Grenade({ grenade }: GrenadeProps) {
+export function Grenade({ grenade, className = "", ...rest }: GrenadeProps) {
     const navigate = useNavigate()
 
     function clickHandler() {
@@ -23,21 +25,27 @@ export function Grenade({ grenade }: GrenadeProps) {
     }
 
     const date = useMemo(() => {
-        const dateInterface = new Date(grenade.createdAt)
-
-        const day = dateInterface.getDate()
-        const month = dateInterface.getMonth() + 1
-
-        return day + "." + month
+        return dateFormatter({
+            isoDatetime: grenade.createdAt,
+            day: true,
+            month: true,
+        })
     }, [grenade])
 
+    const combinedClass: string = useMemo(() => {
+        const draftClass = [classes.grenadeCard]
+
+        if (className) {
+            draftClass.push(className)
+        }
+
+        return draftClass.join(" ")
+    }, [className])
+
     return (
-        <Card className={classes.grenadeCard} onClick={clickHandler}>
+        <Card className={combinedClass} onClick={clickHandler} {...rest}>
             <CardHeader>
-                <CardTitle>
-                    <span>Grenade id:</span>
-                    <span>{grenade.grenadeId}</span>
-                </CardTitle>
+                <CardTitle>Grenade id:{grenade.grenadeId}</CardTitle>
                 <CardDescription>view cool grenade</CardDescription>
             </CardHeader>
             <CardContent>
@@ -47,10 +55,7 @@ export function Grenade({ grenade }: GrenadeProps) {
                     loading='lazy'
                 />
             </CardContent>
-            <CardFooter>
-                <span>Created at:</span>
-                <span>{date}</span>
-            </CardFooter>
+            <CardFooter>Created at:{date}</CardFooter>
         </Card>
     )
 }
