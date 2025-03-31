@@ -13,8 +13,9 @@ services:
         ports:
             - 8080:5173
         depends_on:
+            - bot
             - backend
-        command: sh -c "npm install && npm audit fix --force && npm run host"
+        command: sh -c "npm install && npm run host"
 
     backend:
         container_name: backend
@@ -73,6 +74,4 @@ services:
         environment:
             - TOKEN=${TOKEN}
             - WEB_APP_URL=${WEB_APP_URL}
-        depends_on:
-            - backend
         command: sh -c "python bot.py"
