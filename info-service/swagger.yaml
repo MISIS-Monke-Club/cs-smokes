@@ -117,7 +117,7 @@ paths:
     get:
       tags:
         - Maps
-      summary: Получить все карты
+      summary: Получить все карты(Рабочая)
       security:
         - bearerAuth: []
       responses:
@@ -141,7 +141,7 @@ paths:
     post:
       tags:
         - Maps
-      summary: Создать новую карту
+      summary: Создать новую карту(Рабочая)
       security:
         - bearerAuth: []
       requestBody:
@@ -169,7 +169,7 @@ paths:
     get:
       tags:
         - Maps
-      summary: Получить карту по ID
+      summary: Получить карту по ID(Рабочая)
       security:
         - bearerAuth: []
       parameters:
@@ -188,7 +188,7 @@ paths:
     put:
       tags:
         - Maps
-      summary: Полностью обновить карту по ID
+      summary: Полностью обновить карту по ID(Рабочая)
       security:
         - bearerAuth: []
       parameters:
@@ -220,7 +220,7 @@ paths:
     patch:
       tags:
         - Maps
-      summary: Частично обновить карту по ID
+      summary: Частично обновить карту по ID(Рабочая)
       security:
         - bearerAuth: []
       parameters:
@@ -252,7 +252,7 @@ paths:
     delete:
       tags:
         - Maps
-      summary: Удалить карту по ID
+      summary: Удалить карту по ID(Рабочая)
       security:
         - bearerAuth: []
       parameters:

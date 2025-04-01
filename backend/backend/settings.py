@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "auth_app",
     "lineups",
+    "corsheaders",
 ]
 
 
@@ -62,8 +63,19 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
 }
 
+CSRF_TRUSTED_ORIGINS = ["http://localhost:3000"]
+
+
+SPECTACULAR_SETTINGS = {
+    "SCHEMA_PATH_PREFIX": "/api",
+    "SCHEMA_PATH_PREFIX_TRIM": True,
+    "SERVERS": [
+        {"url": "http://localhost:3000/api", "description": "Сервер бекенда"},
+    ],
+}
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -92,6 +104,9 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "backend.wsgi.application"
+
+# Routing with/without slash. Работает только для ViewSets(мы использвуем почти всегда API-VIEW)
+APPEND_SLASH = False
 
 
 # Database

@@ -8,8 +8,11 @@ from rest_framework.permissions import AllowAny
 from drf_spectacular.utils import extend_schema, OpenApiExample
 
 
-class MapsListView(APIView):
-    permission_classes = [AllowAny]
+class MapsView(APIView):
+    """def get_permissions(self):
+    if self.request.method == "POST":
+        return [IsAuthenticated(), IsAdminUser()]
+    return [AllowAny()]"""  # Метод для проверки админ или нет
 
     @extend_schema(
         description="Получить список всех карт",
@@ -20,37 +23,22 @@ class MapsListView(APIView):
         serializer = MapSerializer(maps, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-
-class MapDetailView(APIView):
-    permission_classes = [AllowAny]
-
     @extend_schema(
-        description="Получить детальную информацию о конкретной карте",
-        responses={200: MapSerializer},
-    )
-    def get(self, request, pk):
-        maps = get_object_or_404(Map, pk=pk)
-        serializer = MapSerializer(maps)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-class MapCreateView(APIView):
-    # permission_classes = [IsAdminUser, IsAuthenticated]
-
-    @extend_schema(
-        description="Создать новую карту",
+        description="Создать новую карту (только для администраторов)",
         request=MapSerializer,
         responses={
             201: MapSerializer,
+            400: None,
             401: None,
+            403: None,
         },
         examples=[
             OpenApiExample(
-                "Example",
+                "Пример запроса",
                 value={
-                    "name": "Пример карты",
-                    "link": "https://example.com/map",
-                    "image_link": "https://example.com/map_image.jpg",
+                    "name": "Новая карта",
+                    "link": "https://example.com/new_map",
+                    "image_link": "https://example.com/new_map_image.jpg",
                 },
                 request_only=True,
             ),
@@ -61,49 +49,75 @@ class MapCreateView(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(status=status.HTTP_401_UNAUTHORIZED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class MapRUDView(APIView):
+class MapDetailRUDView(APIView):
+    """def get_permissions(self):
+    if self.request.method == "GET":
+        return [AllowAny()]
+    return [IsAuthenticated(), IsAdminUser()]"""  # Метод для проверки админ или нет пытаеться добавить карту
+
     @extend_schema(
-        description="Обновить карту (полное обновление)",
+        description="Получить детальную информацию о карте",
+        responses={
+            200: MapSerializer,
+            404: None,
+        },
+    )
+    def get(self, request, pk):
+        map_obj = get_object_or_404(Map, pk=pk)
+        serializer = MapSerializer(map_obj)
+        return Response(serializer.data)
+
+    @extend_schema(
+        description="Полное обновление карты (только для администраторов)",
         request=MapSerializer,
         responses={
             200: MapSerializer,
+            400: None,
             401: None,
+            403: None,
+            404: None,
         },
     )
     def put(self, request, pk):
-        maps = get_object_or_404(Map, pk=pk)
-        serializer = MapSerializer(maps, data=request.data)
+        map_obj = get_object_or_404(Map, pk=pk)
+        serializer = MapSerializer(map_obj, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(status=status.HTTP_401_UNAUTHORIZED)
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @extend_schema(
-        description="Обновить карту (частичное обновление)",
+        description="Частичное обновление карты (только для администраторов)",
         request=MapSerializer,
         responses={
             200: MapSerializer,
+            400: None,
             401: None,
+            403: None,
+            404: None,
         },
     )
     def patch(self, request, pk):
-        maps = get_object_or_404(Map, pk=pk)
-        serializer = MapSerializer(maps, data=request.data, partial=True)
+        map_obj = get_object_or_404(Map, pk=pk)
+        serializer = MapSerializer(map_obj, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(status=status.HTTP_401_UNAUTHORIZED)
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @extend_schema(
-        description="Удалить карту",
+        description="Удаление карты (только для администраторов)",
         responses={
             204: None,
+            401: None,
+            403: None,
+            404: None,
         },
     )
     def delete(self, request, pk):
-        maps = get_object_or_404(Map, pk=pk)
-        maps.delete()
+        map_obj = get_object_or_404(Map, pk=pk)
+        map_obj.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
