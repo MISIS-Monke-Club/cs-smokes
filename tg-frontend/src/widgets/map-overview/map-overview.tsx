@@ -8,6 +8,10 @@ import { ImageComponent } from "@shared/ui/image"
 export function MapOverview({ mapId }: { mapId: MapPageModel["mapId"] }) {
     const { data, isError, isLoading } = useQuery(mapApi.getMapById(mapId))
 
+    if (isLoading) {
+        return <div>Loading...</div>
+    }
+
     if (!data && !isError) {
         return <div>Unexpected state...</div>
     }
@@ -31,7 +35,7 @@ export function MapOverview({ mapId }: { mapId: MapPageModel["mapId"] }) {
                 height='200'
                 isLoading={isLoading}
             />
-            <GrenadesList grenades={data.mapLineups} />
+            <GrenadesList grenades={data?.mapLineups} />
         </>
     )
 }

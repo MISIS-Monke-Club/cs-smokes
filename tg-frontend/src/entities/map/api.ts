@@ -7,12 +7,13 @@ import { instance } from "@shared/api"
 
 export const api = {
     baseKey: "map",
+    baseApiUrl: "maps",
     getMaps: () =>
         queryOptions({
             queryKey: [api.baseKey, "list"],
             queryFn: () =>
                 typedQuery({
-                    request: instance.get("/maps"),
+                    request: instance.get(`/${api.baseApiUrl}`),
                     dtoSchema: mapDTOschema.array(),
                     fromDTO: fromMapArrayDTO,
                 }).catch((err) => {
@@ -27,7 +28,7 @@ export const api = {
             queryKey: [api.baseKey, "ById", mapId],
             queryFn: () =>
                 typedQuery({
-                    request: instance.get(`/maps/${mapId}`),
+                    request: instance.get(`${api.baseApiUrl}/${mapId}`),
                     dtoSchema: mapPageDTOschema,
                     fromDTO: fromMapPageDTO,
                 }).catch((err) => {
