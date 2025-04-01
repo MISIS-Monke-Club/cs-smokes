@@ -32,6 +32,7 @@ const preview: Preview = {
             ],
         },
     },
+    beforeEach: () => client.clear(),
     decorators: [
         (Story, context) => (
             <ThemeProvider>
@@ -40,7 +41,7 @@ const preview: Preview = {
                         initialEntries={
                             context.parameters.route
                                 ? [context.parameters.route]
-                                : ["/"]
+                                : ["/*"]
                         }
                     >
                         <Routes>
