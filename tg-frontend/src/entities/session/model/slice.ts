@@ -1,22 +1,25 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
-
 type UserState = {
-    userId?: number
+    userId: number | null
 }
 
 const initialState: UserState = {
-    userId: undefined,
+    userId: null,
 }
 
-const userSlice = createSlice({
+export const userSlice = createSlice({
     name: "user",
     initialState,
     reducers: {
-        setUserId: (state, action: PayloadAction<number | undefined>) => {
+        setUserId: (state, action: PayloadAction<number>) => {
             state.userId = action.payload
         },
+    },
+    selectors: {
+        selectUserId: (sliceState) => sliceState.userId,
     },
 })
 
 export const { setUserId } = userSlice.actions
 export const userReducer = userSlice.reducer
+export const { selectUserId } = userSlice.selectors

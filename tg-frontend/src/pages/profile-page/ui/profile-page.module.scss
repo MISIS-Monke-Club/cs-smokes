@@ -1,10 +1,13 @@
 .title {
     font-size: toRem(32);
     text-align: center;
-    margin-bottom: 1.3rem;
+    margin-bottom: toRem(30);
+}
+
+.profile {
+    margin-bottom: toRem(30);
 }
 
 .editButton {
     display: flex;
-    margin: 30px 0 0 0;
 }

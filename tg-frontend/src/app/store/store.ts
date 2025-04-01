@@ -1,14 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit"
-import { userReducer } from "@entities/session"
+import { reducer } from "./reducer"
 
 export const store = configureStore({
-    reducer: {
-        user: userReducer,
-    },
+    reducer,
     middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(),
 })
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
-export type RootState = ReturnType<typeof store.getState>
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type RootState = any
 // Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
 export type AppDispatch = typeof store.dispatch

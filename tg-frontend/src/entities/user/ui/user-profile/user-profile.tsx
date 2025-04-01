@@ -1,6 +1,6 @@
 import React from "react"
 import { UserModel } from "../../domain"
-import { ProfileField } from "../profile-field/profile-field"
+import { ProfileField } from "../profile-field"
 import classes from "./user-profile.module.scss"
 
 type UserProfileProps = {

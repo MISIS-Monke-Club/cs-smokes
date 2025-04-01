@@ -1,8 +1,8 @@
 .profile {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
-    border: 1px solid var(--color-border);
-    border-radius: 5px;
-    padding: 1.5rem;
+    gap: toRem(25);
+    border: toRem(1) solid var(--color-border);
+    border-radius: toRem(5);
+    padding: toRem(30);
 }

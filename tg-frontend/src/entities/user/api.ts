@@ -31,51 +31,32 @@ const mockUsers: UserModel[] = [
 
 export const userApi = {
     baseKey: "user",
-    getUserById: (userId?: number) =>
+
+    getUserById: (userId: number | null) =>
         queryOptions({
             queryKey: [userApi.baseKey, "profile", userId ?? "me"],
+            // TODO: This is mock
             queryFn: () =>
-                new Promise<UserModel | undefined>((resolve, reject) => {
-                    setTimeout(() => {
-                        try {
-                            const userIndex = userId
-                                ? mockUsers.findIndex(
-                                      (u) => u.user_id === userId
-                                  )
-                                : 0
-
-                            if (userIndex === -1) {
-                                reject(new Error("Пользователь не найден"))
-                                return
-                            }
-
-                            const user = mockUsers[userIndex]
-
-                            resolve(
-                                typedQuery(
-                                    Promise.resolve({
-                                        data: user,
-                                    } as AxiosResponse),
-                                    userDTOShema
-                                )
-                            )
-                        } catch (err) {
-                            console.error(err)
-                            reject(err)
-                        }
-                    }, 300)
-                }),
+                typedQuery(
+                    Promise.resolve({
+                        data: userId
+                            ? mockUsers.find((u) => u.user_id === userId)
+                            : mockUsers[0],
+                    } as AxiosResponse),
+                    userDTOShema
+                ),
         }),
 
-    updateUser: async (userData: Partial<UserModel> & { userId: number }) => {
-        return new Promise<UserModel>((resolve, reject) => {
-            setTimeout(() => {
+    updateUser: (userData: Partial<UserModel> & { userId: number }) => {
+        // TODO: This is mock
+        return typedQuery(
+            new Promise<AxiosResponse>((resolve, reject) => {
                 try {
                     const userIndex = mockUsers.findIndex(
                         (u) => u.user_id === userData.userId
                     )
                     if (userIndex === -1) {
-                        reject(new Error("Пользователь не найден"))
+                        reject(new Error("User not found"))
                         return
                     }
 
@@ -84,20 +65,14 @@ export const userApi = {
                         ...userData,
                     }
 
-                    const user = mockUsers[userIndex]
-
-                    resolve(
-                        typedQuery(
-                            Promise.resolve({
-                                data: user,
-                            } as AxiosResponse),
-                            userDTOShema
-                        )
-                    )
+                    resolve({
+                        data: mockUsers[userIndex],
+                    } as AxiosResponse)
                 } catch (err) {
                     reject(err)
                 }
-            }, 300)
-        })
+            }),
+            userDTOShema
+        )
     },
 }

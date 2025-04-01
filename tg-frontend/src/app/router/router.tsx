@@ -34,11 +34,11 @@ export const router = createBrowserRouter(
                 },
                 {
                     path: "/profile",
-                    element: <ProfilePage />,
+                    element: <ProfilePage isOwnProfile={true} />,
                 },
                 {
                     path: "/guest/profile/:id",
-                    element: <ProfilePage />,
+                    element: <ProfilePage isOwnProfile={false} />,
                 },
                 {
                     path: "/profile/edit",

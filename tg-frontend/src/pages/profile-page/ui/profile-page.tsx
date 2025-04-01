@@ -6,12 +6,12 @@ import { Link } from "react-router-dom"
 import { idSchema } from "../domain"
 import classes from "./profile-page.module.scss"
 import { setUserId } from "@entities/session"
-import { RootState } from "@shared/store"
 import { UserProfile } from "@entities/user"
 import { userApi } from "@entities/user"
 import { Button } from "@shared/ui/button"
+import { selectUserId } from "@entities/session"
 
-export const ProfilePage = () => {
+export const ProfilePage = ({ isOwnProfile }: { isOwnProfile: boolean }) => {
     const { id } = useParams<{ id?: string }>()
     const dispatch = useDispatch()
 
@@ -23,21 +23,28 @@ export const ProfilePage = () => {
         }
     }, [parsedId, dispatch])
 
-    const userId = useSelector((state: RootState) => state.user.userId)
+    const userId = useSelector(selectUserId)
 
     const { data: user, isLoading } = useQuery(userApi.getUserById(userId))
 
-    if (!parsedId?.success && location.pathname !== "/profile")
-        return <p>Неверный идентификатор пользователя</p>
-    if (isLoading) return <b>Загрузка...</b>
-    if (!user) return <p>Профиль не найден</p>
+    if (!parsedId?.success && location.pathname !== "/profile") {
+        return <b>Неверный идентификатор пользователя</b>
+    }
 
-    const isOwnProfile = location.pathname === "/profile"
+    if (isLoading) {
+        return <b>Загрузка...</b>
+    }
+
+    if (!user) {
+        return <b>Профиль не найден</b>
+    }
 
     return (
         <div className={classes.container}>
             <h1 className={classes.title}>Профиль</h1>
-            <UserProfile user={user} />
+            <div className={classes.profile}>
+                <UserProfile user={user} />
+            </div>
             {isOwnProfile && (
                 <Button size='lg' asChild className={classes.editButton}>
                     <Link to='/profile/edit'>Редактировать профиль</Link>
