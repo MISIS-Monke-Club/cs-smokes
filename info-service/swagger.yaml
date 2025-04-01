@@ -63,7 +63,7 @@ paths:
     post:
       tags:
         - AUTH
-      summary: Логин через тг
+      summary: Логин через тг (Рабочая)
       requestBody:
         required: true
         content:

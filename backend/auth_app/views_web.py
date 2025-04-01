@@ -2,8 +2,10 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import UserRegistrationSerializer, LoginSerializer, UserSerializer
+from drf_spectacular.utils import extend_schema
 
 
+@extend_schema(tags=["Auth"])
 class RegistrationView(generics.CreateAPIView):
     serializer_class = UserRegistrationSerializer
 
@@ -20,5 +22,6 @@ class RegistrationView(generics.CreateAPIView):
         )
 
 
+@extend_schema(tags=["Auth"])
 class LoginView(TokenObtainPairView):
     serializer_class = LoginSerializer
