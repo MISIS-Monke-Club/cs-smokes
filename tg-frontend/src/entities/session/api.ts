@@ -13,7 +13,7 @@ export const api = {
             // typedQuery(instance.post("/login/tg", data), loginTgDTOschema),
             // TODO: delete this mock
             typedQuery({
-                request: instance.post("/login/tg", data),
+                request: instance.post("/login/tg/", data),
                 dtoSchema: loginTgDTOschema,
                 fromDTO: fromLoginTgDTO,
             }),

@@ -40,13 +40,12 @@ CORS_ALLOW_ALL_ORIGINS = True  # не для продакшена
 
 CORS_ALLOWED_ORIGINS = get_list_from_env(
     name="CORS_ALLOWED_ORIGINS",
-    default="https://.ngrok-free.app,https://web.telegram.org,http://localhost:3000,https://localhost:3000",
+    default="https://.ngrok-free.app,http://localhost:3000,https://localhost:3000,http://localhost:9999",
 )
 CSRF_TRUSTED_ORIGINS = get_list_from_env(
     "CSRF_TRUSTED_ORIGINS",
-    default="https://.ngrok-free.app,https://web.telegram.org,http://localhost:3000,https://localhost:3000",
+    default="https://.ngrok-free.app,http://localhost:3000,https://localhost:3000,http://localhost:9999",
 )
-# Application definition
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOW_METHODS = [
