@@ -1,12 +1,20 @@
 import type { Preview } from "@storybook/react"
-import "../src/app/tailwind.css"
-import "../src/app/index.scss"
 import { themes } from "storybook/internal/theming"
 import { ThemeProvider } from "../src/app/providers/theme-provider"
-import { MemoryRouter } from "react-router-dom"
+import { MemoryRouter, Route, Routes } from "react-router-dom"
 import React from "react"
+import { Toaster } from "sonner"
+import { initialize, mswLoader } from "msw-storybook-addon"
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
+import { QueryClientProvider } from "@tanstack/react-query"
+import { client } from "../src/shared/api"
+import "../src/app/tailwind.css"
+import "../src/app/index.scss"
+
+initialize()
 
 const preview: Preview = {
+    loaders: [mswLoader],
     parameters: {
         docs: {
             theme: themes.dark,
@@ -24,12 +32,35 @@ const preview: Preview = {
             ],
         },
     },
+    beforeEach: () => client.clear(),
     decorators: [
-        (Story) => (
+        (Story, context) => (
             <ThemeProvider>
-                <MemoryRouter initialEntries={["/"]}>
-                    <Story />
-                </MemoryRouter>
+                <QueryClientProvider client={client}>
+                    <MemoryRouter
+                        initialEntries={
+                            context.parameters.route
+                                ? [context.parameters.route]
+                                : ["/*"]
+                        }
+                    >
+                        <Routes>
+                            <Route
+                                path={context.parameters.routeSetup || "/*"}
+                                element={<Story />}
+                            />
+                        </Routes>
+                    </MemoryRouter>
+                    <Toaster
+                        duration={3500}
+                        closeButton
+                        richColors
+                        theme='system'
+                    />
+                    {context.parameters.reactQueryDevTools && (
+                        <ReactQueryDevtools initialIsOpen={false} />
+                    )}
+                </QueryClientProvider>
             </ThemeProvider>
         ),
     ],

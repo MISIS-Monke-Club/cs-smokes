@@ -12,7 +12,11 @@ export function MapCard({ map }: { map: MapModel }) {
     }
 
     return (
-        <Card className={classes.mapCard} onClick={clickHandler}>
+        <Card
+            className={classes.mapCard}
+            onClick={clickHandler}
+            aria-label='map-card'
+        >
             <CardHeader>{map.name}</CardHeader>
             <CardContent>
                 <ImageComponent url={map.imageLink} />

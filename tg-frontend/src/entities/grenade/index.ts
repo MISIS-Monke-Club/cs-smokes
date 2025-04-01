@@ -1,6 +1,6 @@
 export { Grenade } from "./ui/grenade/grenade"
 export { GrenadesList } from "./ui/grenades-list"
-export { api as grenadeApi } from "./api"
+export { api as grenadeApi } from "./api/client"
 export type { GrenadeModel } from "./domain"
 export { grenadeDTOschema } from "./domain"
 export { maper as grenadeMaper } from "./lib/maper"

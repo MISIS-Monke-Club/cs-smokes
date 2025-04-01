@@ -1,5 +1,5 @@
 import { AxiosResponse } from "axios"
-import { ZodIssue, ZodSchema } from "zod"
+import { ZodSchema } from "zod"
 import { ZodError } from "zod"
 
 type TypedQueryOptions<
@@ -30,7 +30,13 @@ export function typedQuery<
 
             return returnData
         } catch (err) {
-            throw new ZodError(err as ZodIssue[])
+            if (err instanceof ZodError) {
+                throw err
+            } else {
+                throw new Error(
+                    `unknown error, recommending to check dtoTransfer function, this error should be unhandled there: ${fromDTO}`
+                )
+            }
         }
     })
 }
