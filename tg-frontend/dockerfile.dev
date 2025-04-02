@@ -2,11 +2,11 @@ FROM node:22 as builder
 ENV NODE_ENV development
 
 WORKDIR /tg-frontend
-COPY package*.json /tg-frontend
+COPY package*.json ./
 
 RUN npm install
 
-COPY . /tg-frontend
+COPY . /tg-frontend/
 
 EXPOSE 8080
 

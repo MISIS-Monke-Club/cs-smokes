@@ -3,6 +3,7 @@ services:
         container_name: tg-frontend
         build:
             context: ./tg-frontend
+            dockerfile: dockerfile.dev
         volumes:
             - ./tg-frontend:/tg-frontend
             - ./tg-frontend/node_modules:/tg-frontend/node_modules
@@ -26,7 +27,7 @@ services:
             - 3000:8000
         env_file: ./.env
         environment:
-            - DEBUG=${DJANGO_DEBUG:?Variable DJANGO_DEBUG required}
+            - DEBUG=0
             - SECRET_KEY=${SECRET_KEY}
             - DB_NAME=${DB_NAME}
             - DB_USER=${DB_USER}
