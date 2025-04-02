@@ -7,7 +7,6 @@ export const store = configureStore({
 })
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type RootState = any
 // Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
 export type AppDispatch = typeof store.dispatch
