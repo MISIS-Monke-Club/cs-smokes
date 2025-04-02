@@ -1,0 +1,74 @@
+services:
+    tg-frontend:
+        container_name: tg-frontend
+        build:
+            context: ./tg-frontend
+            dockerfile: dockerfile.prod
+        env_file: ./.env
+        environment:
+            - VITE_BACKEND_URL=${VITE_BACKEND_URL}
+            - HUSKY=0
+        ports:
+            - 8000:80
+        depends_on:
+            - backend
+
+    backend:
+        container_name: backend
+        build:
+            context: ./backend
+        volumes:
+            - ./backend:/backend
+        ports:
+            - 3000:8000
+        env_file: ./.env
+        environment:
+            - DEBUG=${DJANGO_DEBUG:?Variable DJANGO_DEBUG required}
+            - SECRET_KEY=${SECRET_KEY}
+            - DB_NAME=${DB_NAME}
+            - DB_USER=${DB_USER}
+            - DB_PASSWORD=${DB_PASSWORD}
+            - DB_HOST=${DB_HOST}
+            - DB_PORT=${DB_PORT}
+            - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
+        depends_on:
+            - db
+        command: sh ./run-server.sh
+
+    db:
+        container_name: postgres-db
+        image: postgres:15-alpine
+        restart: always
+        env_file: ./.env
+        environment:
+            - POSTGRES_DB=${DB_NAME}
+            - POSTGRES_USER=${DB_USER}
+            - POSTGRES_PASSWORD=${DB_PASSWORD}
+        ports:
+            - 5433:5432
+        healthcheck:
+            test: ["CMD", "-f", "http://localhost:5433"]
+
+    info-service:
+        container_name: info-service
+        image: swaggerapi/swagger-ui
+        ports:
+            - 9999:8080
+        volumes:
+            - ./info-service/swagger.yaml:/spec/swagger.yaml
+        environment:
+            SWAGGER_JSON: /spec/swagger.yaml
+
+    bot:
+        container_name: bot
+        build:
+            context: ./bot
+        volumes:
+            - ./bot:/bot
+        env_file: ./.env
+        environment:
+            - TOKEN=${TOKEN}
+            - WEB_APP_URL=${WEB_APP_URL}
+        depends_on:
+            - backend
+        command: sh -c "python bot.py"
