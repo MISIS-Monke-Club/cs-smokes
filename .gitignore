@@ -4,6 +4,11 @@ postgres_data
 .DS_Store
 .vite
 
+# Worktrees
+feature
+release
+hotfix
+
 # IDEs
 .idea
 .vscode
@@ -139,3 +144,5 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+ **/__pycache__/

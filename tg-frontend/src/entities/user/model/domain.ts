@@ -12,4 +12,14 @@ export const userDTOschema = z.object({
     is_banned: z.boolean(),
 })
 
-export type UserModel = z.infer<typeof userDTOschema>
+export type UserModel = {
+    userId: number
+    username: string
+    avatarUrl: string | null
+    steamLink: string | null
+    tgId: number | null
+    email: string | null
+    firstName: string | null
+    lastName: string | null
+    isBanned: boolean
+}

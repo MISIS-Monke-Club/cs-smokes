@@ -51,8 +51,6 @@ services:
             - 5433:5432
         healthcheck:
             test: ["CMD", "-f", "http://localhost:5433"]
-        volumes:
-            - ./postgres_data:/var/lib/postgresql/data
 
     info-service:
         container_name: info-service

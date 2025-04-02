@@ -1,6 +1,7 @@
-import { UserModel } from "../model/domain"
+import { z } from "zod"
+import { userDTOschema } from "../model/domain"
 
-export const mockUsers: Record<number, UserModel> = {
+export const mockUsers: Record<number, z.infer<typeof userDTOschema>> = {
     1: {
         user_id: 1,
         username: "user1",

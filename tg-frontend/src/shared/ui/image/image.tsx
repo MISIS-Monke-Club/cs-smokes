@@ -1,56 +1,67 @@
-import { HTMLProps, useEffect, useMemo, useState } from "react"
+import { HTMLProps, useMemo } from "react"
 import { Skeleton } from "../skeleton"
 import classes from "./image.module.scss"
 
 type ImageProps = HTMLProps<HTMLImageElement> & {
-    url?: string
+    url?: string | null
     skeletonClasses?: string
+    isLoading?: boolean
 }
 
 export function ImageComponent({
-    url,
+    url = "",
     className = "",
     skeletonClasses = "",
+    isLoading = false,
     ...rest
 }: ImageProps) {
-    const [isLoading, setIsLoading] = useState<boolean>(true)
-    const [hasMounted, setHasMounted] = useState<boolean>(false)
-
-    useEffect(() => {
-        // Flag means that image was started loading
-        setHasMounted(true)
-    }, [])
-
     const combinedClass: string = useMemo(() => {
-        let draftClass: string = className
+        const draftClass: string[] = []
 
-        if (!url) {
-            draftClass += " " + classes.fakeImage
+        if (className) {
+            draftClass.push(className)
         }
 
-        return draftClass
-    }, [url, className])
+        return draftClass.join(" ")
+    }, [className])
 
-    if (!url) {
-        return <img className={combinedClass} {...rest} />
-    }
+    const placeholderClass: string = useMemo(() => {
+        const draftClass = [classes.fakeImage]
 
-    return (
-        <>
-            {isLoading && hasMounted && (
-                <Skeleton
-                    className={`${className} ${skeletonClasses} ${classes.fakeImage}`}
-                    {...rest}
-                />
-            )}
-            <img
-                className={combinedClass}
-                src={url}
-                loading='lazy'
-                onLoad={() => setIsLoading(false)}
-                style={{ display: isLoading && hasMounted ? "none" : "" }}
+        if (skeletonClasses) {
+            draftClass.push(skeletonClasses)
+        }
+
+        return draftClass.join(" ")
+    }, [skeletonClasses])
+
+    const placeholderSize: { width: number; height: number } = useMemo(() => {
+        const draftWidth = {
+            width: 100,
+            height: 100,
+        }
+
+        if (rest.width) {
+            draftWidth.width = Number(rest.width)
+        }
+
+        if (rest.height) {
+            draftWidth.height = Number(rest.height)
+        }
+
+        return draftWidth
+    }, [rest.height, rest.width])
+
+    if (isLoading || !url || url.length === 0) {
+        return (
+            <Skeleton
+                className={placeholderClass}
+                widthInPixels={placeholderSize.width}
+                heightInPixels={placeholderSize.height}
                 {...rest}
             />
-        </>
-    )
+        )
+    }
+
+    return <img className={combinedClass} src={url} loading='lazy' {...rest} />
 }

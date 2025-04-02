@@ -52,6 +52,10 @@ export function ProfileOverview({ userId, isEditable }: ProfileOverviewProps) {
         )
     }
 
+    if (!userData) {
+        return <div>Data was not provided...</div>
+    }
+
     return (
         <div className={classes.container}>
             <h1 className={classes.title}>Профиль</h1>

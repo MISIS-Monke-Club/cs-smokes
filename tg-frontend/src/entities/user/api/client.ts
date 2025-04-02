@@ -2,6 +2,7 @@ import { queryOptions } from "@tanstack/react-query"
 import { AxiosResponse } from "axios"
 import { toast } from "sonner"
 import { userDTOschema } from "../model/domain"
+import { fromUserDTO } from "../lib/from-dto"
 import { mockUsers } from "./__mocks"
 import { typedQuery } from "@shared/lib/precooked-methods"
 
@@ -17,7 +18,7 @@ export const api = {
                 // If there is no user id - request will be catched (prevented)
                 if (userId === null) {
                     req = Promise.reject(
-                        "User id was not provided, rejecting request"
+                        new Error("User id was not provided, rejecting request")
                     )
                 } else {
                     // req = instance.get(`${api.baseUrl}/${userId}`)
@@ -27,15 +28,16 @@ export const api = {
                     } as AxiosResponse)
                 }
 
-                return typedQuery(
-                    req.catch((err) => {
-                        console.error(err)
-                        toast.error(`cant get data about user (id:${userId})`)
+                return typedQuery({
+                    request: req,
+                    dtoSchema: userDTOschema,
+                    fromDTO: fromUserDTO,
+                }).catch((err) => {
+                    console.error(err)
+                    toast.error(`cant get data about user (id:${userId})`)
 
-                        throw err
-                    }),
-                    userDTOschema
-                )
+                    throw err
+                })
             },
         }),
 }

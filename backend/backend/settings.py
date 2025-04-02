@@ -13,18 +13,20 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+from datetime import timedelta
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+AUTH_USER_MODEL = "auth_app.User"
 load_dotenv(override=False)
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = (os.getenv("DJANGO_DEBUG", True),)
+DEBUG = os.getenv("DJANGO_DEBUG", "True") == "True"
 ALLOWED_HOSTS = (os.getenv("DJANGO_ALLOWED_HOSTS", "localhost"),)
-SECRET_KEY = (os.getenv("SECRET_KEY", "key"),)
+SECRET_KEY = os.getenv("SECRET_KEY", "key")
 
 # Application definition
 
@@ -37,9 +39,43 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.postgres",
     "backend",
+    "rest_framework",
+    "rest_framework_simplejwt",
+    "drf_spectacular",
+    "auth_app",
+    "lineups",
+    "corsheaders",
 ]
 
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+SIMPLE_JWT = {
+    "SIGNING_KEY": SECRET_KEY,
+    "USER_ID_FIELD": "tg_id",
+    "USER_ID_CLAIM": "user_id",
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=7),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
+}
+
+CSRF_TRUSTED_ORIGINS = ["http://localhost:3000"]
+
+
+SPECTACULAR_SETTINGS = {
+    "SCHEMA_PATH_PREFIX": "/api",
+    "SCHEMA_PATH_PREFIX_TRIM": True,
+    "SERVERS": [
+        {"url": "http://localhost:3000/api", "description": "Сервер бекенда"},
+    ],
+}
+
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -68,6 +104,9 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "backend.wsgi.application"
+
+# Routing with/without slash. Работает только для ViewSets(мы использвуем почти всегда API-VIEW)
+APPEND_SLASH = False
 
 
 # Database

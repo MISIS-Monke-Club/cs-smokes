@@ -1,7 +1,7 @@
 import { z } from "zod"
 
 export type LoginTgModel = {
-    User_ID: number
+    userId: number
     token: string
 }
 export const loginTgDTOschema = z.object({
@@ -10,5 +10,5 @@ export const loginTgDTOschema = z.object({
 })
 
 export type LoginTgPostModel = {
-    initData: string
+    init_data: string
 }

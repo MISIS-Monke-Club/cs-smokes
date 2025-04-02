@@ -23,7 +23,7 @@ export function LoginPage() {
             Object.fromEntries(formData.entries())
         )
 
-        mutateAsync({ initData: formValues.login })
+        mutateAsync({ init_data: formValues.login })
             .then(() => {
                 toast.success("Данные успешно отправлены на /login/tg")
             })
@@ -38,7 +38,7 @@ export function LoginPage() {
             <h2 className={classes.title}>Login page</h2>
             <form onSubmit={handleSubmit}>
                 <Input name='login' defaultValue={Telegram.WebApp.initData} />
-                <Button>send initData</Button>
+                <Button type='submit'>send initData</Button>
             </form>
         </div>
     )

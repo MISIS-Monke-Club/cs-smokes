@@ -1,11 +1,11 @@
 import classes from "./grenades.module.scss"
-import { GrenadesList } from "@widgets/grenades-list"
+import { GrenadesWidget } from "@widgets/grenades-widget"
 
 export function Grenades() {
     return (
         <>
             <h1 className={classes.title}>Grenades list</h1>
-            <GrenadesList />
+            <GrenadesWidget />
         </>
     )
 }

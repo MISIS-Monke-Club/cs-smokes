@@ -50,10 +50,10 @@
         ]
     },
     "include": [
-        "./"
+        "src", "./*.js"
     ],
     "exclude": [
-        "node_modules", "dist"
+        "node_modules", "dist", "coverage", "public"
     ],
     "references": [
         {

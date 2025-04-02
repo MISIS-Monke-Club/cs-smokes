@@ -66,7 +66,7 @@ export function EditProfileForm() {
                     disabled={!isEditing}
                     type='text'
                     name='steamLink'
-                    defaultValue={serverData?.steam_link || ""}
+                    defaultValue={serverData?.steamLink || ""}
                     placeholder='Your steam link...'
                 />
                 <Input
@@ -80,14 +80,14 @@ export function EditProfileForm() {
                     disabled={!isEditing}
                     type='text'
                     name='firstName'
-                    defaultValue={serverData?.first_name || ""}
+                    defaultValue={serverData?.firstName || ""}
                     placeholder='Your first name...'
                 />
                 <Input
                     disabled={!isEditing}
                     type='text'
                     name='lastName'
-                    defaultValue={serverData?.last_name || ""}
+                    defaultValue={serverData?.lastName || ""}
                     placeholder='Your first name...'
                 />
                 <div className={classes.buttons}>

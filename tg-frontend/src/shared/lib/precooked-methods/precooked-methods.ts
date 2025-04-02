@@ -1,19 +1,42 @@
 import { AxiosResponse } from "axios"
-import { ZodIssue, ZodSchema } from "zod"
+import { ZodSchema } from "zod"
 import { ZodError } from "zod"
 
-export const typedQuery = <T extends ZodSchema>(
-    request: Promise<AxiosResponse>,
-    dataSchema: T
-): Promise<Zod.infer<typeof dataSchema>> =>
-    request.then((response) => {
-        try {
-            const data: Zod.infer<typeof dataSchema> = dataSchema.parse(
-                response.data
-            )
+type TypedQueryOptions<
+    TDto extends object,
+    TSchema extends ZodSchema<TDto>,
+    TReturn,
+> = {
+    request: Promise<AxiosResponse>
+    dtoSchema: TSchema
 
-            return data
+    fromDTO: (el: TDto) => TReturn
+}
+
+export function typedQuery<
+    TDto extends object,
+    TSchema extends ZodSchema<TDto>,
+    TReturn,
+>({
+    request,
+    dtoSchema,
+    fromDTO,
+}: TypedQueryOptions<TDto, TSchema, TReturn>): Promise<TReturn> {
+    return request.then((response) => {
+        try {
+            const data: TDto = dtoSchema.parse(response.data)
+
+            const returnData: TReturn = fromDTO(data)
+
+            return returnData
         } catch (err) {
-            throw new ZodError(err as ZodIssue[])
+            if (err instanceof ZodError) {
+                throw err
+            } else {
+                throw new Error(
+                    `unknown error, recommending to check dtoTransfer function, this error should be unhandled there: ${fromDTO}`
+                )
+            }
         }
     })
+}
