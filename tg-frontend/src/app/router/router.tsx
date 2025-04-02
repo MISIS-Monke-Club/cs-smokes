@@ -4,8 +4,9 @@ import { Grenades } from "@pages/grenades"
 import { Homepage } from "@pages/home-page"
 import { GrenadePage } from "@pages/grenade-page"
 import { LoginPage } from "@pages/login-page"
-import { ProfilePage } from "@pages/profile-page"
+import { GuestProfilePage } from "@pages/guest-profile-page"
 import { EditProfilePage } from "@pages/edit-profile-page"
+import { OwnProfilePage } from "@pages/own-profile-page"
 
 export const router = createBrowserRouter(
     [
@@ -34,11 +35,11 @@ export const router = createBrowserRouter(
                 },
                 {
                     path: "/profile",
-                    element: <ProfilePage isOwnProfile={true} />,
+                    element: <OwnProfilePage />,
                 },
                 {
-                    path: "/guest/profile/:id",
-                    element: <ProfilePage isOwnProfile={false} />,
+                    path: "/guest/profile/:userId",
+                    element: <GuestProfilePage />,
                 },
                 {
                     path: "/profile/edit",
