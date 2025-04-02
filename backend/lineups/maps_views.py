@@ -4,7 +4,6 @@ from rest_framework import status
 from django.shortcuts import get_object_or_404
 from auth_app.models import Map
 from auth_app.serializers import MapSerializer
-from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from drf_spectacular.utils import extend_schema, OpenApiExample
 
 

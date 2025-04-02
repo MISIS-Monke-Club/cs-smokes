@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.hashers import make_password, check_password
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
 
 class Map(models.Model):
@@ -37,26 +37,32 @@ class LineupType(models.Model):
         return self.key_name
 
 
-class User(models.Model):
+class UserManager(BaseUserManager):
+    def create_user(self, username, email, password=None):
+        if not email:
+            raise ValueError("Email обязателен")
+        user = self.model(username=username, email=self.normalize_email(email))
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+
+class User(AbstractBaseUser):
     user_id = models.AutoField(primary_key=True)
-    username = models.CharField(max_length=255)
-    avatar_url = models.CharField(max_length=255)
-    steam_link = models.CharField(max_length=255)
-    tg_id = models.IntegerField()
-    email = models.EmailField(max_length=255)
-    first_name = models.CharField(max_length=255)
-    last_name = models.CharField(max_length=255)
+    username = models.CharField(max_length=255, unique=True)
+    email = models.EmailField(max_length=255, default="")
+    first_name = models.CharField(max_length=255, default="", blank=True)
+    last_name = models.CharField(max_length=255, default="", blank=True)
+    avatar_url = models.CharField(max_length=255, default="", blank=True)
+    steam_link = models.CharField(max_length=255, default="", blank=True)
+    tg_id = models.IntegerField(null=True, blank=True)
     is_banned = models.BooleanField(default=False)
-    password = models.CharField(max_length=255)
+    objects = UserManager()
+    USERNAME_FIELD = "username"
+    REQUIRED_FIELDS = ["email"]
 
     def __str__(self):
         return self.username
-
-    def set_password(self, raw_password):
-        self.password = make_password(raw_password)
-
-    def check_password(self, raw_password):
-        return check_password(raw_password, self.password)
 
 
 class Lineup(models.Model):

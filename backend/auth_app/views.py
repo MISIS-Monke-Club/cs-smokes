@@ -8,14 +8,70 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from .models import User as CustomUser
 from auth_app.serializers import UserSerializer
+from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import extend_schema, OpenApiExample, OpenApiResponse
+
 
 # Получаем токен из переменной окружения
 TELEGRAM_BOT_TOKEN = os.getenv("TOKEN")
 
 
+@extend_schema(
+    tags=["Auth"],
+    request={
+        "application/json": {
+            "example": {
+                "init_data": "query_id=AAHdF6JSAAAAAN0XohWB&user=%7B%22id%22%3A123456%7D&hash=..."
+            }
+        }
+    },
+    responses={
+        200: OpenApiResponse(
+            description="Успешная аутентификация",
+            examples=[
+                OpenApiExample(
+                    "Пример ответа",
+                    value={
+                        "user": {
+                            "id": 1,
+                            "username": "john_doe",
+                            "tg_id": 123456789,
+                        },
+                        "access_token": "eyJhbGciOi...",
+                        "refresh_token": "eyJhbGciOi...",
+                    },
+                )
+            ],
+        ),
+        400: OpenApiResponse(
+            description="Ошибки валидации",
+            examples=[
+                OpenApiExample(
+                    "Неверные данные",
+                    value={"error": "Invalid hash. Data has been tampered with."},
+                ),
+                OpenApiExample(
+                    "Отсутствует init_data", value={"error": "init_data is required"}
+                ),
+            ],
+        ),
+    },
+)
+@extend_schema(tags=["Auth"])
 class TelegramAuthView(APIView):
     permission_classes = [AllowAny]
 
+    @extend_schema(
+        examples=[
+            OpenApiExample(
+                "Пример запроса",
+                value={
+                    "init_data": "query_id=AAHdF6JSAAAAAN0XohWB&user=%7B%22id%22%3A123456%7D&hash=..."
+                },
+                request_only=True,
+            )
+        ]
+    )
     def post(self, request):
         init_data = request.data.get("init_data")  # данные из Telegram Web App
         if not init_data:
