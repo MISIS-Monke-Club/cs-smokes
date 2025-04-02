@@ -11,10 +11,10 @@ services:
             - VITE_BACKEND_URL=${VITE_BACKEND_URL}
             - HUSKY=${FRONTEND_LINTING:?Variable FRONTEND_LINTING is required}
         ports:
-            - 8080:5173
+            - 8000:5173
         depends_on:
             - backend
-        command: sh -c "npm install && npm audit fix --force && npm run host"
+        command: sh ./run-server.sh
 
     backend:
         container_name: backend
