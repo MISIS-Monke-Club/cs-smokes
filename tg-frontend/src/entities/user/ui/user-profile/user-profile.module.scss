@@ -1,0 +1,8 @@
+.profile {
+    display: flex;
+    flex-direction: column;
+    gap: toRem(25);
+    border: toRem(1) solid var(--color-border);
+    border-radius: toRem(5);
+    padding: toRem(30);
+}

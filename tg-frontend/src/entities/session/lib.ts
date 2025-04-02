@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { loginTgDTOschema, LoginTgModel } from "./model"
+import { loginTgDTOschema, LoginTgModel } from "./model/domain"
 
 export const fromLoginTgDTO = (
     el: z.infer<typeof loginTgDTOschema>
