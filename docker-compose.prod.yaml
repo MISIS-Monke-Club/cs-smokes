@@ -83,3 +83,4 @@ services:
         ports:
             - 443:443
             - 80:80
+        command: ["nginx", "-g", "daemon off;"]
