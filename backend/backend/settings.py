@@ -56,6 +56,7 @@ REST_FRAMEWORK = {
     ),
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
+FORCE_SCRIPT_NAME=BACKEND_PREFIX
 
 SIMPLE_JWT = {
     "SIGNING_KEY": SECRET_KEY,
@@ -68,8 +69,9 @@ SIMPLE_JWT = {
 CSRF_TRUSTED_ORIGINS = ["http://localhost:3000"]
 
 
+print(BACKEND_PREFIX)
 SPECTACULAR_SETTINGS = {
-    "SCHEMA_PATH_PREFIX": BACKEND_PREFIX,
+    "SCHEMA_PATH_PREFIX": "/api",
     "SCHEMA_PATH_PREFIX_TRIM": True,
     "SERVERS": [
         {"url": BACKEND_SERVER, "description": "Сервер бекенда"},
