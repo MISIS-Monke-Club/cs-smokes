@@ -17,8 +17,8 @@ services:
             context: ./backend
         volumes:
             - ./backend:/backend
-        ports:
-            - 3000:8000
+        expose:
+            - 8000
         env_file: ./.env
         environment:
             - DEBUG=${DJANGO_DEBUG:?Variable DJANGO_DEBUG required}
@@ -42,16 +42,16 @@ services:
             - POSTGRES_DB=${DB_NAME}
             - POSTGRES_USER=${DB_USER}
             - POSTGRES_PASSWORD=${DB_PASSWORD}
-        ports:
-            - 5433:5432
+        expose:
+            - 5433
         healthcheck:
             test: ["CMD", "-f", "http://localhost:5433"]
 
     info-service:
         container_name: info-service
         image: swaggerapi/swagger-ui
-        ports:
-            - 9999:8080
+        expose:
+            - 8080
         volumes:
             - ./info-service/swagger.yaml:/spec/swagger.yaml
         environment:
@@ -75,7 +75,7 @@ services:
         container_name: nginx-server
         image: nginx:stable-alpine3.20-perl
         volumes:
-            - ./tg-frontend/nginx.conf:/etc/nginx/conf.d/default.conf
+            - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
             - ./tg-frontend/dist:/usr/share/nginx/html
         depends_on: 
             - backend
