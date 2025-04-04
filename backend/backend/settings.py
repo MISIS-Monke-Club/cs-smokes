@@ -28,6 +28,7 @@ DEBUG = os.getenv("DJANGO_DEBUG", "True") == "True"
 ALLOWED_HOSTS = (os.getenv("DJANGO_ALLOWED_HOSTS", "localhost"),)
 SECRET_KEY = os.getenv("SECRET_KEY", "key")
 BACKEND_SERVER = os.getenv("BACKEND_SERVER", "http://localhost:3000/api")
+BACKEND_PREFIX = os.getenv("BACKEND_PREFIX", "/api")
 
 # Application definition
 
@@ -68,7 +69,7 @@ CSRF_TRUSTED_ORIGINS = ["http://localhost:3000"]
 
 
 SPECTACULAR_SETTINGS = {
-    "SCHEMA_PATH_PREFIX": "/api",
+    "SCHEMA_PATH_PREFIX": BACKEND_PREFIX,
     "SCHEMA_PATH_PREFIX_TRIM": True,
     "SERVERS": [
         {"url": BACKEND_SERVER, "description": "Сервер бекенда"},
