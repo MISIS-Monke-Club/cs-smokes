@@ -71,7 +71,7 @@ SPECTACULAR_SETTINGS = {
     "SCHEMA_PATH_PREFIX": "/api",
     "SCHEMA_PATH_PREFIX_TRIM": True,
     "SERVERS": [
-        {"url": "http://localhost:3000/api", "description": "Сервер бекенда"},
+        {"url": BACKEND_SERVER, "description": "Сервер бекенда"},
     ],
 }
 
