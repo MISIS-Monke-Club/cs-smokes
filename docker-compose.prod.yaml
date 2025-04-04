@@ -4,6 +4,8 @@ services:
         build:
             context: ./tg-frontend
             dockerfile: dockerfile.prod
+        volumes:
+            - frontend-dist:/tg-frontend/dist
         env_file: ./.env
         environment:
             - VITE_BACKEND_URL=${VITE_BACKEND_URL}
@@ -21,6 +23,7 @@ services:
             - 8000
         env_file: ./.env
         environment:
+            - BACKEND_SERVER=${VITE_BACKEND_URL}
             - DEBUG=${DJANGO_DEBUG:?Variable DJANGO_DEBUG required}
             - SECRET_KEY=${SECRET_KEY}
             - DB_NAME=${DB_NAME}
@@ -37,6 +40,8 @@ services:
         container_name: postgres-db
         image: postgres:15-alpine
         restart: always
+        volumes: 
+            - db-data:/var/lib/postgresql/data
         env_file: ./.env
         environment:
             - POSTGRES_DB=${DB_NAME}
@@ -74,9 +79,10 @@ services:
     nginx: 
         container_name: nginx-server
         image: nginx:stable-alpine3.20-perl
+        restart: always
         volumes:
             - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
-            - ./tg-frontend/dist:/usr/share/nginx/html:ro
+            - frontend-dist:/usr/share/nginx/html:ro
         depends_on: 
             - backend
             - tg-frontend
@@ -84,3 +90,7 @@ services:
             - 443:443
             - 80:80
         command: ["nginx", "-g", "daemon off;"]
+
+volumes: 
+    frontend-dist:
+    db-data:

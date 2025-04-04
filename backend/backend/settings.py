@@ -27,6 +27,7 @@ load_dotenv(override=False)
 DEBUG = os.getenv("DJANGO_DEBUG", "True") == "True"
 ALLOWED_HOSTS = (os.getenv("DJANGO_ALLOWED_HOSTS", "localhost"),)
 SECRET_KEY = os.getenv("SECRET_KEY", "key")
+BACKEND_SERVER = os.getenv("BACKEND_SERVER", "http://localhost:3000/api")
 
 # Application definition
 

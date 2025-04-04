@@ -27,6 +27,7 @@ services:
             - 3000:8000
         env_file: ./.env
         environment:
+            - BACKEND_SERVER=${VITE_BACKEND_URL}
             - DEBUG=0
             - SECRET_KEY=${SECRET_KEY}
             - DB_NAME=${DB_NAME}
