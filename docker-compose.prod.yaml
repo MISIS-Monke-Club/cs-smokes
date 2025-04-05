@@ -10,8 +10,6 @@ services:
         environment:
             - VITE_BACKEND_URL=${VITE_BACKEND_URL}
             - HUSKY=0
-        depends_on:
-            - backend
 
     backend:
         container_name: backend
@@ -74,8 +72,6 @@ services:
         environment:
             - TOKEN=${TOKEN}
             - WEB_APP_URL=${WEB_APP_URL}
-        depends_on:
-            - backend
         command: sh -c "python bot.py"
 
     nginx: 
@@ -90,6 +86,7 @@ services:
         depends_on: 
             - backend
             - tg-frontend
+            - info-service
         ports:
             - 443:443
             - 80:80
