@@ -5,7 +5,7 @@ services:
             context: ./tg-frontend
             dockerfile: dockerfile.prod
         volumes:
-            - frontend-dist:/tg-frontend/dist
+            - frontend-dist:/tg-frontend/dist:rw
         env_file: ./.env
         environment:
             - VITE_BACKEND_URL=${VITE_BACKEND_URL}
