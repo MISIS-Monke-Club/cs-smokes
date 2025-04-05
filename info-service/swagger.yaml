@@ -5,7 +5,11 @@ info:
   description: API for managing maps, lineups, grenade classes, users, admins, and favorites in a tactical game.
 servers:
   - url: "http://localhost:3000/api/"
-    description: Сервер бекенда
+    description: Сервер бекенда, запущенный локально (dev)
+  - url: "https://cs-lineups/development/api"
+    description: Сервер бекенда, в продакшене
+  - url: "http://localhost/development/api"
+    description: Сервер бекенда, запущенный локально (prod)
 
 tags:
   - name: AUTH

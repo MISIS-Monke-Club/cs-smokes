@@ -25,10 +25,10 @@ load_dotenv(override=False)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DJANGO_DEBUG", "True") == "True"
-ALLOWED_HOSTS = (os.getenv("DJANGO_ALLOWED_HOSTS", "localhost"),)
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost").split(",")
 SECRET_KEY = os.getenv("SECRET_KEY", "key")
 BACKEND_SERVER = os.getenv("BACKEND_SERVER", "http://localhost:3000/api")
-BACKEND_PREFIX = os.getenv("BACKEND_PREFIX", "/api")
+FORCE_SCRIPT_NAME = os.getenv("BACKEND_PREFIX", "/")
 
 # Application definition
 
@@ -56,7 +56,6 @@ REST_FRAMEWORK = {
     ),
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
-FORCE_SCRIPT_NAME=BACKEND_PREFIX
 
 SIMPLE_JWT = {
     "SIGNING_KEY": SECRET_KEY,
@@ -69,7 +68,6 @@ SIMPLE_JWT = {
 CSRF_TRUSTED_ORIGINS = ["http://localhost:3000"]
 
 
-print(BACKEND_PREFIX)
 SPECTACULAR_SETTINGS = {
     "SCHEMA_PATH_PREFIX": "/api",
     "SCHEMA_PATH_PREFIX_TRIM": True,
