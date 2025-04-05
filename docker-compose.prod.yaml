@@ -36,7 +36,7 @@ services:
             - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
         depends_on:
             - db
-        command: sh ./run-server.sh
+        command: sh ./run-server.prod.sh
 
     db:
         container_name: postgres-db
