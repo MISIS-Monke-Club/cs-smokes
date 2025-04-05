@@ -6,7 +6,7 @@ info:
 servers:
   - url: "http://localhost:3000/api/"
     description: Сервер бекенда, запущенный локально (dev)
-  - url: "https://cs-lineups/development/api"
+  - url: "https://cs-lineups.ru/development/api"
     description: Сервер бекенда, в продакшене
   - url: "http://localhost/development/api"
     description: Сервер бекенда, запущенный локально (prod)
