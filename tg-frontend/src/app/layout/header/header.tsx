@@ -9,7 +9,7 @@ export function Header() {
                 className={classes.logo}
                 src='/'
                 alt='logo'
-                width='300'
+                width='150'
                 height='150'
                 loading='lazy'
             />
@@ -22,6 +22,9 @@ export function Header() {
                 </Button>
                 <Button asChild variant='link'>
                     <Link to='/grenades'>All grenades</Link>
+                </Button>
+                <Button asChild variant='link'>
+                    <Link to='/profile'>Profile</Link>
                 </Button>
             </nav>
             <div className={classes.actions}>

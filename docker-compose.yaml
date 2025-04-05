@@ -14,6 +14,7 @@ services:
         ports:
             - 8000:5173
         depends_on:
+            - bot
             - backend
         command: sh ./run-server.sh
 
@@ -37,6 +38,8 @@ services:
             - DB_HOST=${DB_HOST}
             - DB_PORT=${DB_PORT}
             - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
+            - TOKEN=${TOKEN}
+            - ALLOWED_ORGINS=${ALLOWED_ORIGINS}
         depends_on:
             - db
         command: sh ./run-server.sh
@@ -75,6 +78,4 @@ services:
         environment:
             - TOKEN=${TOKEN}
             - WEB_APP_URL=${WEB_APP_URL}
-        depends_on:
-            - backend
         command: sh -c "python bot.py"

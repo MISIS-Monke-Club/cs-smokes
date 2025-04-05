@@ -24,13 +24,14 @@ load_dotenv(override=False)
 # SECURITY WARNING: keep the secret key used in production secret!
 
 # SECURITY WARNING: don't run with debug turned on in production!
+
+
 DEBUG = os.getenv("DJANGO_DEBUG", "True") == "True"
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost").split(",")
 SECRET_KEY = os.getenv("SECRET_KEY", "key")
 BACKEND_SERVER = os.getenv("BACKEND_SERVER", "http://localhost:3000/api")
 FORCE_SCRIPT_NAME = os.getenv("BACKEND_PREFIX", "/")
 
-# Application definition
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -39,6 +40,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "corsheaders",
     "django.contrib.postgres",
     "backend",
     "rest_framework",
@@ -48,7 +50,6 @@ INSTALLED_APPS = [
     "lineups",
     "corsheaders",
 ]
-
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
@@ -75,6 +76,51 @@ SPECTACULAR_SETTINGS = {
         {"url": BACKEND_SERVER, "description": "Сервер бекенда"},
     ],
 }
+
+# CORS and CSRF settings
+
+
+def get_list_from_env(name, default=None):
+    value = os.getenv(name, default)
+    if value:
+        return [item.strip() for item in value.split(",") if item.strip()]
+    return []
+
+
+CORS_ALLOW_ALL_ORIGINS = True  # не для продакшена
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOWED_ORIGINS = get_list_from_env(
+    name="ALLOWED_ORIGINS",
+    default="https://.ngrok-free.app,http://localhost:3000,https://localhost:3000,http://localhost:9999",
+)
+CSRF_TRUSTED_ORIGINS = get_list_from_env(
+    "ALLOWED_ORIGINS",
+    default="https://.ngrok-free.app,http://localhost:3000,https://localhost:3000,http://localhost:9999",
+)
+
+
+CORS_ALLOW_METHODS = [
+    "GET",
+    "POST",
+    "PUT",
+    "PATCH",
+    "DELETE",
+    "OPTIONS",
+]
+
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+]
+
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",

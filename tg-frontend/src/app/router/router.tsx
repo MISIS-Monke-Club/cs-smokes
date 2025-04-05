@@ -6,6 +6,9 @@ import { GrenadePage } from "@pages/grenade-page"
 import { LoginPage } from "@pages/login-page"
 import { Maps } from "@pages/maps"
 import { MapPage } from "@pages/map-page"
+import { GuestProfilePage } from "@pages/guest-profile-page"
+import { EditProfilePage } from "@pages/edit-profile-page"
+import { OwnProfilePage } from "@pages/own-profile-page"
 
 export const router = createBrowserRouter(
     [
@@ -39,6 +42,18 @@ export const router = createBrowserRouter(
                 {
                     path: "maps/:mapId",
                     element: <MapPage />,
+                },
+                {
+                    path: "/profile",
+                    element: <OwnProfilePage />,
+                },
+                {
+                    path: "/guest/profile/:userId",
+                    element: <GuestProfilePage />,
+                },
+                {
+                    path: "/profile/edit",
+                    element: <EditProfilePage />,
                 },
             ],
         },
