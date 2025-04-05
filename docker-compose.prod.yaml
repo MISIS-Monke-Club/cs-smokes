@@ -17,6 +17,7 @@ services:
         container_name: backend
         build:
             context: ./backend
+            dockerfile: dockerfile.prod
         volumes:
             - ./backend:/backend
         expose:

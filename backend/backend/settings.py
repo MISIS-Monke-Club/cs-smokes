@@ -48,7 +48,6 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "auth_app",
     "lineups",
-    "corsheaders",
 ]
 
 REST_FRAMEWORK = {
