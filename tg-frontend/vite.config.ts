@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable import/no-default-export */
 import path from "path"
 
 import react from "@vitejs/plugin-react"
-import { defineConfig, loadEnv } from "vite"
+import { defineConfig } from "vite"
+import dotenv from "dotenv"
 import { z } from "zod"
 import tailwindcss from "@tailwindcss/vite"
 
@@ -11,15 +13,17 @@ const envSchema = z.object({
 })
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => {
+export default defineConfig(() => {
+    dotenv.config({ override: false })
+    dotenv.parse("VITE_BACKEND_URL")
+
     // Validate env
-    const env = Object.assign({}, process.env, loadEnv(mode, process.cwd()))
-    envSchema.parse(env)
+    envSchema.parse(process.env)
 
     return {
         server: {
             host: true,
-            allowedHosts: true,
+            allowedHosts: ["*"],
         },
         plugins: [react(), tailwindcss()],
         resolve: {
