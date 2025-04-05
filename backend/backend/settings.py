@@ -65,8 +65,6 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
 }
 
-CSRF_TRUSTED_ORIGINS = ["http://localhost:3000"]
-
 
 SPECTACULAR_SETTINGS = {
     "SCHEMA_PATH_PREFIX": "/api",
@@ -86,12 +84,11 @@ def get_list_from_env(name, default=None):
     return []
 
 
-CORS_ALLOW_ALL_ORIGINS = True  # не для продакшена
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = get_list_from_env(
     name="ALLOWED_ORIGINS",
-    default="https://.ngrok-free.app,http://localhost:3000,https://localhost:3000,http://localhost:9999",
+    default="http://localhost:3000,https://localhost:3000,http://localhost:9999,http://localhost:8080",
 )
 CSRF_TRUSTED_ORIGINS = get_list_from_env(
     "ALLOWED_ORIGINS",
