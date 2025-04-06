@@ -27,8 +27,10 @@ load_dotenv(override=False)
 
 
 DEBUG = os.getenv("DJANGO_DEBUG", "True") == "True"
-ALLOWED_HOSTS = (os.getenv("DJANGO_ALLOWED_HOSTS", "localhost"),)
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost").split(",")
 SECRET_KEY = os.getenv("SECRET_KEY", "key")
+BACKEND_SERVER = os.getenv("BACKEND_SERVER", "http://localhost:3000/api")
+FORCE_SCRIPT_NAME = os.getenv("BACKEND_PREFIX", "/")
 
 
 INSTALLED_APPS = [
@@ -46,7 +48,6 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "auth_app",
     "lineups",
-    "corsheaders",
 ]
 
 REST_FRAMEWORK = {
@@ -64,14 +65,12 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
 }
 
-CSRF_TRUSTED_ORIGINS = ["http://localhost:3000"]
-
 
 SPECTACULAR_SETTINGS = {
     "SCHEMA_PATH_PREFIX": "/api",
     "SCHEMA_PATH_PREFIX_TRIM": True,
     "SERVERS": [
-        {"url": "http://localhost:3000/api", "description": "Сервер бекенда"},
+        {"url": BACKEND_SERVER, "description": "Сервер бекенда"},
     ],
 }
 
@@ -85,12 +84,11 @@ def get_list_from_env(name, default=None):
     return []
 
 
-CORS_ALLOW_ALL_ORIGINS = True  # не для продакшена
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = get_list_from_env(
     name="ALLOWED_ORIGINS",
-    default="https://.ngrok-free.app,http://localhost:3000,https://localhost:3000,http://localhost:9999",
+    default="http://localhost:3000,https://localhost:3000,http://localhost:9999,http://localhost:8080",
 )
 CSRF_TRUSTED_ORIGINS = get_list_from_env(
     "ALLOWED_ORIGINS",
