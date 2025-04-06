@@ -8,7 +8,7 @@ import { grenadeDTOschema, GrenadeModel } from "@entities/grenade"
 export const mapDTOschema = z.object({
     map_id: z.number().positive().min(1),
     name: z.string(),
-    link: z.string().url().nullable(),
+    link: z.string().nullable(),
     image_link: z.string().nullable(),
 })
 
