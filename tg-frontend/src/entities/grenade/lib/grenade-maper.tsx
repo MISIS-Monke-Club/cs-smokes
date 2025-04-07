@@ -5,7 +5,7 @@ import { Grenade } from "../ui/grenade/grenade"
 export const grenadeMaper = (elements: GrenadeModel[]): ReactNode => (
     <>
         {elements.map((el) => (
-            <Grenade key={crypto.randomUUID()} grenade={el} />
+            <Grenade key={el.id} grenade={el} />
         ))}
     </>
 )
