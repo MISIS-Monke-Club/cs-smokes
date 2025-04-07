@@ -1,1 +1,1 @@
-export { MapOverview } from "./map-overview"
+export { MapOverview } from "./ui/map-overview"

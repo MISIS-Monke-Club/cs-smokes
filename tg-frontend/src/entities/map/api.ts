@@ -1,7 +1,7 @@
 import { queryOptions } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { fromMapArrayDTO, fromMapPageDTO } from "./lib/dto-transformer"
-import { mapDTOschema, MapModel, mapPageDTOschema } from "./model"
+import { mapDTOschema, MapModel, mapPageDTOschema, MapPageModel } from "./model"
 import { typedQuery } from "@shared/lib/precooked-methods"
 import { instance } from "@shared/api"
 
@@ -9,7 +9,7 @@ export const api = {
     baseKey: "map",
     baseApiUrl: "maps",
     getMaps: () =>
-        queryOptions({
+        queryOptions<MapModel[]>({
             queryKey: [api.baseKey, "list"],
             queryFn: () =>
                 typedQuery({
@@ -24,7 +24,7 @@ export const api = {
                 }),
         }),
     getMapById: (mapId: MapModel["mapId"]) =>
-        queryOptions({
+        queryOptions<MapPageModel>({
             queryKey: [api.baseKey, "ById", mapId],
             queryFn: () =>
                 typedQuery({

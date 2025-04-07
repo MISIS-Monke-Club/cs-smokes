@@ -1,5 +1,7 @@
 FROM node:22 as builder
-ENV NODE_ENV development
+ARG MODE=development
+
+ENV NODE_ENV=$MODE
 
 WORKDIR /tg-frontend
 COPY package*.json ./
