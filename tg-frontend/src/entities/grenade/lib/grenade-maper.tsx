@@ -5,7 +5,7 @@ import { Grenade } from "../ui/grenade/grenade"
 export const grenadesMaper = (elements: GrenadeModel[]): ReactNode => (
     <>
         {elements.map((el) => (
-            <Grenade key={el.id} grenade={el} />
+            <Grenade key={el.grenadeId} grenade={el} />
         ))}
     </>
 )
