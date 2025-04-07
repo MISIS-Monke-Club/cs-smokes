@@ -1,7 +1,7 @@
 import { queryOptions } from "@tanstack/react-query"
 import { AxiosResponse } from "axios"
 import { toast } from "sonner"
-import { userDTOschema } from "../model/domain"
+import { userDTOschema, UserModel } from "../model/domain"
 import { fromUserDTO } from "../lib/from-dto"
 import { mockUsers } from "./__mocks"
 import { typedQuery } from "@shared/lib/precooked-methods"
@@ -10,7 +10,7 @@ export const api = {
     baseKey: "user",
     baseUrl: "profile",
     getUserById: (userId: number | null) =>
-        queryOptions({
+        queryOptions<UserModel>({
             queryKey: [api.baseKey, "ById", userId],
             queryFn: () => {
                 let req: Promise<AxiosResponse>

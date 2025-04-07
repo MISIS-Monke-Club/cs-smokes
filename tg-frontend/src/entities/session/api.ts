@@ -6,9 +6,9 @@ import { typedQuery } from "@shared/lib/precooked-methods"
 import { client, instance } from "@shared/api"
 
 export const api = {
-    baseKey: "session",
+    baseKey: ["session"],
     loginTg: (): MutationOptions<LoginTgModel, unknown, LoginTgPostModel> => ({
-        mutationKey: [api.baseKey],
+        mutationKey: [...api.baseKey],
         mutationFn: (data) =>
             typedQuery({
                 request: instance.post("/login/tg", data),
@@ -17,7 +17,7 @@ export const api = {
             }),
         onSuccess: () => {
             client.invalidateQueries({
-                queryKey: [api.baseKey],
+                queryKey: [...api.baseKey],
             })
         },
     }),
