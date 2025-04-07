@@ -4,6 +4,8 @@ services:
         build:
             context: ./tg-frontend
             dockerfile: dockerfile.dev
+            args:
+                - MODE=${MODE}
         volumes:
             - ./tg-frontend:/tg-frontend
             - ./tg-frontend/node_modules:/tg-frontend/node_modules
@@ -11,6 +13,7 @@ services:
         environment:
             - VITE_BACKEND_URL=${VITE_BACKEND_URL}
             - HUSKY=${FRONTEND_LINTING:?Variable FRONTEND_LINTING is required}
+            - NODE_ENV=${MODE:?Variable Mode is required}
         ports:
             - 8000:5173
         depends_on:
