@@ -1,5 +1,6 @@
 import { queryOptions } from "@tanstack/react-query"
 import { AxiosResponse } from "axios"
+import { toast } from "sonner"
 import {
     fromGrenadeArrayDTO,
     grenadeDTOschema,
@@ -31,6 +32,13 @@ export const api = {
                     request: req,
                     fromDTO: fromGrenadeArrayDTO,
                     dtoSchema: grenadeDTOschema.array(),
+                }).catch((err) => {
+                    console.error(err)
+                    toast.error(
+                        "something went wrong 'GET /favorites/:user_id'"
+                    )
+
+                    throw err
                 })
             },
         }),

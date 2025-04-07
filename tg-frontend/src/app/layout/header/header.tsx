@@ -24,6 +24,9 @@ export function Header() {
                     <Link to='/grenades'>All grenades</Link>
                 </Button>
                 <Button asChild variant='link'>
+                    <Link to='/favorites'>Favorites</Link>
+                </Button>
+                <Button asChild variant='link'>
                     <Link to='/profile'>Profile</Link>
                 </Button>
             </nav>
