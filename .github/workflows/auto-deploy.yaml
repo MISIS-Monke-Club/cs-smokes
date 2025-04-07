@@ -24,7 +24,7 @@ jobs:
       - name: Deploy to server
         run: |
           ssh root@cs-lineups.ru << 'EOF'
-            cd /cs-smokes
+            cd /root/cs-smokes/
 
             git pull origin develop
 
