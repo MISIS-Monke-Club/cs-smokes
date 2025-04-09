@@ -15,26 +15,19 @@ class Map(models.Model):
 class GrenadeClass(models.Model):
     grenade_class_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255)
+    description = models.CharField(max_length=255)
+    price = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name
 
 
-class LineupTypeValues(models.Model):
-    value_id = models.AutoField(primary_key=True)
-    value = models.CharField(max_length=255)
+class Property(models.Model):
+    property_id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=255)
 
     def __str__(self):
         return self.value
-
-
-class LineupType(models.Model):
-    type_id = models.AutoField(primary_key=True)
-    key_name = models.CharField(max_length=255)
-    value_id = models.ForeignKey(LineupTypeValues, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.key_name
 
 
 class UserManager(BaseUserManager):
@@ -68,8 +61,6 @@ class User(AbstractBaseUser):
 class Lineup(models.Model):
     grenade_id = models.AutoField(primary_key=True)
     map_id = models.ForeignKey(Map, on_delete=models.CASCADE)
-    grenade_class_id = models.ForeignKey(GrenadeClass, on_delete=models.CASCADE)
-    type_id = models.ForeignKey(LineupType, on_delete=models.CASCADE)
     link_to_video = models.CharField(max_length=255)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -78,9 +69,15 @@ class Lineup(models.Model):
     approved = models.BooleanField(default=False)
     views = models.IntegerField(default=0)
     preview_image_link = models.CharField(max_length=255)
+    grenade_class_id = models.ForeignKey(GrenadeClass, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.title
+
+
+class PropertyList(models.Model):
+    key = models.ForeignKey(Property, on_delete=Property.CASCADE)
+    grenade_id = models.ForeignKey(Lineup, on_delete=Lineup.CASCADE)
 
 
 class AdminType(models.Model):

@@ -5,13 +5,13 @@ from django.contrib.auth import authenticate
 from auth_app.models import (
     Map,
     GrenadeClass,
-    LineupTypeValues,
-    LineupType,
     User,
     Lineup,
     AdminType,
     Admins,
     Favorites,
+    Property,
+    PropertyList,
 )
 
 
@@ -27,17 +27,16 @@ class GrenadeClassSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class LineupTypeValuesSerializer(serializers.ModelSerializer):
+class PropertyListSerializer(serializers.ModelSerializer):
     class Meta:
-        model = LineupTypeValues
+        model = PropertyList
         fields = "__all__"
 
 
-class LineupTypeSerializer(serializers.ModelSerializer):
-    value_id = LineupTypeValuesSerializer()
+class PropertySerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = LineupType
+        model = Property
         fields = "__all__"
 
 
@@ -51,7 +50,6 @@ class UserSerializer(serializers.ModelSerializer):
 class LineupSerializer(serializers.ModelSerializer):
     map_id = MapSerializer()
     grenade_class_id = GrenadeClassSerializer()
-    type_id = LineupTypeSerializer()
     user_id = UserSerializer()
 
     class Meta:
