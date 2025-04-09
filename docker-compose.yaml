@@ -34,7 +34,7 @@ services:
         environment:
             - BACKEND_SERVER=${VITE_BACKEND_URL}
             - BACKEND_PREFIX=${BACKEND_PREFIX}
-            - DEBUG=0
+            - DEBUG=${DJANGO_DEBUG}
             - SECRET_KEY=${SECRET_KEY}
             - DB_NAME=${DB_NAME}
             - DB_USER=${DB_USER}
