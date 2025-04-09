@@ -11,7 +11,7 @@ class MapsView(APIView):
     """def get_permissions(self):
     if self.request.method == "POST":
         return [IsAuthenticated(), IsAdminUser()]
-    return [AllowAny()]"""  # Метод для проверки админ или нет
+    return [AllowAny()]"""  # Метод для проверки админ или нет, на релиз версии убрать из комментов
 
     @extend_schema(
         description="Получить список всех карт",

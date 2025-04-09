@@ -15,7 +15,7 @@ class Map(models.Model):
 class GrenadeClass(models.Model):
     grenade_class_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255)
-    description = models.CharField(max_length=255)
+    description = models.CharField(max_length=255, null=True, blank=True)
     price = models.IntegerField(default=0)
 
     def __str__(self):
@@ -27,7 +27,7 @@ class Property(models.Model):
     name = models.CharField(max_length=255)
 
     def __str__(self):
-        return self.value
+        return self.name
 
 
 class UserManager(BaseUserManager):
@@ -76,8 +76,8 @@ class Lineup(models.Model):
 
 
 class PropertyList(models.Model):
-    key = models.ForeignKey(Property, on_delete=Property.CASCADE)
-    grenade_id = models.ForeignKey(Lineup, on_delete=Lineup.CASCADE)
+    key = models.ForeignKey(Property, on_delete=models.CASCADE)
+    grenade_id = models.ForeignKey(Lineup, on_delete=models.CASCADE)
 
 
 class AdminType(models.Model):
