@@ -4,8 +4,8 @@ import { Skeleton } from "../skeleton"
 import classes from "./items-list.module.scss"
 
 type ItemsListProps<T> = React.ComponentProps<"div"> & {
-    elements: T[]
-    mapFunction: (items: T[]) => ReactNode
+    elements?: T[]
+    mapFunction?: (items: T[]) => ReactNode
     isLoading?: boolean
     loadingItemsLength?: number
     type?: "grid" | "column"
@@ -64,13 +64,13 @@ export function ItemsList<T>({
             classesArray.push(className)
         }
 
-        if (type && elements.length !== 0) {
+        if (type && elements?.length !== 0) {
             classesArray.push(typeClasses[type])
-        } else if (elements.length === 0) {
+        } else if (elements?.length === 0) {
             classesArray.push(typeClasses.column)
         }
 
-        if (elements.length === 0) {
+        if (elements?.length === 0) {
             classesArray.push(classes.emptyList as string)
         }
 
@@ -79,9 +79,9 @@ export function ItemsList<T>({
         }
 
         return classesArray.join(" ")
-    }, [className, type, gap, elements.length])
+    }, [className, type, gap, elements?.length])
 
-    if (elements.length === 0) {
+    if (!elements || elements.length === 0 || !mapFunction) {
         return (
             <div
                 className={combinedClassName}

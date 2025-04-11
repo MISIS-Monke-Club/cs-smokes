@@ -1,12 +1,12 @@
 import { Meta, StoryObj } from "@storybook/react"
 import { http, HttpResponse } from "msw"
-import { MapsWidget } from "./maps-widget"
+import { mapApi } from "../.."
 import { testData } from "./__mocks"
+import { MapsList } from "./maps-list"
 import { BASE_BACKEND_URL } from "@shared/config/constants"
-import { mapApi } from "@entities/map"
 
-const meta: Meta<typeof MapsWidget> = {
-    component: MapsWidget,
+const meta: Meta<typeof MapsList> = {
+    component: MapsList,
     parameters: {
         reactQueryDevTools: true,
         msw: {
@@ -22,6 +22,6 @@ const meta: Meta<typeof MapsWidget> = {
 
 export default meta
 
-type Story = StoryObj<typeof MapsWidget>
+type Story = StoryObj<typeof MapsList>
 
 export const Default: Story = {}
