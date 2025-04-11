@@ -43,8 +43,10 @@ class GrenadeClassesView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+class GrenadeClassRUDVIew(APIView):
     @extend_schema(
-        description="Полное обновление класса гранат",
+        description="Полное обновление класса гранаты",
         request=GrenadeClassSerializer,
         responses={
             200: GrenadeClassSerializer,
@@ -61,7 +63,7 @@ class GrenadeClassesView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @extend_schema(
-        description="Частичное обновление класса гранат",
+        description="Частичное обновление класса гранаты",
         request=GrenadeClassSerializer,
         responses={
             200: GrenadeClassSerializer,
