@@ -9,11 +9,13 @@ def create_mock_maps(apps, schema_editor):
             "name": "Mirage",
             "link": "https://example.com/mirage",
             "image_link": "https://example.com/images/mirage.jpg",
+            "grenade_class_id": "2",
         },
         {
             "name": "Dust 2",
             "link": "https://example.com/dust2",
             "image_link": "https://example.com/images/dust2.jpg",
+            "grenade_class_id": "1",
         },
     ]
 
