@@ -5,13 +5,14 @@ from django.shortcuts import get_object_or_404
 from auth_app.models import Map
 from auth_app.serializers import MapSerializer
 from drf_spectacular.utils import extend_schema, OpenApiExample
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 
 class MapsView(APIView):
-    """def get_permissions(self):
-    if self.request.method == "POST":
-        return [IsAuthenticated(), IsAdminUser()]
-    return [AllowAny()]"""  # Метод для проверки админ или нет, на релиз версии убрать из комментов
+    def get_permissions(self):
+        if self.request.method == "POST":
+            return [IsAuthenticated()]
+        return [AllowAny()]
 
     @extend_schema(
         description="Получить список всех карт",
@@ -52,10 +53,10 @@ class MapsView(APIView):
 
 
 class MapDetailRUDView(APIView):
-    """def get_permissions(self):
-    if self.request.method == "GET":
-        return [AllowAny()]
-    return [IsAuthenticated(), IsAdminUser()]"""  # Метод для проверки админ или нет пытаеться добавить карту
+    def get_permissions(self):
+        if self.request.method == "GET":
+            return [AllowAny()]
+        return [IsAuthenticated()]
 
     @extend_schema(
         description="Получить детальную информацию о карте",

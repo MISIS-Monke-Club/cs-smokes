@@ -5,9 +5,16 @@ from auth_app.models import GrenadeClass
 from auth_app.serializers import GrenadeClassSerializer
 from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import extend_schema, OpenApiExample
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 
 class GrenadeClassesView(APIView):
+
+    def get_permissions(self):
+        if self.request.method == "POST":
+            return [IsAuthenticated()]
+        return [AllowAny()]
+
     @extend_schema(
         description="Получить список всех классов гранат",
         responses={200: GrenadeClassSerializer(many=True)},
@@ -45,6 +52,9 @@ class GrenadeClassesView(APIView):
 
 
 class GrenadeClassRUDVIew(APIView):
+
+    permission_classes = [IsAuthenticated]
+
     @extend_schema(
         description="Полное обновление класса гранаты",
         request=GrenadeClassSerializer,
