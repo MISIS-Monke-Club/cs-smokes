@@ -10,10 +10,10 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 
 class GrenadeClassesView(APIView):
 
-    def get_permissions(self):
-        if self.request.method == "POST":
-            return [IsAuthenticated()]
-        return [AllowAny()]
+    # def get_permissions(self):
+    #     if self.request.method == "POST":
+    #         return [IsAuthenticated()]
+    #     return [AllowAny()]
 
     @extend_schema(
         description="Получить список всех классов гранат",
@@ -53,7 +53,7 @@ class GrenadeClassesView(APIView):
 
 class GrenadeClassRUDVIew(APIView):
 
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     @extend_schema(
         description="Полное обновление класса гранаты",

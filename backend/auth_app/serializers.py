@@ -2,6 +2,7 @@ from .models import User
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth import authenticate
+from drf_spectacular.utils import extend_schema_field
 from auth_app.models import (
     Map,
     GrenadeClass,
@@ -24,7 +25,7 @@ class MapSerializer(serializers.ModelSerializer):
 class GrenadeClassSerializer(serializers.ModelSerializer):
     class Meta:
         model = GrenadeClass
-        fields = "__all__"
+        fields = ["grenade_class_id", "name", "description", "price"]
 
 
 class PropertyListSerializer(serializers.ModelSerializer):
@@ -47,14 +48,49 @@ class UserSerializer(serializers.ModelSerializer):
         read_only_fields = ("id", "is_banned")
 
 
+class PropertyInlineSerializer(serializers.Serializer):
+    property_id = serializers.IntegerField()
+    name = serializers.CharField()
+
+
 class LineupSerializer(serializers.ModelSerializer):
-    map_id = MapSerializer()
-    grenade_class_id = GrenadeClassSerializer()
-    user_id = UserSerializer()
+    grenade_class_id = serializers.PrimaryKeyRelatedField(
+        queryset=GrenadeClass.objects.all(), write_only=True
+    )
+    grenade_class = GrenadeClassSerializer(source="grenade_class_id", read_only=True)
+
+    property_list = serializers.SerializerMethodField()
 
     class Meta:
         model = Lineup
-        fields = "__all__"
+        fields = [
+            "grenade_id",
+            "map_id",
+            "link_to_video",
+            "user_id",
+            "created_at",
+            "title",
+            "description",
+            "is_approved",
+            "views",
+            "preview_image_link",
+            "grenade_class_id",
+            "grenade_class",
+            "property_list",
+        ]
+
+    def create(self, validated_data):
+        return Lineup.objects.create(**validated_data)
+
+    @extend_schema_field(PropertyInlineSerializer(many=True))
+    def get_property_list(self, obj):
+        property_links = PropertyList.objects.filter(grenade_id=obj).select_related(
+            "property_id"
+        )
+        return [
+            {"property_id": pl.property_id.property_id, "name": pl.property_id.name}
+            for pl in property_links
+        ]
 
 
 class AdminTypeSerializer(serializers.ModelSerializer):

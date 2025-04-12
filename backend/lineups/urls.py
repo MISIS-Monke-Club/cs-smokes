@@ -2,6 +2,8 @@ from django.urls import re_path
 from .maps_views import MapsView, MapDetailRUDView
 from .greande_class_views import GrenadeClassesView as gcv, GrenadeClassRUDVIew as gcrud
 from .property_views import PropertyViews as pv, ProperyViewsRUD as pvrud
+from .lineups_views import LineupViews as lv, LineupRUDViews as lvrud
+from .property_to_lineup_views import PropertyListView, PropertyListDeleteView as pld
 
 urlpatterns = [
     re_path(r"maps/?$", MapsView.as_view(), name="maps-list-create"),
@@ -17,5 +19,21 @@ urlpatterns = [
         r"properties/(?P<pk>\d+)/?$",
         pvrud.as_view(),
         name="properties-RUD",
+    ),
+    re_path(r"lineups/?$", lv.as_view(), name="lineups-create-view"),
+    re_path(
+        r"lineups/(?P<pk>\d+)/?$",
+        lvrud.as_view(),
+        name="lineups-RUD",
+    ),
+    re_path(
+        r"^property-list?/$",
+        PropertyListView.as_view(),
+        name="property-list-Create-View",
+    ),
+    re_path(
+        r"property-list/(?P<pk>\d+)/?$",
+        pld.as_view(),
+        name="property-list-delete",
     ),
 ]

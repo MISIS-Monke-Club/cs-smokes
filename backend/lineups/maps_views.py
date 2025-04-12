@@ -9,10 +9,10 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 
 
 class MapsView(APIView):
-    def get_permissions(self):
-        if self.request.method == "POST":
-            return [IsAuthenticated()]
-        return [AllowAny()]
+    # def get_permissions(self):
+    #     if self.request.method == "POST":
+    #         return [IsAuthenticated()]
+    #     return [AllowAny()]
 
     @extend_schema(
         description="Получить список всех карт",
@@ -53,10 +53,10 @@ class MapsView(APIView):
 
 
 class MapDetailRUDView(APIView):
-    def get_permissions(self):
-        if self.request.method == "GET":
-            return [AllowAny()]
-        return [IsAuthenticated()]
+    # def get_permissions(self):
+    #     if self.request.method == "GET":
+    #         return [AllowAny()]
+    #     return [IsAuthenticated()]
 
     @extend_schema(
         description="Получить детальную информацию о карте",

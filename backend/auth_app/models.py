@@ -66,7 +66,7 @@ class Lineup(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     title = models.CharField(max_length=255)
     description = models.TextField()
-    approved = models.BooleanField(default=False)
+    is_approved = models.BooleanField(default=False)
     views = models.IntegerField(default=0)
     preview_image_link = models.CharField(max_length=255)
     grenade_class_id = models.ForeignKey(GrenadeClass, on_delete=models.CASCADE)
@@ -76,8 +76,14 @@ class Lineup(models.Model):
 
 
 class PropertyList(models.Model):
-    key = models.ForeignKey(Property, on_delete=models.CASCADE)
+    property_id = models.ForeignKey(Property, on_delete=models.CASCADE)
     grenade_id = models.ForeignKey(Lineup, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ("property_id", "grenade_id")
+
+    def __str__(self):
+        return f"{self.property_id} — {self.grenade_id}"
 
 
 class AdminType(models.Model):

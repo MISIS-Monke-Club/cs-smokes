@@ -10,20 +10,34 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 
 class PropertyViews(APIView):
 
-    def get_permissions(self):
-        if self.request.method == "POST":
-            return [IsAuthenticated()]
-        return [AllowAny()]
+    # def get_permissions(self):
+    #     if self.request.method == "POST":
+    #         return [IsAuthenticated()]
+    #     return [AllowAny()]
 
-    def get(self, requset):
-
-        propeties = Property.objects.all()
-
-        serializer = PropertySerializer(propeties, many=True)
+    @extend_schema(
+        summary="Получить все свойства",
+        responses=PropertySerializer(many=True),
+    )
+    def get(self, request):
+        properties = Property.objects.all()
+        serializer = PropertySerializer(properties, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def post(self, requset):
-        serializer = PropertySerializer(data=requset.data)
+    @extend_schema(
+        summary="Создать новое свойство",
+        request=PropertySerializer,
+        responses=PropertySerializer,
+        examples=[
+            OpenApiExample(
+                "Пример свойства",
+                value={"name": "Пример имени"},
+                request_only=True,
+            ),
+        ],
+    )
+    def post(self, request):
+        serializer = PropertySerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -31,28 +45,39 @@ class PropertyViews(APIView):
 
 
 class ProperyViewsRUD(APIView):
+    # permission_classes = [IsAuthenticated]
 
-    permission_classes = [IsAuthenticated]
-
+    @extend_schema(
+        summary="Обновить свойство (полностью)",
+        request=PropertySerializer,
+        responses=PropertySerializer,
+    )
     def put(self, request, pk):
-        grenade_class_obj = get_object_or_404(Property, pk=pk)
-        serializer = PropertySerializer(grenade_class_obj, data=request.data)
+        obj = get_object_or_404(Property, pk=pk)
+        serializer = PropertySerializer(obj, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    @extend_schema(
+        summary="Обновить свойство (частично)",
+        request=PropertySerializer,
+        responses=PropertySerializer,
+    )
     def patch(self, request, pk):
-        grenade_class_obj = get_object_or_404(Property, pk=pk)
-        serializer = PropertySerializer(
-            grenade_class_obj, data=request.data, partial=True
-        )
+        obj = get_object_or_404(Property, pk=pk)
+        serializer = PropertySerializer(obj, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, requset, pk):
-        grenade_class_obj = get_object_or_404(Property, pk=pk)
-        grenade_class_obj.delete()
+    @extend_schema(
+        summary="Удалить свойство",
+        responses={204: OpenApiExample("Удалено успешно", value=None)},
+    )
+    def delete(self, request, pk):
+        obj = get_object_or_404(Property, pk=pk)
+        obj.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
