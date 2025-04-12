@@ -151,7 +151,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             last_name="",
             avatar_url="",
             steam_link="",
-            tg_id=0,
             is_banned=False,
         )
         user.set_password(validated_data["password"])
