@@ -10,10 +10,10 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 
 class LineupViews(APIView):
 
-    # def get_permissions(self):
-    #     if self.request.method == "POST":
-    #         return [IsAuthenticated()]
-    #     return [AllowAny()]
+    def get_permissions(self):
+        if self.request.method == "POST":
+            return [IsAuthenticated()]
+        return [AllowAny()]
 
     @extend_schema(
         summary="Получить список всех гранат (Lineup)",
@@ -49,7 +49,7 @@ class LineupViews(APIView):
 
 class LineupRUDViews(APIView):
 
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     @extend_schema(
         summary="Обновить Lineup (полностью)",

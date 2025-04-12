@@ -10,10 +10,10 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 
 class PropertyViews(APIView):
 
-    # def get_permissions(self):
-    #     if self.request.method == "POST":
-    #         return [IsAuthenticated()]
-    #     return [AllowAny()]
+    def get_permissions(self):
+        if self.request.method == "POST":
+            return [IsAuthenticated()]
+        return [AllowAny()]
 
     @extend_schema(
         summary="Получить все свойства",
@@ -45,7 +45,7 @@ class PropertyViews(APIView):
 
 
 class ProperyViewsRUD(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     @extend_schema(
         summary="Обновить свойство (полностью)",

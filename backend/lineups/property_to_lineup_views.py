@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404
 
 
 class PropertyListView(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     @extend_schema(
         summary="Получить все связи между гранатами и свойствами", tags=["PropertyList"]
@@ -38,7 +38,7 @@ class PropertyListView(APIView):
 
 class PropertyListDeleteView(APIView):
 
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     @extend_schema(
         summary="Удалить связь между гранатой и свойством", tags=["PropertyList"]
