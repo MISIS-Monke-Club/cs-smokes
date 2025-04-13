@@ -1,0 +1,27 @@
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 2rem;
+}
+
+.label {
+    font-size: toRem(20);
+    margin-bottom: toRem(5);
+}
+
+.textarea {
+    padding: toRem(10);
+    border: toRem(1) solid #272626;
+    border-radius: toRem(4);
+}
+
+.select {
+    padding: toRem(5);
+    border: toRem(1) solid #272626;
+    border-radius: toRem(4);
+}
+
+.button {
+    display: flex;
+    margin: 0 auto;
+}
