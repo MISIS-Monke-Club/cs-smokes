@@ -10,6 +10,7 @@ import { GuestProfilePage } from "@pages/guest-profile-page"
 import { EditProfilePage } from "@pages/edit-profile-page"
 import { OwnProfilePage } from "@pages/own-profile-page"
 import { FavoritesPage } from "@pages/favorites-page"
+import { AddLineupPage } from "@pages/add-lineup-page"
 import { loginThunk, setupAuthSlice, setupInterceptors } from "@features/auth"
 import { store } from "@shared/model"
 
@@ -32,9 +33,8 @@ export const router = createBrowserRouter(
                 {
                     element: <LoginProvider />,
                     children: [
-                        {
-                            path: "/",
-                            element: <Homepage />,
+                        {   path: "/",
+                            element: <Homepage />
                         },
                         {
                             path: "grenades",
@@ -43,6 +43,10 @@ export const router = createBrowserRouter(
                         {
                             path: "grenades/:grenadeId",
                             element: <GrenadePage />,
+                        },
+                        {
+                            path: "/grenades/create",
+                            element: <AddLineupPage />,
                         },
                         {
                             path: "maps",
