@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "auth_app",
     "lineups",
+    "user",
 ]
 
 REST_FRAMEWORK = {
@@ -59,7 +60,7 @@ REST_FRAMEWORK = {
 
 SIMPLE_JWT = {
     "SIGNING_KEY": SECRET_KEY,
-    "USER_ID_FIELD": "tg_id",
+    "USER_ID_FIELD": "user_id",
     "USER_ID_CLAIM": "user_id",
     "ACCESS_TOKEN_LIFETIME": timedelta(days=7),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=30),

@@ -1,6 +1,5 @@
 from .models import User
 from rest_framework import serializers
-from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth import authenticate
 from auth_app.models import (
@@ -14,8 +13,6 @@ from auth_app.models import (
     Admins,
     Favorites,
 )
-
-User = get_user_model()
 
 
 class MapSerializer(serializers.ModelSerializer):
@@ -42,6 +39,14 @@ class LineupTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = LineupType
         fields = "__all__"
+
+
+class UserListSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(source="user_id")
+
+    class Meta:
+        model = User
+        fields = ("id", "username")
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -154,7 +159,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             last_name="",
             avatar_url="",
             steam_link="",
-            tg_id=0,
             is_banned=False,
         )
         user.set_password(validated_data["password"])

@@ -536,7 +536,7 @@ paths:
     get:
       tags:
         - Users
-      summary: Получить данные всех пользователей
+      summary: Получить данные всех пользователей(Рабочая)
       security:
         - bearerAuth: []
       responses:
@@ -551,7 +551,7 @@ paths:
     post:
       tags:
         - Users
-      summary: Создать нового пользователя
+      summary: Создать нового пользователя(Рабочая)
       security:
         - bearerAuth: []
       requestBody:
@@ -593,7 +593,7 @@ paths:
     get:
       tags:
         - Users
-      summary: Получить данные пользователя по ID
+      summary: Получить данные пользователя по ID(Рабочая)
       security:
         - bearerAuth: []
       parameters:
@@ -612,7 +612,7 @@ paths:
     put:
       tags:
         - Users
-      summary: Полностью обновить пользователя по ID
+      summary: Полностью обновить пользователя по ID(Рабочая)
       security:
         - bearerAuth: []
       parameters:
@@ -658,7 +658,7 @@ paths:
     patch:
       tags:
         - Users
-      summary: Частично обновить пользователя по ID
+      summary: Частично обновить пользователя по ID(Рабочая)
       security:
         - bearerAuth: []
       parameters:
@@ -704,7 +704,7 @@ paths:
     delete:
       tags:
         - Users
-      summary: Удалить пользователя по ID
+      summary: Удалить пользователя по ID(Рабочая)
       security:
         - bearerAuth: []
       parameters:
