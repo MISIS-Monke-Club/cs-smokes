@@ -5,15 +5,12 @@ from rest_framework import status
 from auth_app.models import Lineup
 from auth_app.serializers import LineupSerializer
 from django.shortcuts import get_object_or_404
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated
 
 
 class LineupViews(APIView):
 
-    def get_permissions(self):
-        if self.request.method == "POST":
-            return [IsAuthenticated()]
-        return [AllowAny()]
+    permission_classes = [IsAuthenticated]
 
     @extend_schema(
         summary="Получить список всех гранат (Lineup)",
