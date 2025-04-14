@@ -1,4 +1,4 @@
-name: Major frontend updates (develop / master push)
+name: Frontend CD (for storybook)
 on: 
   push:
       branches: 
@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    name: run actions for big frontend changes
+    name: auto-deploy storybook
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository

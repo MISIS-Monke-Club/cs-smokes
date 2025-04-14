@@ -17,18 +17,21 @@ from datetime import timedelta
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+AUTH_USER_MODEL = "auth_app.User"
 load_dotenv(override=False)
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DJANGO_DEBUG", "True") == "True"
-ALLOWED_HOSTS = (os.getenv("DJANGO_ALLOWED_HOSTS", "localhost"),)
-SECRET_KEY = os.getenv("SECRET_KEY", "key")
 
-# Application definition
+
+DEBUG = os.getenv("DJANGO_DEBUG", "True") == "True"
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost").split(",")
+SECRET_KEY = os.getenv("SECRET_KEY", "key")
+BACKEND_SERVER = os.getenv("BACKEND_SERVER", "http://localhost:3000/api")
+FORCE_SCRIPT_NAME = os.getenv("BACKEND_PREFIX", "/")
+
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -37,6 +40,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "corsheaders",
     "django.contrib.postgres",
     "backend",
     "rest_framework",
@@ -44,9 +48,7 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "auth_app",
     "lineups",
-    "corsheaders",
 ]
-
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
@@ -57,22 +59,64 @@ REST_FRAMEWORK = {
 
 SIMPLE_JWT = {
     "SIGNING_KEY": SECRET_KEY,
-    "USER_ID_FIELD": "tg_id",
+    "USER_ID_FIELD": "user_id",
     "USER_ID_CLAIM": "user_id",
     "ACCESS_TOKEN_LIFETIME": timedelta(days=7),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
 }
-
-CSRF_TRUSTED_ORIGINS = ["http://localhost:3000"]
 
 
 SPECTACULAR_SETTINGS = {
     "SCHEMA_PATH_PREFIX": "/api",
     "SCHEMA_PATH_PREFIX_TRIM": True,
     "SERVERS": [
-        {"url": "http://localhost:3000/api", "description": "Сервер бекенда"},
+        {"url": BACKEND_SERVER, "description": "Сервер бекенда"},
     ],
 }
+
+# CORS and CSRF settings
+
+
+def get_list_from_env(name, default=None):
+    value = os.getenv(name, default)
+    if value:
+        return [item.strip() for item in value.split(",") if item.strip()]
+    return []
+
+
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOWED_ORIGINS = get_list_from_env(
+    name="ALLOWED_ORIGINS",
+    default="http://localhost:3000,https://localhost:3000,http://localhost:9999,http://localhost:8080",
+)
+CSRF_TRUSTED_ORIGINS = get_list_from_env(
+    "ALLOWED_ORIGINS",
+    default="https://.ngrok-free.app,http://localhost:3000,https://localhost:3000,http://localhost:9999",
+)
+
+
+CORS_ALLOW_METHODS = [
+    "GET",
+    "POST",
+    "PUT",
+    "PATCH",
+    "DELETE",
+    "OPTIONS",
+]
+
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+]
+
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",

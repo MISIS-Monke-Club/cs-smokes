@@ -1,7 +1,8 @@
 import { Slot } from "@radix-ui/react-slot"
 import { cva } from "class-variance-authority"
 
-import { useMemo } from "react"
+import { ReactNode, useMemo } from "react"
+import { Loader2 } from "lucide-react"
 import { cn } from "../../lib/utils"
 
 export const buttonVariants = cva(
@@ -44,6 +45,9 @@ type ButtonProps = React.ComponentProps<"button"> & {
         | "link"
     size?: "default" | "sm" | "lg" | "icon"
     asChild?: boolean
+    isLoading?: boolean
+    loaderPosition?: "before" | "after"
+    loaderElement?: ReactNode
 }
 
 export function Button({
@@ -51,6 +55,9 @@ export function Button({
     variant,
     size,
     asChild = false,
+    isLoading = false,
+    loaderPosition = "before",
+    loaderElement = <Loader2 className='animate-spin' />,
     ...props
 }: ButtonProps) {
     const combinedButtonClass: string = useMemo(() => {
@@ -60,6 +67,50 @@ export function Button({
 
         return draftClass
     }, [variant, size, className])
+
+    if (isLoading) {
+        if (size === "icon") {
+            return (
+                <button
+                    type='button'
+                    data-slot='button'
+                    className={combinedButtonClass}
+                    {...props}
+                    disabled={true}
+                >
+                    {loaderElement}
+                </button>
+            )
+        } else {
+            if (loaderPosition === "before") {
+                return (
+                    <button
+                        type='button'
+                        data-slot='button'
+                        className={combinedButtonClass}
+                        {...props}
+                        disabled={true}
+                    >
+                        {loaderElement}
+                        {props.value}
+                    </button>
+                )
+            } else if (loaderPosition === "after") {
+                return (
+                    <button
+                        type='button'
+                        data-slot='button'
+                        className={combinedButtonClass}
+                        {...props}
+                        disabled={true}
+                    >
+                        {props.value}
+                        {loaderElement}
+                    </button>
+                )
+            }
+        }
+    }
 
     if (asChild) {
         return (

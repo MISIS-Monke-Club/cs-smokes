@@ -1,4 +1,7 @@
+from .models import User
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from django.contrib.auth import authenticate
 from auth_app.models import (
     Map,
     GrenadeClass,
@@ -41,7 +44,8 @@ class LineupTypeSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = "__all__"
+        exclude = ("password", "last_login")
+        read_only_fields = ("id", "is_banned")
 
 
 class LineupSerializer(serializers.ModelSerializer):
@@ -77,3 +81,98 @@ class FavoritesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Favorites
         fields = "__all__"
+
+
+class LoginSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        token["username"] = user.username
+        return token
+
+    def validate(self, attrs):
+        username_or_email = attrs.get("username")
+        password = attrs.get("password")
+
+        if "@" in username_or_email:
+            try:
+                user = User.objects.get(email=username_or_email)
+                username = user.username
+            except User.DoesNotExist:
+                raise serializers.ValidationError(
+                    {"username": "Пользователь с таким email не найден."}
+                )
+        else:
+            username = username_or_email
+
+        user = authenticate(
+            request=self.context.get("request"), username=username, password=password
+        )
+
+        if not user:
+            raise serializers.ValidationError(
+                {
+                    "username": "Неверные учетные данные.",
+                    "password": "Неверные учетные данные.",
+                }
+            )
+
+        refresh = self.get_token(user)
+
+        data = {
+            "refresh": str(refresh),
+            "access": str(refresh.access_token),
+            "user": UserResponseSerializer(user).data,
+        }
+
+        return data
+
+
+class UserRegistrationSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = User
+        fields = ("username", "email", "password")
+
+    def validate(self, attrs):
+        email = attrs.get("email")
+        if User.objects.filter(email=email).exists():
+            raise serializers.ValidationError(
+                {"email": "Пользователь с таким email уже существует"}
+            )
+        return attrs
+
+    def create(self, validated_data):
+        user = User(
+            username=validated_data["username"],
+            email=validated_data["email"],
+            first_name="",
+            last_name="",
+            avatar_url="",
+            steam_link="",
+            is_banned=False,
+        )
+        user.set_password(validated_data["password"])
+        user.save()
+        return user
+
+    def to_representation(self, instance):
+        return UserResponseSerializer(instance).data
+
+
+class UserResponseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = (
+            "user_id",
+            "username",
+            "email",
+            "first_name",
+            "last_name",
+            "avatar_url",
+            "steam_link",
+            "tg_id",
+            "is_banned",
+        )
+        read_only_fields = ("user_id", "is_banned")

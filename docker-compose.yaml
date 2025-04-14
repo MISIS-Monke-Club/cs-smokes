@@ -3,6 +3,9 @@ services:
         container_name: tg-frontend
         build:
             context: ./tg-frontend
+            dockerfile: dockerfile.dev
+            args:
+                - MODE=${MODE}
         volumes:
             - ./tg-frontend:/tg-frontend
             - ./tg-frontend/node_modules:/tg-frontend/node_modules
@@ -10,23 +13,28 @@ services:
         environment:
             - VITE_BACKEND_URL=${VITE_BACKEND_URL}
             - HUSKY=${FRONTEND_LINTING:?Variable FRONTEND_LINTING is required}
+            - NODE_ENV=${MODE:?Variable Mode is required}
         ports:
-            - 8080:5173
+            - 8000:5173
         depends_on:
+            - bot
             - backend
-        command: sh -c "npm install && npm audit fix --force && npm run host"
+        command: sh ./run-server.sh
 
     backend:
         container_name: backend
         build:
             context: ./backend
+            dockerfile: dockerfile.dev
         volumes:
             - ./backend:/backend
         ports:
             - 3000:8000
         env_file: ./.env
         environment:
-            - DEBUG=${DJANGO_DEBUG:?Variable DJANGO_DEBUG required}
+            - BACKEND_SERVER=${VITE_BACKEND_URL}
+            - BACKEND_PREFIX=${BACKEND_PREFIX}
+            - DEBUG=${DJANGO_DEBUG}
             - SECRET_KEY=${SECRET_KEY}
             - DB_NAME=${DB_NAME}
             - DB_USER=${DB_USER}
@@ -34,6 +42,8 @@ services:
             - DB_HOST=${DB_HOST}
             - DB_PORT=${DB_PORT}
             - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
+            - TOKEN=${TOKEN}
+            - ALLOWED_ORGINS=${ALLOWED_ORIGINS}
         depends_on:
             - db
         command: sh ./run-server.sh
@@ -72,6 +82,4 @@ services:
         environment:
             - TOKEN=${TOKEN}
             - WEB_APP_URL=${WEB_APP_URL}
-        depends_on:
-            - backend
         command: sh -c "python bot.py"

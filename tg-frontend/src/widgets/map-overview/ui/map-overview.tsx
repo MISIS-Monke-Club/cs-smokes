@@ -3,10 +3,15 @@ import classes from "./map-overview.module.scss"
 import { GrenadesList } from "@entities/grenade"
 import { mapApi, MapPageModel } from "@entities/map"
 import { PlaceholderBlock } from "@shared/ui/placeholder-block"
+import { grenadeWithFavoriteMaper } from "@features/add-to-favorite"
 import { ImageComponent } from "@shared/ui/image"
 
 export function MapOverview({ mapId }: { mapId: MapPageModel["mapId"] }) {
     const { data, isError, isLoading } = useQuery(mapApi.getMapById(mapId))
+
+    if (isLoading) {
+        return <div>Loading...</div>
+    }
 
     if (!data && !isError) {
         return <div>Unexpected state...</div>
@@ -20,6 +25,10 @@ export function MapOverview({ mapId }: { mapId: MapPageModel["mapId"] }) {
         )
     }
 
+    if (!data) {
+        return <div>Something went wrong</div>
+    }
+
     return (
         <>
             <h1 className={classes.title}>{data?.name}</h1>
@@ -31,7 +40,10 @@ export function MapOverview({ mapId }: { mapId: MapPageModel["mapId"] }) {
                 height='200'
                 isLoading={isLoading}
             />
-            <GrenadesList grenades={data.mapLineups} />
+            <GrenadesList
+                grenades={data?.mapLineups}
+                mapFunction={grenadeWithFavoriteMaper}
+            />
         </>
     )
 }

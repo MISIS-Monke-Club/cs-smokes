@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom"
-import React, { useMemo } from "react"
+import React, { ReactNode, useMemo } from "react"
 import { GrenadeModel } from "../../domain"
 import classes from "./grenade.module.scss"
 import {
@@ -14,10 +14,16 @@ import { dateFormatter } from "@shared/lib/date-formatter"
 
 type GrenadeProps = React.ComponentProps<"div"> & {
     grenade: GrenadeModel
+    bottomSlot?: ReactNode
     className?: string
 }
 
-export function Grenade({ grenade, className = "", ...rest }: GrenadeProps) {
+export function Grenade({
+    grenade,
+    bottomSlot = "",
+    className = "",
+    ...rest
+}: GrenadeProps) {
     const navigate = useNavigate()
 
     function clickHandler() {
@@ -54,8 +60,9 @@ export function Grenade({ grenade, className = "", ...rest }: GrenadeProps) {
                     alt='grenade image'
                     loading='lazy'
                 />
+                <div>Created at:{date}</div>
             </CardContent>
-            <CardFooter>Created at:{date}</CardFooter>
+            <CardFooter>{bottomSlot}</CardFooter>
         </Card>
     )
 }
