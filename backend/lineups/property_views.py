@@ -48,6 +48,19 @@ class ProperyViewsRUD(APIView):
     permission_classes = [IsAuthenticated]
 
     @extend_schema(
+        description="Получить детальную информацию о свойстве",
+        summary="Получить детальную информацию о свойстве по ID",
+        responses={
+            200: PropertySerializer,
+            404: None,
+        },
+    )
+    def get(self, request, pk):
+        obj = get_object_or_404(Property, pk=pk)
+        serializer = PropertySerializer(obj)
+        return Response(serializer.data)
+
+    @extend_schema(
         summary="Обновить свойство (полностью)",
         request=PropertySerializer,
         responses=PropertySerializer,
