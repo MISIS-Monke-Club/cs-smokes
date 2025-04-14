@@ -52,6 +52,20 @@ class LineupRUDViews(APIView):
     permission_classes = [IsAuthenticated]
 
     @extend_schema(
+        description="Получить детальную информацию о раскидке",
+        summary="Получить детальную информацию о раскидке по ID",
+        responses={
+            200: LineupSerializer,
+            404: None,
+        },
+        tags=["Lineup"],
+    )
+    def get(self, request, pk):
+        obj = get_object_or_404(Lineup, pk=pk)
+        serializer = LineupSerializer(obj)
+        return Response(serializer.data)
+
+    @extend_schema(
         summary="Обновить Lineup (полностью)",
         request=LineupSerializer,
         responses={200: LineupSerializer, 400: LineupSerializer, 404: LineupSerializer},
