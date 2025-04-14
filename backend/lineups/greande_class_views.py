@@ -56,6 +56,18 @@ class GrenadeClassRUDVIew(APIView):
     permission_classes = [IsAuthenticated]
 
     @extend_schema(
+        description="Получить детальную информацию о классе гранаты",
+        responses={
+            200: GrenadeClassSerializer,
+            404: None,
+        },
+    )
+    def get(self, request, pk):
+        obj = get_object_or_404(GrenadeClass, pk=pk)
+        serializer = GrenadeClassSerializer(obj)
+        return Response(serializer.data)
+
+    @extend_schema(
         description="Полное обновление класса гранаты",
         request=GrenadeClassSerializer,
         responses={
