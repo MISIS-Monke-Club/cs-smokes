@@ -88,7 +88,7 @@ class LineupSerializer(serializers.ModelSerializer):
             "property_id"
         )
         return [
-            {"property_id": pl.property_id.property_id, "name": pl.property_id.name}
+            {"property_id": pl.property_id.property_id, "name": pl.property_id.name, "value":pl.property_id.value}
             for pl in property_links
         ]
 

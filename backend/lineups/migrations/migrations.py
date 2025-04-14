@@ -60,9 +60,9 @@ def create_mock_properties(apps, schema_editor):
     Property = apps.get_model("auth_app", "Property")
 
     mock_properties = [
-        {"name": "Дальность броска"},
-        {"name": "Время восстановления"},
-        {"name": "Радиус воздействия"},
+        {"name": "Дальность броска","value":"300"},
+        {"name": "Время восстановления","value":"10"},
+        {"name": "Радиус воздействия","value":"200 метров"},
     ]
 
     for prop_data in mock_properties:
