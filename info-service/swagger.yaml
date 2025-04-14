@@ -273,6 +273,7 @@ paths:
 
   /lineups/:
     get:
+      deprecated: true
       tags:
         - Lineups
       summary: Получить все раскидки
@@ -288,6 +289,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/Lineup"
     post:
+      deprecated: true
       tags:
         - Lineups
       summary: Создать новую раскидку
@@ -339,6 +341,7 @@ paths:
 
   /lineups/{id}/:
     get:
+      deprecated: true
       tags:
         - Lineups
       summary: Получить раскидку по ID
@@ -358,6 +361,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Lineup"
     put:
+      deprecated: true
       tags:
         - Lineups
       summary: Полностью обновить раскидку по ID
@@ -418,6 +422,7 @@ paths:
         "401":
           description: Неавторизованный доступ
     patch:
+      deprecated: true
       tags:
         - Lineups
       summary: Частично обновить раскидку по ID
@@ -478,6 +483,7 @@ paths:
         "401":
           description: Неавторизованный доступ
     delete:
+      deprecated: true
       tags:
         - Lineups
       summary: Удалить раскидку по ID
@@ -497,6 +503,7 @@ paths:
 
   /grenade-classes/:
     get:
+      deprecated: true
       tags:
         - GrenadeClasses
       summary: Получить все классы гранат
@@ -512,6 +519,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/GrenadeClass"
     post:
+      deprecated: true
       tags:
         - GrenadeClasses
       summary: Создать новый класс гранаты
@@ -534,6 +542,7 @@ paths:
 
   /users/:
     get:
+      deprecated: true
       tags:
         - Users
       summary: Получить данные всех пользователей
@@ -549,6 +558,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/User"
     post:
+      deprecated: true
       tags:
         - Users
       summary: Создать нового пользователя
@@ -591,6 +601,7 @@ paths:
 
   /users/{id}/:
     get:
+      deprecated: true
       tags:
         - Users
       summary: Получить данные пользователя по ID
@@ -610,6 +621,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/User"
     put:
+      deprecated: true
       tags:
         - Users
       summary: Полностью обновить пользователя по ID
@@ -656,6 +668,7 @@ paths:
         "401":
           description: Неавторизованный доступ
     patch:
+      deprecated: true
       tags:
         - Users
       summary: Частично обновить пользователя по ID
@@ -702,6 +715,7 @@ paths:
         "401":
           description: Неавторизованный доступ
     delete:
+      deprecated: true
       tags:
         - Users
       summary: Удалить пользователя по ID
@@ -721,6 +735,7 @@ paths:
 
   /admins/:
     get:
+      deprecated: true
       tags:
         - Admins
       summary: Получить всех администраторов
@@ -736,6 +751,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/Admins"
     post:
+      deprecated: true
       tags:
         - Admins
       summary: Назначить администратора
@@ -760,6 +776,7 @@ paths:
 
   /admins/{id}/:
     get:
+      deprecated: true
       tags:
         - Admins
       summary: Получить администратора по ID
@@ -779,6 +796,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Admins"
     patch:
+      deprecated: true
       tags:
         - Admins
       summary: Частично обновить администратора по ID
@@ -805,6 +823,7 @@ paths:
         "401":
           description: Неавторизованный доступ
     delete:
+      deprecated: true
       tags:
         - Admins
       summary: Удалить администратора по ID
@@ -824,6 +843,7 @@ paths:
 
   /admin-types/:
     get:
+      deprecated: true
       tags:
         - Admins
       summary: Получить все типы администраторов
@@ -839,6 +859,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/AdminType"
     post:
+      deprecated: true
       tags:
         - Admins
       summary: Создать новый тип администратора
@@ -865,6 +886,7 @@ paths:
 
   /admin-types/{id}/:
     get:
+      deprecated: true
       tags:
         - Admins
       summary: Получить тип администратора по ID
@@ -884,6 +906,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/AdminType"
     put:
+      deprecated: true
       tags:
         - Admins
       summary: Полностью обновить тип администратора по ID
@@ -914,6 +937,7 @@ paths:
         "401":
           description: Неавторизованный доступ
     patch:
+      deprecated: true
       tags:
         - Admins
       summary: Частично обновить тип администратора по ID
@@ -944,6 +968,7 @@ paths:
         "401":
           description: Неавторизованный доступ
     delete:
+      deprecated: true
       tags:
         - Admins
       summary: Удалить тип администратора по ID
@@ -963,6 +988,7 @@ paths:
 
   /favorites/:
     post:
+      deprecated: true
       tags:
         - Favorites
       summary: Добавить раскидку в избранное
@@ -985,6 +1011,7 @@ paths:
 
   /favorites/{userId}/:
     get:
+      deprecated: true
       tags:
         - Favorites
       summary: Получить избранные раскидки пользователя
@@ -1008,6 +1035,7 @@ paths:
 
   /favorites/{grenadeId}/:
     delete:
+      deprecated: true
       tags:
         - Favorites
       summary: Удалить раскидку из избранного
