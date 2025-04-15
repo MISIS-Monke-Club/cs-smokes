@@ -1,12 +1,18 @@
 import { FormEvent } from "react"
 import { toast } from "sonner"
-import { lineupSchema, mapOptions } from "../model"
+import { AddLineupModel, lineupSchema, mapOptions } from "../model"
 import { useAddLineup } from "../lib"
 import classes from "./add-lineup-form.module.scss"
 import { Input } from "@shared/ui/input"
 import { Button } from "@shared/ui/button"
 
-export function AddLineupForm() {
+type AddLineupFormProps = {
+    name?: string
+    className?: string
+    initialValues?: AddLineupModel
+}
+
+export function AddLineupForm({ className }: AddLineupFormProps) {
     const { addLineup, isLoading } = useAddLineup()
 
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -26,12 +32,22 @@ export function AddLineupForm() {
     }
 
     return (
-        <form className={classes.form} onSubmit={handleSubmit}>
+        <form
+            className={`${classes.form} ${className ?? ""}`}
+            onSubmit={handleSubmit}
+            role='form'
+        >
             <div className={classes.formGroup}>
                 <label className={classes.label} htmlFor='title'>
                     Название лайнапа
                 </label>
-                <Input type='text' id='title' name='title' required />
+                <Input
+                    type='text'
+                    id='title'
+                    name='title'
+                    placeholder='Название лайнапа'
+                    required
+                />
             </div>
 
             <div className={classes.formGroup}>
@@ -42,6 +58,7 @@ export function AddLineupForm() {
                     className={classes.textarea}
                     id='description'
                     name='description'
+                    placeholder='Описание лайнапа'
                     required
                 ></textarea>
             </div>
