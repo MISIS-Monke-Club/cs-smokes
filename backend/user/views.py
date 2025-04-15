@@ -3,7 +3,7 @@ from drf_spectacular.types import OpenApiTypes
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from auth_app.models import User
 from auth_app.serializers import (
@@ -13,14 +13,16 @@ from auth_app.serializers import (
 )
 
 
-class MixedPermissionAPIView(APIView):
-    def get_permissions(self):
-        if self.request.method == "GET":
-            return [AllowAny()]
-        return [IsAuthenticated()]
+# class MixedPermissionAPIView(APIView):
+#     def get_permissions(self):
+#         if self.request.method == "GET":
+#             return [AllowAny()]
+#         return [IsAuthenticated()]
 
 
-class UserListAPIView(MixedPermissionAPIView):
+class UserListAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
     @extend_schema(
         summary="Получить список пользователей",
         description="Возвращает список всех пользователей (только id и username)",
@@ -69,7 +71,8 @@ class UserListAPIView(MixedPermissionAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class UserDetailAPIView(MixedPermissionAPIView):
+class UserDetailAPIView(APIView):
+    permission_classes = [IsAuthenticated]
 
     def get_object(self, id):
         return get_object_or_404(User, user_id=id)
