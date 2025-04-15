@@ -965,7 +965,7 @@ paths:
     post:
       tags:
         - Favorites
-      summary: Добавить раскидку в избранное
+      summary: Добавить раскидку в избранное(Рабочая)
       security:
         - bearerAuth: []
       requestBody:
@@ -987,7 +987,7 @@ paths:
     get:
       tags:
         - Favorites
-      summary: Получить избранные раскидки пользователя
+      summary: Получить избранные раскидки пользователя(Рабочая)
       security:
         - bearerAuth: []
       parameters:
@@ -1010,7 +1010,7 @@ paths:
     delete:
       tags:
         - Favorites
-      summary: Удалить раскидку из избранного
+      summary: Удалить раскидку из избранного(Рабочая)
       security:
         - bearerAuth: []
       parameters:
