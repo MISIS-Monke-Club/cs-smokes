@@ -1014,7 +1014,7 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: grenade_id
+        - name: grenadeId
           in: path
           required: true
           schema:
