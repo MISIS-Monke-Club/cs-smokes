@@ -48,3 +48,11 @@ export const lineupSchema = z.object({
 })
 
 export type LineupFormData = z.infer<typeof lineupSchema>
+
+export type AddLineupModel = {
+    title: string
+    description: string
+    map: string
+    link_to_video: string
+    preview_image_link: string | null
+}
