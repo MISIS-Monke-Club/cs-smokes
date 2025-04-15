@@ -34,6 +34,15 @@ class PropertyListSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class PropertyListPostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PropertyList
+        fields = ["grenade_id", "property_id"]
+        extra_kwargs = {
+            "grenade_id": {"read_only": True},
+        }
+
+
 class PropertySerializer(serializers.ModelSerializer):
 
     class Meta:
