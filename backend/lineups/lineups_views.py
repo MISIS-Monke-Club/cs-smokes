@@ -1,8 +1,8 @@
-from drf_spectacular.utils import extend_schema, OpenApiExample
+from drf_spectacular.utils import extend_schema, OpenApiExample, OpenApiTypes
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from auth_app.models import Lineup
+from auth_app.models import Lineup, GrenadeClass
 from auth_app.serializers import LineupSerializer
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
@@ -120,3 +120,44 @@ class LineupRUDViews(APIView):
         obj = get_object_or_404(Lineup, pk=pk)
         obj.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class ChangeGrenadeClassView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(
+        summary="Изменить grenade_class у Lineup",
+        request={
+            "application/json": {
+                "type": "object",
+                "properties": {
+                    "grenade_class_id": {
+                        "type": "integer",
+                        "example": 2,
+                        "description": "ID нового GrenadeClass",
+                    }
+                },
+                "required": ["grenade_class"],
+            }
+        },
+        responses={
+            200: OpenApiTypes.OBJECT,
+            400: OpenApiTypes.OBJECT,
+            404: OpenApiTypes.OBJECT,
+        },
+        tags=["Lineup"],
+    )
+    def patch(self, request, pk):
+        lineup = get_object_or_404(Lineup, pk=pk)
+        grenade_class_id = request.data.get("grenade_class_id")
+
+        if not grenade_class_id:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        try:
+            grenade_class = GrenadeClass.objects.get(pk=grenade_class_id)
+        except GrenadeClass.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        lineup.grenade_class_id = grenade_class
+        lineup.save()
+        return Response(status=status.HTTP_200_OK)
