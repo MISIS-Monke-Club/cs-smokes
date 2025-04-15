@@ -31,11 +31,11 @@ class PropertyListDeleteView(APIView):
 
     permission_classes = [IsAuthenticated]
 
-    @extend_schema(
-        summary="Удалить связь между гранатой и свойством", tags=["PropertyList"]
-    )
-    def delete(self, request, pk):
-        obj = get_object_or_404(PropertyList, pk=pk)
+    @extend_schema(summary="Удалить связь между гранатой и свойством", tags=["Lineup"])
+    def delete(self, request, grenade_id, property_id):
+        obj = get_object_or_404(
+            PropertyList, grenade_id=grenade_id, property_id=property_id
+        )
         obj.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 

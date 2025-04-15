@@ -41,7 +41,7 @@ urlpatterns = [
         name="property-list-post",
     ),
     re_path(
-        r"property-list/(?P<pk>\d+)/?$",
+        r"lineups/(?P<grenade_id>\d+)/properties/(?P<property_id>\d+)/?$",
         pld.as_view(),
         name="property-list-delete",
     ),
