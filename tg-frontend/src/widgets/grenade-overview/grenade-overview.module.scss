@@ -3,25 +3,26 @@
 }
 
 .title {
+    margin-bottom: 1rem;
     font-size: 2rem;
     font-weight: 800;
-    margin-bottom: 1rem;
 }
 
 .content {
     display: flex;
     flex-direction: row;
+    gap: 5px;
     align-items: center;
     justify-content: space-between;
-    gap: 5px;
+
     width: 100%;
 }
 
 .textInfo {
     display: flex;
     flex-direction: column;
-    align-items: start;
     gap: 0.5rem;
+    align-items: start;
 }
 
 .image {

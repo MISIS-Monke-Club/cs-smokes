@@ -6,21 +6,24 @@
 *::after {
     box-sizing: border-box;
 }
+
 /*
 2. Remove default margin
 */
 * {
     margin: 0;
 }
+
 /*
 Typographic tweaks!
 3. Add accessible line-height
 4. Improve text rendering
 */
 body {
-    line-height: 1.5;
     -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
 }
+
 /*
 5. Improve media defaults
 */
@@ -32,6 +35,7 @@ svg {
     display: block;
     max-width: 100%;
 }
+
 /*
 6. Remove built-in form typography styles
 */
@@ -41,6 +45,7 @@ textarea,
 select {
     font: inherit;
 }
+
 /*
 7. Avoid text overflows
 */
@@ -60,6 +65,7 @@ ol {
 }
 
 #root,
+/* stylelint-disable-next-line selector-id-pattern */
 #__next {
     isolation: isolate;
 }
@@ -68,6 +74,7 @@ ol {
 svg *[fill] {
     fill: currentColor;
 }
+
 svg *[stroke] {
     stroke: currentColor;
 }

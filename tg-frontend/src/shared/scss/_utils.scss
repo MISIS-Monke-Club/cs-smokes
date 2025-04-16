@@ -5,12 +5,14 @@
     @include hidden;
 }
 
+/* stylelint-disable-next-line selector-class-pattern */
 .hidden-mobile {
     @include mobile {
         @include hidden;
     }
 }
 
+/* stylelint-disable-next-line selector-class-pattern */
 .hidden-tablet {
     @include tablet {
         @include hidden;
