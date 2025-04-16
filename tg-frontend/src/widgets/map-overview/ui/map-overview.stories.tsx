@@ -26,10 +26,13 @@ const meta: Meta<typeof MapOverview> = {
         mapId: testData.map_id,
     },
     play: async ({ canvas }) => {
-        const loaderPlaceholder = canvas.getByText("Loading...")
+        const loaderPlaceholder = await canvas.findAllByLabelText(
+            "placeholder-skeleton"
+        )
 
-        await expect(loaderPlaceholder).toBeInTheDocument()
-        await expect(loaderPlaceholder).toBeVisible()
+        await expect(loaderPlaceholder).toHaveLength(15)
+        await expect(loaderPlaceholder[0]).toBeInTheDocument()
+        await expect(loaderPlaceholder[0]).toBeVisible()
 
         // Waiting for the end of the request
         const title = await canvas.findByRole("heading", { level: 1 })

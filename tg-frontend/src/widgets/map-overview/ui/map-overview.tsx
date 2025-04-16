@@ -1,16 +1,35 @@
 import { useQuery } from "@tanstack/react-query"
+import { useDispatch } from "react-redux"
 import classes from "./map-overview.module.scss"
-import { GrenadesList } from "@entities/grenade"
+import {
+    createList,
+    Grenade,
+    GrenadeModel,
+    GrenadesListComponent,
+} from "@entities/grenade"
 import { mapApi, MapPageModel } from "@entities/map"
 import { PlaceholderBlock } from "@shared/ui/placeholder-block"
-import { grenadeWithFavoriteMaper } from "@features/add-to-favorite"
 import { ImageComponent } from "@shared/ui/image"
+import { ItemsList } from "@shared/ui/items-list"
 
 export function MapOverview({ mapId }: { mapId: MapPageModel["mapId"] }) {
     const { data, isError, isLoading } = useQuery(mapApi.getMapById(mapId))
+    const dispatch = useDispatch()
+    dispatch(
+        createList({
+            listId: "mapsGrenades",
+            mapFunction: (elements: GrenadeModel[]) => (
+                <>
+                    {elements.map((el) => (
+                        <Grenade key={el.grenadeId} grenade={el} />
+                    ))}
+                </>
+            ),
+        })
+    )
 
     if (isLoading) {
-        return <div>Loading...</div>
+        return <ItemsList isLoading loadingItemsLength={15} />
     }
 
     if (!data && !isError) {
@@ -40,9 +59,11 @@ export function MapOverview({ mapId }: { mapId: MapPageModel["mapId"] }) {
                 height='200'
                 isLoading={isLoading}
             />
-            <GrenadesList
-                grenades={data?.mapLineups}
-                mapFunction={grenadeWithFavoriteMaper}
+            <GrenadesListComponent
+                grenades={data.mapLineups}
+                grenadesListId='mapsGrenades'
+                isLoading={isLoading}
+                isError={isError}
             />
         </>
     )

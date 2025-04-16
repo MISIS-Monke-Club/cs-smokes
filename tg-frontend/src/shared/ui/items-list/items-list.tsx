@@ -7,6 +7,7 @@ type ItemsListProps<T> = React.ComponentProps<"div"> & {
     elements?: T[]
     mapFunction?: (items: T[]) => ReactNode
     isLoading?: boolean
+    isPending?: boolean
     loadingItemsLength?: number
     type?: "grid" | "column"
     gap?: "small" | "medium" | "large"
@@ -81,19 +82,6 @@ export function ItemsList<T>({
         return classesArray.join(" ")
     }, [className, type, gap, elements?.length])
 
-    if (!elements || elements.length === 0 || !mapFunction) {
-        return (
-            <div
-                className={combinedClassName}
-                aria-label='empty-items-list'
-                style={computedStyles}
-                {...rest}
-            >
-                <p>No data was provided(</p>
-            </div>
-        )
-    }
-
     if (isLoading) {
         return (
             <div
@@ -105,6 +93,19 @@ export function ItemsList<T>({
                 <ComponentsRepeater length={loadingItemsLength}>
                     {displayedLoadingItem}
                 </ComponentsRepeater>
+            </div>
+        )
+    }
+
+    if (!elements || elements.length === 0 || !mapFunction) {
+        return (
+            <div
+                className={combinedClassName}
+                aria-label='empty-items-list'
+                style={computedStyles}
+                {...rest}
+            >
+                <p>No data was provided(</p>
             </div>
         )
     }
