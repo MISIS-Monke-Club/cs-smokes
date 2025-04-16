@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { grenadeDTOschema } from "../domain"
+import { grenadeDTOschema } from "../model/domain"
 
 export const mockGrenades: z.infer<ReturnType<typeof grenadeDTOschema.array>> =
     [

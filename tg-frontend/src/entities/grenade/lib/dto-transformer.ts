@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { grenadeDTOschema, GrenadeModel } from "../domain"
+import { grenadeDTOschema, GrenadeModel } from "../model/domain"
 
 export const fromGrenadeDTO = (
     dto: z.infer<typeof grenadeDTOschema>
