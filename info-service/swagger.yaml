@@ -18,8 +18,8 @@ tags:
     description: Карты
   - name: Lineups
     description: Раскидки
-  - name: LineupTypes
-    description: Типы раскидок
+  - name: Properties
+    description: Свойства гранат
   - name: GrenadeClasses
     description: Классы гранат
   - name: Users
@@ -321,18 +321,8 @@ paths:
                 preview_image_link:
                   type: string
                   nullable: true
-                property_list:
-                  type: object
-                  properties:
-                    info_about:
-                      type: string
-                    info_value:
-                      type: string
-                    grenade_class:
-                      type: object
-                      properties:
-                        greande_info:
-                          type: string
+                grenade_class_id:
+                  type: integer
       responses:
         "201":
           description: Раскидка успешно создана
@@ -384,8 +374,6 @@ paths:
                   type: integer
                 grenade_class_id:
                   type: integer
-                type_id:
-                  type: integer
                 link_to_video:
                   type: string
                   nullable: true
@@ -403,18 +391,8 @@ paths:
                 preview_image_link:
                   type: string
                   nullable: true
-                property:
-                  type: object
-                  properties:
-                    info_about:
-                      type: string
-                    info_value:
-                      type: string
                 grenade_class:
-                  type: object
-                  properties:
-                    greande_info:
-                      type: string
+                  type: integer
 
       responses:
         "200":
@@ -445,8 +423,6 @@ paths:
                   type: integer
                 grenade_class_id:
                   type: integer
-                type_id:
-                  type: integer
                 link_to_video:
                   type: string
                   nullable: true
@@ -464,18 +440,8 @@ paths:
                 preview_image_link:
                   type: string
                   nullable: true
-                property:
-                  type: object
-                  properties:
-                    info_about:
-                      type: string
-                    info_value:
-                      type: string
                 grenade_class:
-                  type: object
-                  properties:
-                    greande_info:
-                      type: string
+                  type: integer
 
       responses:
         "200":
@@ -1200,8 +1166,6 @@ components:
           type: integer
         map_id:
           type: integer
-        type_id:
-          type: integer
         link_to_video:
           type: string
           nullable: true
@@ -1227,22 +1191,22 @@ components:
           items:
             type: object
             properties:
-              key:
+              name:
                 type: string
-              value:
+              value:  
                 type: string
         grenade_class:
           $ref: "#/components/schemas/GrenadeClass"
 
-    LineupType:
+    Property:
       type: object
       properties:
-        type_id:
+        property_id:
           type: integer
-        key_name:
+        name:
           type: string
-        value_id:
-          type: integer
+        value:
+          type: string  
 
     GrenadeClass:
       type: object
@@ -1364,8 +1328,6 @@ components:
           type: integer
         grenade_class_id:
           type: integer
-        type_id:
-          type: integer
         link_to_video:
           type: string
           nullable: true
@@ -1383,14 +1345,6 @@ components:
         preview_image_link:
           type: string
           nullable: true
-
-    LineupTypeUpdate:
-      type: object
-      properties:
-        key_name:
-          type: string
-        value_id:
-          type: integer
 
     UserUpdate:
       type: object
