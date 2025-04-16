@@ -466,6 +466,116 @@ paths:
           description: Раскидка успешно удалена
         "401":
           description: Неавторизованный доступ
+  /lineups/{grenade_id}/properties/{property_id}/:
+    delete:
+      deprecated: true
+      tags:
+        - Lineups
+      summary: Удалить свойство у раскидки
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: grenade_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID раскидки
+        - name: property_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID свойства
+      responses:
+        "204":
+          description: Свойство успешно удалено у раскидки
+        "401":
+          description: Неавторизованный доступ
+        "404":
+          description: Раскидка или свойство не найдены
+
+  /lineups/{grenade_id}/properties/:
+    post:
+      deprecated: true
+      tags:
+        - Lineups
+      summary: Добавить свойство к раскидке
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: grenade_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID раскидки
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                property_id:
+                  type: integer
+                  description: ID добавляемого свойства
+              required:
+                - property_id
+      responses:
+        "201":
+          description: Свойство успешно добавлено к раскидке
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Lineup"
+        "400":
+          description: Некорректные данные
+        "401":
+          description: Неавторизованный доступ
+        "404":
+          description: Раскидка или свойство не найдены
+
+  /lineups/{id}/change-grenade-class/:
+    patch:
+      deprecated: true
+      tags:
+        - Lineups
+      summary: Изменить класс гранаты у раскидки
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID раскидки
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                grenade_class_id:
+                  type: integer
+                  description: ID нового класса гранат
+              required:
+                - grenade_class_id
+      responses:
+        "200":
+          description: Класс гранаты успешно изменен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Lineup"
+        "400":
+          description: Некорректные данные
+        "401":
+          description: Неавторизованный доступ
+        "404":
+          description: Раскидка или класс гранат не найдены
 
   /properties/:
     get:
