@@ -467,6 +467,146 @@ paths:
         "401":
           description: Неавторизованный доступ
 
+  /properties/:
+    get:
+      deprecated: true
+      tags:
+        - Properties
+      summary: Получить все свойства
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Список всех свойств
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Property"
+    
+    post:
+      deprecated: true
+      tags:
+        - Properties
+      summary: Создать новое свойство
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PropertyCreate"
+      responses:
+        "201":
+          description: Свойство успешно создано
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Property"
+
+  /properties/{id}/:
+    get:
+      deprecated: true
+      tags:
+        - Properties
+      summary: Получить свойство по ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Информация о свойстве
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Property"
+        "404":
+          description: Свойство не найдено
+    
+    put:
+      deprecated: true
+      tags:
+        - Properties
+      summary: Полностью обновить свойство
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PropertyUpdate"
+      responses:
+        "200":
+          description: Свойство успешно обновлено
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Property"
+        "404":
+          description: Свойство не найдено
+    
+    patch:
+      deprecated: true
+      tags:
+        - Properties
+      summary: Частично обновить свойство
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PropertyUpdate"
+      responses:
+        "200":
+          description: Свойство успешно обновлено
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Property"
+        "404":
+          description: Свойство не найдено
+    
+    delete:
+      deprecated: true
+      tags:
+        - Properties
+      summary: Удалить свойство
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Свойство успешно удалено
+        "404":
+          description: Свойство не найдено
+
   /grenade-classes/:
     get:
       deprecated: true
@@ -1203,10 +1343,31 @@ components:
       properties:
         property_id:
           type: integer
+          format: int64
+          readOnly: true
         name:
           type: string
         value:
-          type: string  
+          type: string
+    
+    PropertyCreate:
+      type: object
+      properties:
+        name:
+          type: string
+        value:
+          type: string
+      required:
+        - name
+    
+    PropertyUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        value:
+          type: string
+      minProperties: 1  
 
     GrenadeClass:
       type: object
