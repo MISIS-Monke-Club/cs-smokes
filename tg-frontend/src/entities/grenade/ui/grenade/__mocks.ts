@@ -10,7 +10,7 @@ export const grenadeMock: GrenadeModel = {
             "Ослепляющая граната, используется для временного выведения врагов из строя.",
         price: 200,
     },
-    properties: [
+    propertyList: [
         { key: "bounce", value: "low" },
         { key: "radius", value: "5m" },
         { key: "duration", value: "2s" },

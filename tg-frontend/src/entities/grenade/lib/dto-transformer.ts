@@ -14,7 +14,7 @@ export const fromGrenadeDTO = (
             description: dto.grenade_class.description,
             price: dto.grenade_class.price,
         },
-        properties: dto.property_list.map((el) => ({
+        propertyList: dto.property_list.map((el) => ({
             key: el.key,
             value: el.value,
         })),

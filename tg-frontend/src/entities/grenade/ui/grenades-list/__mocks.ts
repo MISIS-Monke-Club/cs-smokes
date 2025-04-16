@@ -10,7 +10,7 @@ export const grenadesMocks: GrenadeModel[] = [
             description: "Blocks vision temporarily",
             price: 300,
         },
-        properties: [
+        propertyList: [
             { key: "bounce", value: "medium" },
             { key: "duration", value: "18s" },
         ],
@@ -32,7 +32,7 @@ export const grenadesMocks: GrenadeModel[] = [
             description: "Blinds enemies temporarily",
             price: 200,
         },
-        properties: [
+        propertyList: [
             { key: "radius", value: "15m" },
             { key: "duration", value: "2.5s" },
         ],
@@ -54,7 +54,7 @@ export const grenadesMocks: GrenadeModel[] = [
             description: "Deals damage over time",
             price: 400,
         },
-        properties: [
+        propertyList: [
             { key: "burnTime", value: "7s" },
             { key: "radius", value: "4m" },
         ],
@@ -76,7 +76,7 @@ export const grenadesMocks: GrenadeModel[] = [
             description: "Obscures vision",
             price: 300,
         },
-        properties: [{ key: "duration", value: "20s" }],
+        propertyList: [{ key: "duration", value: "20s" }],
         linkToVideo: "https://example.com/video4",
         userId: 104,
         createdAt: "2025-01-01T12:00:00Z",

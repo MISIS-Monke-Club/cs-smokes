@@ -1,6 +1,7 @@
 import { Meta, StoryObj } from "@storybook/react"
 import { Canvas } from "storybook/internal/types"
 import { expect } from "@storybook/test"
+import { grenadesMaper } from "../../lib/grenade-maper"
 import { GrenadesListComponent } from "./grenades-list"
 import { grenadesMocks } from "./__mocks"
 
@@ -18,7 +19,7 @@ const meta: Meta<typeof GrenadesListComponent> = {
         layout: "centered",
     },
     args: {
-        grenadesListId: "allGrenades",
+        mapFunction: grenadesMaper,
         grenades: grenadesMocks,
     },
     play: async ({ canvas }) => {
@@ -61,7 +62,7 @@ export const Loading: Story = {
             "placeholder-skeleton"
         )
 
-        await expect(loadingSkeletons).toHaveLength(15)
+        await expect(loadingSkeletons).toHaveLength(5)
         await expect(loadingSkeletons[0]).toBeVisible()
         await expect(loadingSkeletons[0]).toBeInTheDocument()
     },

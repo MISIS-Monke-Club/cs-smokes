@@ -11,3 +11,8 @@ export {
     setMapFunctionForGrenadeList,
     slice as grenadeSlice,
 } from "./model/slice"
+export {
+    mockGrenade as mockServerGrenade,
+    mockGrenades as mockServerGrenades,
+} from "./api/__mocks"
+export { grenadesMaper } from "./lib/grenade-maper"

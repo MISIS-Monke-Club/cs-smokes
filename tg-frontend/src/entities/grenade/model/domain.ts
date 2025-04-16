@@ -35,7 +35,7 @@ export type GrenadeModel = {
         description: string
         price: number
     }
-    properties: {
+    propertyList: {
         key: string
         value: string
     }[]

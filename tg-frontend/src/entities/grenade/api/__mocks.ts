@@ -50,3 +50,26 @@ export const mockGrenades: z.infer<ReturnType<typeof grenadeDTOschema.array>> =
             preview_image_link: "https://example.com/smoke-preview.jpg",
         },
     ]
+
+export const mockGrenade: z.infer<typeof grenadeDTOschema> = {
+    grenade_id: 1,
+    map_id: 1,
+    type_id: 1,
+    grenade_class: {
+        name: "Smoke",
+        description: "Blocks vision temporarily",
+        price: 300,
+    },
+    property_list: [
+        { key: "bounce", value: "medium" },
+        { key: "duration", value: "18s" },
+    ],
+    link_to_video: "https://example.com/video1",
+    user_id: 101,
+    created_at: "2025-04-01T10:00:00Z",
+    title: "Mid Control Smoke",
+    description: "Useful for taking mid safely.",
+    is_approved: true,
+    views: 230,
+    preview_image_link: "https://example.com/image1.jpg",
+}
