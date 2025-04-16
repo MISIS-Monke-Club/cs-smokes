@@ -530,13 +530,133 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                name:
-                  type: string
+              $ref: "#/components/schemas/GrenadeClassCreate"
       responses:
         "201":
           description: Класс гранаты успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GrenadeClass"
+        "401":
+          description: Неавторизованный доступ
+        "400":
+          description: Некорректные данные
+
+  /grenade-classes/{id}/:
+    get:
+      deprecated: true
+      tags:
+        - GrenadeClasses
+      summary: Получить данные одного класса гранат по ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID класса гранат
+      responses:
+        "200":
+          description: Данные класса гранат
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GrenadeClass"
+        "404":
+          description: Класс гранат не найден
+        "401":
+          description: Неавторизованный доступ
+
+    put:
+      deprecated: true
+      tags:
+        - GrenadeClasses
+      summary: Обновить класс гранат (полная замена)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID класса гранат
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GrenadeClassUpdate"
+      responses:
+        "200":
+          description: Класс гранат успешно обновлен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GrenadeClass"
+        "404":
+          description: Класс гранат не найден
+        "401":
+          description: Неавторизованный доступ
+        "400":
+          description: Некорректные данные
+
+    patch:
+      deprecated: true
+      tags:
+        - GrenadeClasses
+      summary: Частично обновить класс гранат
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID класса гранат
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GrenadeClassUpdate"
+      responses:
+        "200":
+          description: Класс гранат успешно обновлен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GrenadeClass"
+        "404":
+          description: Класс гранат не найден
+        "401":
+          description: Неавторизованный доступ
+        "400":
+          description: Некорректные данные
+
+    delete:
+      deprecated: true
+      tags:
+        - GrenadeClasses
+      summary: Удалить класс гранат
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID класса гранат
+      responses:
+        "204":
+          description: Класс гранат успешно удален
+        "404":
+          description: Класс гранат не найден
         "401":
           description: Неавторизованный доступ
 
@@ -1129,6 +1249,8 @@ components:
       properties:
         grenade_class_id:
           type: integer
+          format: int64
+          readOnly: true
         name:
           type: string
         description:
@@ -1136,6 +1258,38 @@ components:
           nullable: true
         price:
           type: integer
+          format: int32
+      required:
+        - name
+        - price
+
+    GrenadeClassCreate:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        price:
+          type: integer
+          format: int32
+      required:
+        - name
+        - price
+
+    GrenadeClassUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        price:
+          type: integer
+          format: int32
+      minProperties: 1
 
     User:
       type: object
@@ -1237,12 +1391,6 @@ components:
           type: string
         value_id:
           type: integer
-
-    GrenadeClassUpdate:
-      type: object
-      properties:
-        name:
-          type: string
 
     UserUpdate:
       type: object
