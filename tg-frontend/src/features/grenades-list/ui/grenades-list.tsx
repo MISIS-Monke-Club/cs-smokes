@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { grenadeApi, GrenadesListComponent } from "@entities/grenade"
+import { grenadesMaper } from "@entities/grenade"
 
 export function GrenadesList() {
     const {
@@ -13,7 +14,7 @@ export function GrenadesList() {
             grenades={grenades}
             isError={isError}
             isLoading={isLoading}
-            grenadesListId='allGrenadesActions'
+            mapFunction={grenadesMaper}
         />
     )
 }
