@@ -13,13 +13,6 @@ from auth_app.serializers import (
 )
 
 
-# class MixedPermissionAPIView(APIView):
-#     def get_permissions(self):
-#         if self.request.method == "GET":
-#             return [AllowAny()]
-#         return [IsAuthenticated()]
-
-
 class UserListAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -62,7 +55,6 @@ class UserListAPIView(APIView):
             ),
         ],
     )
-    # CREATE - POST /users/
     def post(self, request):
         serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid():
