@@ -1,7 +1,9 @@
 .grenadeCard {
-    width: fit-content;
     cursor: pointer;
+
+    width: fit-content;
     border: 2px solid transparent;
+
     background:
         linear-gradient(var(--color-background), var(--color-background))
             padding-box,
@@ -12,9 +14,10 @@
                 var(--color-main) 100%
             )
             border-box;
+
+    animation-name: rotate;
     animation-duration: 3s;
     animation-timing-function: linear;
-    animation-name: rotate;
     animation-iteration-count: infinite;
 }
 
@@ -25,7 +28,7 @@
 }
 
 @property --mapBorderAngle {
-    syntax: "<angle>";
-    initial-value: 0deg;
     inherits: false;
+    initial-value: 0deg;
+    syntax: "<angle>";
 }
