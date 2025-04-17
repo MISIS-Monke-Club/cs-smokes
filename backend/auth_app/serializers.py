@@ -41,19 +41,14 @@ class LineupTypeSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class UserListSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(source="user_id")
-
-    class Meta:
-        model = User
-        fields = ("id", "username")
-
-
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        exclude = ("password", "last_login")
-        read_only_fields = ("id", "is_banned")
+        exclude = (
+            "password",
+            "last_login",
+        )
+        read_only_fields = ("id",)
 
 
 class LineupSerializer(serializers.ModelSerializer):

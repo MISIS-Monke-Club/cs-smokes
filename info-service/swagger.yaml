@@ -34,7 +34,7 @@ paths:
     post:
       tags:
         - AUTH
-      summary: Логин(Рабочая)
+      summary: Логин
       requestBody:
         required: true
         content:
@@ -67,7 +67,7 @@ paths:
     post:
       tags:
         - AUTH
-      summary: Логин через тг(Рабочая)
+      summary: Логин через тг
       requestBody:
         required: true
         content:
@@ -97,7 +97,7 @@ paths:
     post:
       tags:
         - AUTH
-      summary: Регистрация(Рабочая)
+      summary: Регистрация
       requestBody:
         required: true
         content:
@@ -121,7 +121,7 @@ paths:
     get:
       tags:
         - Maps
-      summary: Получить все карты(Рабочая)
+      summary: Получить все карты
       security:
         - bearerAuth: []
       responses:
@@ -145,7 +145,7 @@ paths:
     post:
       tags:
         - Maps
-      summary: Создать новую карту(Рабочая)
+      summary: Создать новую карту
       security:
         - bearerAuth: []
       requestBody:
@@ -173,7 +173,7 @@ paths:
     get:
       tags:
         - Maps
-      summary: Получить карту по ID(Рабочая)
+      summary: Получить карту по ID
       security:
         - bearerAuth: []
       parameters:
@@ -192,7 +192,7 @@ paths:
     put:
       tags:
         - Maps
-      summary: Полностью обновить карту по ID(Рабочая)
+      summary: Полностью обновить карту по ID
       security:
         - bearerAuth: []
       parameters:
@@ -224,7 +224,7 @@ paths:
     patch:
       tags:
         - Maps
-      summary: Частично обновить карту по ID(Рабочая)
+      summary: Частично обновить карту по ID
       security:
         - bearerAuth: []
       parameters:
@@ -256,7 +256,7 @@ paths:
     delete:
       tags:
         - Maps
-      summary: Удалить карту по ID(Рабочая)
+      summary: Удалить карту по ID
       security:
         - bearerAuth: []
       parameters:
@@ -542,10 +542,9 @@ paths:
 
   /users/:
     get:
-      deprecated: true
       tags:
         - Users
-      summary: Получить данные всех пользователей(Рабочая)
+      summary: Получить данные всех пользователей
       security:
         - bearerAuth: []
       responses:
@@ -558,10 +557,9 @@ paths:
                 items:
                   $ref: "#/components/schemas/User"
     post:
-      deprecated: true
       tags:
         - Users
-      summary: Создать нового пользователя(Рабочая)
+      summary: Создать нового пользователя
       security:
         - bearerAuth: []
       requestBody:
@@ -601,10 +599,9 @@ paths:
 
   /users/{id}/:
     get:
-      deprecated: true
       tags:
         - Users
-      summary: Получить данные пользователя по ID(Рабочая)
+      summary: Получить данные пользователя по ID
       security:
         - bearerAuth: []
       parameters:
@@ -621,10 +618,9 @@ paths:
               schema:
                 $ref: "#/components/schemas/User"
     put:
-      deprecated: true
       tags:
         - Users
-      summary: Полностью обновить пользователя по ID(Рабочая)
+      summary: Полностью обновить пользователя по ID
       security:
         - bearerAuth: []
       parameters:
@@ -668,10 +664,9 @@ paths:
         "401":
           description: Неавторизованный доступ
     patch:
-      deprecated: true
       tags:
         - Users
-      summary: Частично обновить пользователя по ID(Рабочая)
+      summary: Частично обновить пользователя по ID
       security:
         - bearerAuth: []
       parameters:
@@ -715,10 +710,9 @@ paths:
         "401":
           description: Неавторизованный доступ
     delete:
-      deprecated: true
       tags:
         - Users
-      summary: Удалить пользователя по ID(Рабочая)
+      summary: Удалить пользователя по ID
       security:
         - bearerAuth: []
       parameters:

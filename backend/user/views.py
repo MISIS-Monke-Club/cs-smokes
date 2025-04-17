@@ -7,7 +7,6 @@ from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from auth_app.models import User
 from auth_app.serializers import (
-    UserListSerializer,
     UserSerializer,
     UserRegistrationSerializer,
 )
@@ -18,12 +17,24 @@ class UserListAPIView(APIView):
 
     @extend_schema(
         summary="Получить список пользователей",
-        description="Возвращает список всех пользователей (только id и username)",
-        responses={200: UserListSerializer(many=True), 401: OpenApiTypes.OBJECT},
+        description="Возвращает список всех пользователей с полной информацией",
+        responses={200: UserSerializer(many=True), 401: OpenApiTypes.OBJECT},
         examples=[
             OpenApiExample(
                 "Пример успешного ответа",
-                value=[{"id": 1, "username": "user1"}, {"id": 2, "username": "user2"}],
+                value=[
+                    {
+                        "user_id": 1,
+                        "username": "usename",
+                        "email": "user@example.com",
+                        "first_name": "",
+                        "last_name": "",
+                        "avatar_url": "",
+                        "steam_link": "",
+                        "tg_id": None,
+                        "is_banned": False,
+                    }
+                ],
                 response_only=True,
                 status_codes=["200"],
             ),
@@ -31,7 +42,7 @@ class UserListAPIView(APIView):
     )
     def get(self, request):
         users = User.objects.all()
-        serializer = UserListSerializer(users, many=True)
+        serializer = UserSerializer(users, many=True)
         return Response(serializer.data)
 
     @extend_schema(
