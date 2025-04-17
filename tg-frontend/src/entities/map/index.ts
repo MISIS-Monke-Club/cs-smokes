@@ -1,4 +1,6 @@
-export { api as mapApi } from "./api"
+export { api as mapApi } from "./api/client"
+export { testMapPageServer, testMapsServer } from "./api/__test-handler"
+export { mockMapPage, mockMaps } from "./api/__mocks"
 export { MapCard } from "./ui/map-card/map-card"
 export { MapsList } from "./ui/maps-list"
 export type { MapModel, MapPageModel } from "./model"

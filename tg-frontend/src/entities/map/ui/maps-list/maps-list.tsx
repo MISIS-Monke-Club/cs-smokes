@@ -15,6 +15,16 @@ type MapsListProps = {
 export function MapsList({ mapFunction = mapsMaper }: MapsListProps) {
     const { data: maps = [], isLoading, isError } = useQuery(mapApi.getMaps())
 
+    if (isLoading) {
+        return (
+            <ItemsList type='grid' isLoading>
+                <ComponentsRepeater length={20}>
+                    <Skeleton />
+                </ComponentsRepeater>
+            </ItemsList>
+        )
+    }
+
     if (maps.length === 0) {
         return (
             <PlaceholderBlock>
@@ -26,16 +36,6 @@ export function MapsList({ mapFunction = mapsMaper }: MapsListProps) {
     if (isError) {
         return (
             <PlaceholderBlock>Error acquired in maps list...</PlaceholderBlock>
-        )
-    }
-
-    if (isLoading) {
-        return (
-            <ItemsList type='grid' isLoading>
-                <ComponentsRepeater length={20}>
-                    <Skeleton />
-                </ComponentsRepeater>
-            </ItemsList>
         )
     }
 

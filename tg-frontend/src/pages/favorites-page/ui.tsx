@@ -4,6 +4,7 @@ import classes from "./ui.module.scss"
 import { GrenadesListComponent } from "@entities/grenade"
 import { getFavoritesApi } from "@features/get-favorite-lineups"
 import { selectUserId } from "@entities/session"
+import { favoritesMaper } from "@features/add-to-favorite"
 
 export function FavoritesPage() {
     const userId = useSelector(selectUserId)
@@ -15,7 +16,10 @@ export function FavoritesPage() {
     return (
         <>
             <h1 className={classes.title}>Favorites</h1>
-            <GrenadesListComponent grenades={grenades} grenadesListId={""} />
+            <GrenadesListComponent
+                grenades={grenades}
+                mapFunction={favoritesMaper}
+            />
         </>
     )
 }

@@ -1,10 +1,8 @@
 import { Meta, StoryObj } from "@storybook/react"
 import { Canvas } from "storybook/internal/types"
 import { expect } from "@storybook/test"
-import { delay, http, HttpResponse } from "msw"
 import { GrenadesList } from "./grenades-list"
-import { grenadeApi, mockServerGrenades } from "@entities/grenade"
-import { BASE_BACKEND_URL } from "@shared/config/constants"
+import { mockServerGrenades, testGrenadesServer } from "@entities/grenade"
 
 const baseTestFunction = async (canvas: Canvas) => {
     const loadingPlaceholders = await canvas.findAllByLabelText(
@@ -13,7 +11,13 @@ const baseTestFunction = async (canvas: Canvas) => {
 
     await expect(loadingPlaceholders).toHaveLength(5)
 
-    const cards = await canvas.findAllByLabelText("card")
+    const cards = await canvas.findAllByLabelText(
+        "card",
+        {},
+        {
+            timeout: 2000,
+        }
+    )
 
     await expect(cards[0]).toBeInTheDocument()
     await expect(cards[0]).toBeVisible()
@@ -25,16 +29,7 @@ const meta: Meta<typeof GrenadesList> = {
     parameters: {
         layout: "centered",
         msw: {
-            handlers: [
-                http.get(
-                    `${BASE_BACKEND_URL}/${grenadeApi.baseApiUrl}`,
-                    async () => {
-                        await delay()
-
-                        return HttpResponse.json(mockServerGrenades)
-                    }
-                ),
-            ],
+            handlers: [testGrenadesServer(1000)],
         },
     },
     play: async ({ canvas }) => {
@@ -52,16 +47,7 @@ export const LongLoading: Story = {
     parameters: {
         layout: "centered",
         msw: {
-            handlers: [
-                http.get(
-                    `${BASE_BACKEND_URL}/${grenadeApi.baseApiUrl}`,
-                    async () => {
-                        await delay(3000)
-
-                        return HttpResponse.json(mockServerGrenades)
-                    }
-                ),
-            ],
+            handlers: [testGrenadesServer(3000)],
         },
     },
     play: async ({ canvas }) => {
