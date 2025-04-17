@@ -1,7 +1,7 @@
 import { Meta, StoryObj } from "@storybook/react"
 import { expect } from "@storybook/test"
-import { ImageComponent } from "./image"
 import classes from "./image.stories.module.scss"
+import { ImageComponent } from "./image"
 
 const meta: Meta<typeof ImageComponent> = {
     component: ImageComponent,
