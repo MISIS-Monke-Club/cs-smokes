@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable import/no-default-export */
 import path from "path"
 
@@ -9,13 +8,13 @@ import { z } from "zod"
 import tailwindcss from "@tailwindcss/vite"
 
 const envSchema = z.object({
-    VITE_BACKEND_URL: z.string(),
+    VITE_BACKEND_URL: z.string().nonempty(),
 })
 
 // https://vitejs.dev/config/
 export default defineConfig(() => {
+    // Parsing env (docker env has first priority)
     dotenv.config({ override: false })
-    dotenv.parse("VITE_BACKEND_URL")
 
     // Validate env
     envSchema.parse(process.env)
