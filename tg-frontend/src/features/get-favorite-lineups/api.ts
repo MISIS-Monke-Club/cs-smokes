@@ -8,10 +8,10 @@ import {
 } from "@entities/grenade"
 import { typedQuery } from "@shared/lib/precooked-methods"
 import { instance } from "@shared/api"
-import { favoritesApi } from "@entities/favorites"
 
 export const api = {
-    ...favoritesApi,
+    baseKey: ["favorites"],
+    baseUrl: "favorites",
     getFavoriteLineupsByUserId: (userId: number | null) =>
         queryOptions<GrenadeModel[]>({
             queryKey: [...api.baseKey, "ById", userId],

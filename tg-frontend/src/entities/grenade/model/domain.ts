@@ -1,3 +1,4 @@
+import { ReactNode } from "react"
 import { z } from "zod"
 
 export const grenadeDTOschema = z.object({
@@ -34,7 +35,7 @@ export type GrenadeModel = {
         description: string
         price: number
     }
-    properties: {
+    propertyList: {
         key: string
         value: string
     }[]
@@ -47,3 +48,5 @@ export type GrenadeModel = {
     views: number
     previewImageLink: string | null
 }
+
+export type GrenadesListMaper = (elements: GrenadeModel[]) => ReactNode

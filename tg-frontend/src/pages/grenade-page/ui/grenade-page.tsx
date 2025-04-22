@@ -2,8 +2,8 @@ import { useMemo } from "react"
 import { useParams } from "react-router-dom"
 import { grenadePageParamsSchema } from "../domain"
 import classes from "./grenade-page.module.scss"
-import { GrenadeOverview } from "@widgets/grenade-overview/grenade-overview"
 import { GoBack } from "@features/go-back"
+import { GetGrenade } from "@features/get-grenade"
 // import { useParams } from "react-router-dom"
 
 export function GrenadePage() {
@@ -24,7 +24,7 @@ export function GrenadePage() {
     return (
         <>
             <GoBack className={classes.goBack} />
-            <GrenadeOverview grenadeId={grenadeId} />
+            <GetGrenade grenadeId={grenadeId} />
         </>
     )
 }

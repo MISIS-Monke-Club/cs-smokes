@@ -1,2 +1,2 @@
-export { AddToFavorite } from "./ui"
-export { grenadeWithFavoriteMaper } from "./lib/favorites-maper"
+export { AddToFavorite } from "./ui/add-to-favorites"
+export { maper as favoritesMaper } from "./lib/maper"

@@ -1,6 +1,6 @@
 import { Heart } from "lucide-react"
 import { toast } from "sonner"
-import { useAddToFavorites } from "./lib/add-to-favorites-hook"
+import { useAddToFavorites } from "../lib/add-to-favorites-hook"
 import { Button } from "@shared/ui/button"
 import { GrenadeModel } from "@entities/grenade"
 

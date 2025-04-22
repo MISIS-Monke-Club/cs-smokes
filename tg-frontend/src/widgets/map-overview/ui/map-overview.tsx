@@ -1,16 +1,17 @@
 import { useQuery } from "@tanstack/react-query"
 import classes from "./map-overview.module.scss"
-import { GrenadesList } from "@entities/grenade"
+import { GrenadesListComponent } from "@entities/grenade"
 import { mapApi, MapPageModel } from "@entities/map"
 import { PlaceholderBlock } from "@shared/ui/placeholder-block"
-import { grenadeWithFavoriteMaper } from "@features/add-to-favorite"
 import { ImageComponent } from "@shared/ui/image"
+import { ItemsList } from "@shared/ui/items-list"
+import { favoritesMaper } from "@features/add-to-favorite"
 
 export function MapOverview({ mapId }: { mapId: MapPageModel["mapId"] }) {
     const { data, isError, isLoading } = useQuery(mapApi.getMapById(mapId))
 
     if (isLoading) {
-        return <div>Loading...</div>
+        return <ItemsList isLoading loadingItemsLength={15} />
     }
 
     if (!data && !isError) {
@@ -40,9 +41,11 @@ export function MapOverview({ mapId }: { mapId: MapPageModel["mapId"] }) {
                 height='200'
                 isLoading={isLoading}
             />
-            <GrenadesList
-                grenades={data?.mapLineups}
-                mapFunction={grenadeWithFavoriteMaper}
+            <GrenadesListComponent
+                grenades={data.mapLineups}
+                mapFunction={favoritesMaper}
+                isLoading={isLoading}
+                isError={isError}
             />
         </>
     )

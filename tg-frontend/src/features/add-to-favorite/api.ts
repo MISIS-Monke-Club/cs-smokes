@@ -1,10 +1,10 @@
 import { MutationOptions } from "@tanstack/react-query"
-import { favoritesApi } from "@entities/favorites"
 import { grenadeApi, GrenadeModel } from "@entities/grenade"
 import { client, instance } from "@shared/api"
 
 export const api = {
-    ...favoritesApi,
+    baseKey: ["favorites"],
+    baseUrl: "favorites",
     addToFavoritesMutations: (): MutationOptions<
         unknown,
         unknown,
