@@ -1,6 +1,9 @@
 name: CI for frontend and web-frontend
 on: push
 
+env:
+  VITE_BACKEND_URL: http://localhost:3000/api
+
 jobs:
   build:
     name: run ci for tg-frontend
@@ -20,6 +23,9 @@ jobs:
       - name: Types
         run: npm run type-check
         working-directory: ./tg-frontend
+      - name: Ability to Deploy
+        run: npm run build
+        working-directory: ./tg-frontend
       - name: Linters
         run: npm run lint
         working-directory: ./tg-frontend
@@ -28,7 +34,4 @@ jobs:
         working-directory: ./tg-frontend
       - name: Tests
         run: npm run test
-        working-directory: ./tg-frontend
-      - name: Ability to Deploy
-        run: npm run build
         working-directory: ./tg-frontend
