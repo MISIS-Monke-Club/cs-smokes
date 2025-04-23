@@ -48,7 +48,7 @@ class UserListAPIView(APIView):
     @extend_schema(
         summary="Создать нового пользователя",
         description="Создает нового пользователя с указанными данными",
-        request=UserSerializer,
+        request=UserRegistrationSerializer,
         responses={
             201: UserSerializer,
             400: OpenApiTypes.OBJECT,
@@ -167,7 +167,11 @@ class UserDetailAPIView(APIView):
                 description="ID пользователя",
             )
         ],
-        responses={204: None, 401: OpenApiTypes.OBJECT, 404: OpenApiTypes.OBJECT},
+        responses={
+            204: OpenApiTypes.NONE,
+            401: OpenApiTypes.OBJECT,
+            404: OpenApiTypes.OBJECT,
+        },
     )
     def delete(self, request, id):
         user = self.get_object(id)

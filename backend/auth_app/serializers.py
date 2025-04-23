@@ -50,6 +50,27 @@ class UserSerializer(serializers.ModelSerializer):
         )
         read_only_fields = ("id",)
 
+    def validate(self, attrs):
+        user_id = self.instance.pk if self.instance else None
+
+        # Проверка email
+        if "email" in attrs:
+            email = attrs["email"]
+            if User.objects.exclude(pk=user_id).filter(email=email).exists():
+                raise serializers.ValidationError(
+                    {"email": "Этот email уже используется."}
+                )
+
+        # Проверка username
+        if "username" in attrs:
+            username = attrs["username"]
+            if User.objects.exclude(pk=user_id).filter(username=username).exists():
+                raise serializers.ValidationError(
+                    {"username": "Этот username уже используется."}
+                )
+
+        return attrs
+
 
 class LineupSerializer(serializers.ModelSerializer):
     map_id = MapSerializer()
