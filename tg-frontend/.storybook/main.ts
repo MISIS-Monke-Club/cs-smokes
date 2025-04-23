@@ -7,7 +7,7 @@ const config: StorybookConfig = {
         "@storybook/addon-onboarding",
         "@storybook/experimental-addon-test",
         "@chromatic-com/storybook",
-        "@storybook/addon-mdx-gfm"
+        "@storybook/addon-mdx-gfm",
     ],
     typescript: {
         check: true,
@@ -19,8 +19,8 @@ const config: StorybookConfig = {
         options: {},
     },
     docs: {
-        autodocs: true
+        autodocs: true,
     },
-    staticDirs: ["../public"]
+    staticDirs: ["../public"],
 }
 export default config
