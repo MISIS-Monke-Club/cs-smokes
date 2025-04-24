@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { mapsMaper } from "../../lib/maper"
-import { MapModel } from "../../model"
+import { MapModel } from "../../model/domain"
 import { mapApi } from "../../"
 import { PlaceholderBlock } from "@shared/ui/placeholder-block"
 import { ItemsList } from "@shared/ui/items-list"

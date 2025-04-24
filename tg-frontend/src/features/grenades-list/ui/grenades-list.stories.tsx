@@ -2,7 +2,7 @@ import { Meta, StoryObj } from "@storybook/react"
 import { Canvas } from "storybook/internal/types"
 import { expect } from "@storybook/test"
 import { GrenadesList } from "./grenades-list"
-import { mockServerGrenades, testGrenadesServer } from "@entities/grenade"
+import { grenadesDTOmock, testGrenadesServer } from "@entities/grenade"
 
 const baseTestFunction = async (canvas: Canvas) => {
     const loadingPlaceholders = await canvas.findAllByLabelText(
@@ -21,7 +21,7 @@ const baseTestFunction = async (canvas: Canvas) => {
 
     await expect(cards[0]).toBeInTheDocument()
     await expect(cards[0]).toBeVisible()
-    await expect(cards.length).toEqual(mockServerGrenades.length)
+    await expect(cards).toHaveLength(grenadesDTOmock.length)
 }
 
 const meta: Meta<typeof GrenadesList> = {
@@ -69,7 +69,7 @@ export const LongLoading: Story = {
             }
         )
 
-        await expect(loadedCards).toHaveLength(mockServerGrenades.length)
+        await expect(loadedCards).toHaveLength(grenadesDTOmock.length)
         await expect(loadedCards[0]).toBeInTheDocument()
         await expect(loadedCards[0]).toBeVisible()
     },

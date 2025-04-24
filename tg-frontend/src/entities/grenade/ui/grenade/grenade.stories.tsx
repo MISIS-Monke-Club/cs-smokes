@@ -1,9 +1,9 @@
 import { Meta, StoryObj } from "@storybook/react"
 import { expect, userEvent, within } from "@storybook/test"
 import { Canvas } from "@storybook/core/types"
+import { grenadeModelMock } from "../../model/__mocks"
 import { Grenade } from "./grenade"
 import classes from "./grenade.stories.module.scss"
-import { grenadeMock } from "./__mocks"
 import { dateFormatter } from "@shared/lib/date-formatter"
 
 // To remove boilerplate all mocks collected to this object
@@ -11,12 +11,14 @@ const baseTestFunction = async (canvas: Canvas) => {
     const card = canvas.getByLabelText("card")
 
     const testTime = dateFormatter({
-        isoDatetime: grenadeMock.createdAt,
+        isoDatetime: grenadeModelMock.createdAt,
         day: true,
         month: true,
     })
 
-    const title = within(card).getByText(`Grenade id:${grenadeMock.grenadeId}`)
+    const title = within(card).getByText(
+        `Grenade id:${grenadeModelMock.grenadeId}`
+    )
     const createdAt = within(card).getByText(`Created at:${testTime}`)
 
     // Basic tests
@@ -35,7 +37,7 @@ const baseTestFunction = async (canvas: Canvas) => {
 const meta: Meta<typeof Grenade> = {
     component: Grenade,
     args: {
-        grenade: grenadeMock,
+        grenade: grenadeModelMock,
     },
     parameters: {
         layout: "centered",

@@ -2,15 +2,15 @@ import { Meta, StoryObj } from "@storybook/react"
 import { Canvas } from "storybook/internal/types"
 import { expect } from "@storybook/test"
 import { grenadesMaper } from "../../lib/grenade-maper"
+import { grenadesModelMocks } from "../../model/__mocks"
 import { GrenadesListComponent } from "./grenades-list"
-import { grenadesMocks } from "./__mocks"
 
 const baseTestFunction = async (canvas: Canvas) => {
     const cards = await canvas.findAllByLabelText("card")
 
     await expect(cards[0]).toBeInTheDocument()
     await expect(cards[0]).toBeVisible()
-    await expect(cards.length).toEqual(grenadesMocks.length)
+    await expect(cards).toHaveLength(grenadesModelMocks.length)
 }
 
 const meta: Meta<typeof GrenadesListComponent> = {
@@ -20,7 +20,7 @@ const meta: Meta<typeof GrenadesListComponent> = {
     },
     args: {
         mapFunction: grenadesMaper,
-        grenades: grenadesMocks,
+        grenades: grenadesModelMocks,
     },
     play: async ({ canvas }) => {
         await baseTestFunction(canvas)

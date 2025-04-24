@@ -4,7 +4,7 @@ import { Canvas } from "storybook/internal/types"
 import { GetGrenade } from "./get-grenade"
 import {
     grenadeOverviewTestFunc,
-    mockGrenade,
+    grenadeDTOmock,
     testGrenadeServer,
 } from "@entities/grenade"
 
@@ -22,14 +22,14 @@ const meta: Meta<typeof GetGrenade> = {
         msw: {
             handlers: [
                 testGrenadeServer({
-                    grenadeId: mockGrenade.grenade_id,
+                    grenadeId: grenadeDTOmock.grenade_id,
                     delayInMs: 200,
                 }),
             ],
         },
     },
     args: {
-        grenadeId: mockGrenade.grenade_id,
+        grenadeId: grenadeDTOmock.grenade_id,
     },
     play: async ({ canvas }) => {
         await baseTestFunction(canvas)
@@ -51,7 +51,7 @@ export const LongRequest: Story = {
         msw: {
             handlers: [
                 testGrenadeServer({
-                    grenadeId: mockGrenade.grenade_id,
+                    grenadeId: grenadeDTOmock.grenade_id,
                     delayInMs: 4000,
                 }),
             ],

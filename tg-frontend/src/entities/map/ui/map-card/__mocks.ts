@@ -1,4 +1,4 @@
-import { MapModel } from "../../model"
+import { MapModel } from "../../model/domain"
 
 export const mapMock: MapModel = {
     imageLink:

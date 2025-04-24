@@ -22,6 +22,7 @@ export const grenadeDTOschema = z.object({
     title: z.string(),
     description: z.string().nullable(),
     is_approved: z.boolean(),
+    is_favorite: z.boolean(),
     views: z.number().positive(),
     preview_image_link: z.string().nullable(),
 })
@@ -45,6 +46,7 @@ export type GrenadeModel = {
     title: string
     description: string | null
     isApproved: boolean
+    isFavorite: boolean
     views: number
     previewImageLink: string | null
 }

@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom"
-import { MapModel } from "../../model"
+import { MapModel } from "../../model/domain"
 import classes from "./map-card.module.scss"
 import { Card, CardContent, CardFooter, CardHeader } from "@shared/ui/card"
 import { ImageComponent } from "@shared/ui/image"

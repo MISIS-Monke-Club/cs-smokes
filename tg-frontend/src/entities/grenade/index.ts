@@ -17,9 +17,10 @@ export {
     slice as grenadeSlice,
 } from "./model/slice"
 export { grenadesMaper } from "./lib/grenade-maper"
-export {
-    mockGrenade as mockServerGrenade,
-    mockGrenades as mockServerGrenades,
-} from "./api/__mocks"
 export { testGrenadeServer, testGrenadesServer } from "./api/__test-handlers"
-export { mockGrenade, mockGrenades } from "./api/__mocks"
+export {
+    grenadeModelMock,
+    grenadeDTOmock,
+    grenadesDTOmock,
+    grenadesModelMocks,
+} from "./model/__mocks"

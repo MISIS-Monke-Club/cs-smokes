@@ -24,6 +24,7 @@ export const fromGrenadeDTO = (
         title: dto.title,
         description: dto.description,
         isApproved: dto.is_approved,
+        isFavorite: dto.is_favorite,
         views: dto.views,
         previewImageLink: dto.preview_image_link,
     }
