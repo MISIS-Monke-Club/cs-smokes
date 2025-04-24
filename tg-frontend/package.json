@@ -14,10 +14,10 @@
         "prepare": "cd .. && husky ./tg-frontend/.husky || true",
         "storybook": "VITE_BACKEND_URL=http://localhost:3000/api storybook dev -p 6006",
         "test:prepare": "npx playwright install --with-deps",
-        "test": "npx vitest run",
+        "test": " VITE_BACKEND_URL=http://localhost:3000/apinpx vitest run",
         "type-check": "tsc --noEmit --pretty --skipLibCheck -p tsconfig.json",
-        "test-storybook": "npx test-storybook",
-        "build-storybook": "storybook build"
+        "test-storybook": "VITE_BACKEND_URL=http://localhost:3000/api npx test-storybook",
+        "build-storybook": "VITE_BACKEND_URL=http://localhost:3000/api storybook build"
     },
     "dependencies": {
         "@radix-ui/react-dialog": "^1.1.6",

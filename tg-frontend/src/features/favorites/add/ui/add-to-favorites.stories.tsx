@@ -1,7 +1,6 @@
 import { Meta, StoryObj } from "@storybook/react"
 import { expect, userEvent, waitFor } from "@storybook/test"
 import { delay, http, HttpResponse } from "msw"
-import { api } from "../api"
 import { AddToFavorite } from "./add-to-favorites"
 import { BASE_BACKEND_URL } from "@shared/config/constants"
 
@@ -11,7 +10,7 @@ const meta: Meta<typeof AddToFavorite> = {
         layout: "centered",
         msw: {
             handlers: [
-                http.post(`${BASE_BACKEND_URL}/${api.baseUrl}`, async () => {
+                http.post(`${BASE_BACKEND_URL}/favorites`, async () => {
                     await delay(2000)
 
                     return new HttpResponse(null, {

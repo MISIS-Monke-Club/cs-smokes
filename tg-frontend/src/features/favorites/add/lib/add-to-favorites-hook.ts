@@ -1,10 +1,10 @@
 import { useMutation } from "@tanstack/react-query"
-import { api } from "../api"
+import { addToFavoritesMutations } from "../api"
 import { GrenadeModel } from "@entities/grenade"
 
 export function useAddToFavorites() {
     const { mutateAsync, isError, isPending } = useMutation(
-        api.addToFavoritesMutations()
+        addToFavoritesMutations()
     )
 
     const mutate = (grenadeId: Pick<GrenadeModel, "grenadeId">) =>
