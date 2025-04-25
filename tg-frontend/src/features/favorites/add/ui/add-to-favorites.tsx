@@ -4,10 +4,13 @@ import { useAddToFavorites } from "../lib/add-to-favorites-hook"
 import { Button } from "@shared/ui/button"
 import { GrenadeModel } from "@entities/grenade"
 
-export function AddToFavorite({ grenadeId }: Pick<GrenadeModel, "grenadeId">) {
+type AddToFavoritesProps = Pick<GrenadeModel, "grenadeId"> &
+    React.ComponentProps<"button">
+
+export function AddToFavorite({ grenadeId, ...rest }: AddToFavoritesProps) {
     const { addToFavorites, isMutationPending } = useAddToFavorites()
 
-    function clickHandler(e: React.MouseEvent<HTMLButtonElement>) {
+    function addToFavoriteHandler(e: React.MouseEvent<HTMLButtonElement>) {
         e.stopPropagation()
 
         addToFavorites({ grenadeId }).catch((err) => {
@@ -18,11 +21,12 @@ export function AddToFavorite({ grenadeId }: Pick<GrenadeModel, "grenadeId">) {
 
     return (
         <Button
-            onClick={clickHandler}
+            onClick={addToFavoriteHandler}
             isLoading={isMutationPending}
             disabled={isMutationPending}
             variant='outline'
             size='icon'
+            {...rest}
         >
             <Heart />
         </Button>

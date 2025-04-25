@@ -95,7 +95,7 @@ export const grenadeDTOmock: z.infer<typeof grenadeDTOschema> = {
     title: "Mid Control Smoke",
     description: "Useful for taking mid safely.",
     is_approved: true,
-    is_favorite: false,
+    is_favorite: true,
     views: 230,
     preview_image_link: "https://example.com/image1.jpg",
 }
