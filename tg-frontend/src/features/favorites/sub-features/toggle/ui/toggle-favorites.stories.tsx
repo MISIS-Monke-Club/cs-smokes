@@ -1,11 +1,15 @@
 import { Meta, StoryObj } from "@storybook/react"
-import { expect, userEvent, waitFor } from "@storybook/test"
+import { expect, userEvent } from "@storybook/test"
 import { delay, http, HttpResponse } from "msw"
-import { AddToFavorite } from "./add-to-favorites"
+import { ToggleFavorites } from "./toggle-favorites"
 import { BASE_BACKEND_URL } from "@shared/config/constants"
+import { grenadeDTOmock, testGrenadeServer } from "@entities/grenade"
 
-const meta: Meta<typeof AddToFavorite> = {
-    component: AddToFavorite,
+const meta: Meta<typeof ToggleFavorites> = {
+    component: ToggleFavorites,
+    args: {
+        grenadeId: grenadeDTOmock.grenade_id,
+    },
     parameters: {
         layout: "centered",
         msw: {
@@ -16,6 +20,14 @@ const meta: Meta<typeof AddToFavorite> = {
                     return new HttpResponse(null, {
                         status: 201,
                     })
+                }),
+                testGrenadeServer({
+                    grenadeId: grenadeDTOmock.grenade_id,
+                    delayInMs: 2000,
+                    customData: {
+                        ...grenadeDTOmock,
+                        is_favorite: true,
+                    },
                 }),
             ],
         },
@@ -30,21 +42,13 @@ const meta: Meta<typeof AddToFavorite> = {
         // Fires request
         await userEvent.click(button)
 
-        await expect(button).toBeDisabled()
-        await expect(button).not.toBeEnabled()
-
-        // Enables again
-        await waitFor(
-            () => {
-                expect(button).not.toBeDisabled()
-            },
-            { timeout: 4000 }
-        )
+        await expect(button).not.toBeDisabled()
+        await expect(button).toBeEnabled()
     },
 }
 
 export default meta
 
-type Story = StoryObj<typeof AddToFavorite>
+type Story = StoryObj<typeof ToggleFavorites>
 
 export const Default: Story = {}

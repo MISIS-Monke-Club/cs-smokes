@@ -1,1 +1,0 @@
-export { DeleteFromFavorites } from "./ui"

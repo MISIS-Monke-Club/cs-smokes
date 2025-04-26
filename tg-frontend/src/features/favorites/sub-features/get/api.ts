@@ -17,7 +17,6 @@ export const api = {
             queryKey: [...api.baseKey, "ById", userId],
             queryFn: () => {
                 let req: Promise<AxiosResponse>
-
                 if (!userId) {
                     req = Promise.reject(
                         new Error(
