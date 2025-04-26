@@ -1,24 +1,17 @@
-import { MutationOptions } from "@tanstack/react-query"
-import { LoginTgModel, LoginTgPostModel } from "./model/domain"
+import { fromLoginTgDTO } from "./lib/dto-transformer"
 import { loginTgDTOschema } from "./model/domain"
-import { fromLoginTgDTO } from "./lib"
+import { instance } from "@shared/api"
 import { typedQuery } from "@shared/lib/precooked-methods"
-import { client, instance } from "@shared/api"
+
+export type LoginTgPostModel = {
+    init_data: string
+}
 
 export const api = {
-    baseKey: ["session"],
-    loginTg: (): MutationOptions<LoginTgModel, unknown, LoginTgPostModel> => ({
-        mutationKey: [...api.baseKey],
-        mutationFn: (data) =>
-            typedQuery({
-                request: instance.post("/login/tg", data),
-                dtoSchema: loginTgDTOschema,
-                fromDTO: fromLoginTgDTO,
-            }),
-        onSuccess: () => {
-            client.invalidateQueries({
-                queryKey: [...api.baseKey],
-            })
-        },
-    }),
+    loginTg: (data: LoginTgPostModel) =>
+        typedQuery({
+            request: instance.post("/login/tg/", data),
+            dtoSchema: loginTgDTOschema,
+            fromDTO: fromLoginTgDTO,
+        }),
 }

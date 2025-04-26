@@ -9,7 +9,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 import { QueryClientProvider } from "@tanstack/react-query"
 import { client } from "../src/shared/api"
 import "../src/app/tailwind.css"
-import { store } from "../src/app/store/store"
+import { store } from "../src/shared/model"
 import { Provider } from "react-redux"
 import "../src/app/index.scss"
 

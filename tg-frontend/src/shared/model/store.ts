@@ -1,8 +1,9 @@
-import { configureStore } from "@reduxjs/toolkit"
-import { reducer } from "./reducer"
+import { combineSlices, configureStore } from "@reduxjs/toolkit"
+
+export const rootReducer = combineSlices()
 
 export const store = configureStore({
-    reducer,
+    reducer: rootReducer,
     middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(),
 })
 

@@ -3,4 +3,5 @@
 
 interface ImportMetaEnv {
     readonly VITE_BACKEND_URL: string
+    readonly IN_TG_ENVIRONMENT: string
 }

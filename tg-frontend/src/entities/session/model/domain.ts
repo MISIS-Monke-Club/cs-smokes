@@ -2,13 +2,15 @@ import { z } from "zod"
 
 export type LoginTgModel = {
     userId: number
-    token: string
+    authToken: string
+    refreshToken: string
 }
 export const loginTgDTOschema = z.object({
-    User_ID: z.coerce.number(),
-    token: z.string(),
+    user_id: z.number(),
+    refresh_token: z.string().nonempty(),
+    auth_token: z.string().nonempty(),
 })
 
-export type LoginTgPostModel = {
-    init_data: string
-}
+export const loginTgErrorDTO = z.object({
+    error: z.string().nonempty(),
+})
