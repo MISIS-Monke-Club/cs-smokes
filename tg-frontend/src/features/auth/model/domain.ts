@@ -1,12 +1,13 @@
 import { z } from "zod"
+import { userDTOschema, UserModel } from "@entities/user"
 
 export type LoginTgModel = {
-    userId: number
+    user: UserModel
     authToken: string
     refreshToken: string
 }
 export const loginTgDTOschema = z.object({
-    user_id: z.number(),
+    user: userDTOschema,
     refresh_token: z.string().nonempty(),
     auth_token: z.string().nonempty(),
 })

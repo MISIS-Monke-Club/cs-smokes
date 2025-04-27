@@ -1,5 +1,5 @@
-import { fromLoginTgDTO } from "./lib/dto-transformer"
 import { loginTgDTOschema } from "./model/domain"
+import { fromLoginTgDTO } from "./lib/dto-transformer"
 import { instance } from "@shared/api"
 import { typedQuery } from "@shared/lib/precooked-methods"
 

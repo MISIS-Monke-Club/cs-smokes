@@ -1,9 +1,9 @@
 import { useMutation } from "@tanstack/react-query"
-import { sessionApi } from "@entities/session"
+import { api } from "../api"
 
 export function useLogin() {
     const { mutateAsync } = useMutation({
-        mutationFn: sessionApi.loginTg,
+        mutationFn: api.loginTg,
     })
 
     return mutateAsync

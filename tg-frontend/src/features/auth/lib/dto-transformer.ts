@@ -1,10 +1,11 @@
 import { z } from "zod"
 import { loginTgDTOschema, LoginTgModel } from "../model/domain"
+import { fromUserDTO } from "@entities/user"
 
 export const fromLoginTgDTO = (
     dto: z.infer<typeof loginTgDTOschema>
 ): LoginTgModel => ({
-    userId: dto.user_id,
+    user: fromUserDTO(dto.user),
     authToken: dto.auth_token,
-    refreshToken: dto.refresh_token,
+    refreshToken: dto.auth_token,
 })

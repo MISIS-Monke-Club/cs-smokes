@@ -8,12 +8,8 @@ import { Button } from "@shared/ui/button"
 import { Input } from "@shared/ui/input"
 import { TELEGRAM_INIT_DATA } from "@shared/config/constants"
 import { useLogin } from "@features/auth"
-import {
-    loginTgErrorDTO,
-    selectError,
-    setUserError,
-    setUserId,
-} from "@entities/session"
+import { selectError, setUserError, setUserId } from "@entities/session"
+import { loginTgErrorDTO } from "@features/auth"
 
 export function LoginPage() {
     const login = useLogin()
@@ -35,7 +31,7 @@ export function LoginPage() {
 
         login({ init_data: formValues.login })
             .then((data) => {
-                dispatch(setUserId(data.userId))
+                dispatch(setUserId(data.user.userId))
             })
             .catch((err) => {
                 if (err instanceof AxiosError) {
