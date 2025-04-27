@@ -25,6 +25,11 @@ export default defineConfig(() => {
             host: true,
             allowedHosts: ["*"],
         },
+        build: {
+            rollupOptions: {
+                external: (id) => id.includes("/__"),
+            },
+        },
         plugins: [react(), tailwindcss()],
         resolve: {
             alias: {
