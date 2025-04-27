@@ -279,6 +279,25 @@ paths:
       summary: Получить все раскидки
       security:
         - bearerAuth: []
+      parameters:
+        - in: query
+          name: is_approved
+          schema:
+            type: boolean
+          description: Фильтр по статусу одобрения (true/false)
+          example: true
+        - in: query
+          name: ordering
+          schema:
+            type: string
+            enum: [date_of_creation, -date_of_creation, by_alphabet, -by_alphabet]
+          description: |
+            Поле для сортировки. 
+            Префикс "-" для обратного порядка.
+            Доступные значения: 
+            - date_of_creation (по дате создания)
+            - by_alphabet (по алфавиту)
+          example: date_of_creation
       responses:
         "200":
           description: Список всех раскидок
@@ -471,7 +490,7 @@ paths:
       deprecated: true
       tags:
         - Lineups
-      summary: Удалить свойство у раскидки
+      summary: Удалить свойство у раскидки, ручка будет, но принято решение ее не использовать
       security:
         - bearerAuth: []
       parameters:
@@ -500,7 +519,7 @@ paths:
       deprecated: true
       tags:
         - Lineups
-      summary: Добавить свойство к раскидке
+      summary: Добавить свойство к раскидке, ручка будет, но принято решение ее не использовать
       security:
         - bearerAuth: []
       parameters:
@@ -576,6 +595,85 @@ paths:
           description: Неавторизованный доступ
         "404":
           description: Раскидка или класс гранат не найдены
+  /lineups/view_filters/:
+    get:
+      deprecated: true
+      tags:
+        - Lineups
+      summary: Получить список всех доступных фильтров
+      description: |
+        Возвращает фиксированный список всех доступных фильтров.
+        Фильтры неизменны и всегда возвращаются в ответе.
+      responses:
+        200:
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  filters:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          example: "is_approved"
+                          description: "Название фильтра"
+                        description:
+                          type: string
+                          example: "Фильтр по статусу одобрения (true/false)"
+                          description: "Описание фильтра"
+                example:
+                  filters:
+                    - name: "is_approved"
+                      description: "Фильтр по статусу одобрения (true/false)"
+        500:
+          description: Внутренняя ошибка сервера
+
+  /lineups/view_sorts/:
+    get:
+      deprecated: true
+      tags:
+        - Lineups
+      summary: Получить список всех доступных сортировок
+      description: |
+        Возвращает фиксированный список всех доступных сортировок.
+        Сортировки неизменны и всегда возвращаются в ответе.
+      responses:
+        200:
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sorts:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          example: "date_of_creation"
+                          description: "Название сортировки"
+                        description:
+                          type: string
+                          example: "Сортировка по дате создания (от старых к новым)"
+                          description: "Описание сортировки"
+                example:
+                  sorts:
+                    - name: "date_of_creation"
+                      description: "Сортировка по дате создания (от старых к новым)"
+                    - name: "-date_of_creation"
+                      description: "Сортировка по дате создания (от новых к старым)"
+                    - name: "by_alphabet"
+                      description: "Сортировка по алфавиту "
+                    - name: "-by_alphabet"
+                      description: "Сортировка по алфавиту"
+        500:
+          description: Внутренняя ошибка сервера
 
   /properties/:
     get:
