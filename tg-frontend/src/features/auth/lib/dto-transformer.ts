@@ -6,6 +6,6 @@ export const fromLoginTgDTO = (
     dto: z.infer<typeof loginTgDTOschema>
 ): LoginTgModel => ({
     user: fromUserDTO(dto.user),
-    authToken: dto.auth_token,
-    refreshToken: dto.auth_token,
+    authToken: dto.access_token,
+    refreshToken: dto.access_token,
 })

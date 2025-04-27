@@ -9,7 +9,7 @@ export type LoginTgModel = {
 export const loginTgDTOschema = z.object({
     user: userDTOschema,
     refresh_token: z.string().nonempty(),
-    auth_token: z.string().nonempty(),
+    access_token: z.string().nonempty(),
 })
 
 export const loginTgErrorDTO = z.object({
