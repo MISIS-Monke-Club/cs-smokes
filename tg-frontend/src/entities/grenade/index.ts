@@ -9,17 +9,11 @@ export { api as grenadeApi } from "./api/client"
 export type { GrenadeModel } from "./model/domain"
 export { grenadeDTOschema } from "./model/domain"
 export { fromGrenadeDTO, fromGrenadeArrayDTO } from "./lib/dto-transformer"
-export {
-    createList,
-    deleteListById,
-    selectGrenadeLists,
-    setMapFunctionForGrenadeList,
-    slice as grenadeSlice,
-} from "./model/slice"
 export { grenadesMaper } from "./lib/grenade-maper"
-export {
-    mockGrenade as mockServerGrenade,
-    mockGrenades as mockServerGrenades,
-} from "./api/__mocks"
 export { testGrenadeServer, testGrenadesServer } from "./api/__test-handlers"
-export { mockGrenade, mockGrenades } from "./api/__mocks"
+export {
+    grenadeModelMock,
+    grenadeDTOmock,
+    grenadesDTOmock,
+    grenadesModelMocks,
+} from "./model/__mocks"

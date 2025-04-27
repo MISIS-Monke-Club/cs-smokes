@@ -1,3 +1,8 @@
-export { api as sessionApi } from "./api"
-export type { LoginTgModel, LoginTgPostModel } from "./model/domain"
-export { userSlice, selectUserId, setUserId, userReducer } from "./model/slice"
+export {
+    slice as userSlice,
+    selectUserId,
+    setUserId,
+    selectError,
+    deleteUser,
+    setUserError,
+} from "./model/slice"

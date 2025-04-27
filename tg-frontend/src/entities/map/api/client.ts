@@ -6,7 +6,7 @@ import {
     MapModel,
     mapPageDTOschema,
     MapPageModel,
-} from "../model"
+} from "../model/domain"
 import { typedQuery } from "@shared/lib/precooked-methods"
 import { instance } from "@shared/api"
 

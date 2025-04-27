@@ -3,10 +3,10 @@ import { z } from "zod"
 export const userDTOschema = z.object({
     user_id: z.number().int(),
     username: z.string(),
-    avatar_url: z.string().url().nullable(),
-    steam_link: z.string().url().nullable(),
+    avatar_url: z.string().nullable(),
+    steam_link: z.string().nullable(),
     tg_id: z.number().int().nullable(),
-    email: z.string().email().nullable(),
+    email: z.string().nullable(),
     first_name: z.string().nullable(),
     last_name: z.string().nullable(),
     is_banned: z.boolean(),

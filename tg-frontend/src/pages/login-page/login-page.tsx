@@ -1,14 +1,20 @@
 import { FormEvent } from "react"
 import { z } from "zod"
-import { useMutation } from "@tanstack/react-query"
+import { useDispatch, useSelector } from "react-redux"
+import { AxiosError } from "axios"
 import { toast } from "sonner"
 import classes from "./login-page.module.scss"
 import { Button } from "@shared/ui/button"
 import { Input } from "@shared/ui/input"
-import { sessionApi } from "@entities/session"
+import { TELEGRAM_INIT_DATA } from "@shared/config/constants"
+import { useLogin } from "@features/auth"
+import { selectError, setUserError, setUserId } from "@entities/session"
+import { loginTgErrorDTO } from "@features/auth"
 
 export function LoginPage() {
-    const { mutateAsync } = useMutation(sessionApi.loginTg())
+    const login = useLogin()
+    const loginError = useSelector(selectError)
+    const dispatch = useDispatch()
 
     function handleSubmit(e: FormEvent<HTMLFormElement>) {
         // Prevents page reload
@@ -23,21 +29,43 @@ export function LoginPage() {
             Object.fromEntries(formData.entries())
         )
 
-        mutateAsync({ init_data: formValues.login })
-            .then(() => {
-                toast.success("Данные успешно отправлены на /login/tg")
+        login({ init_data: formValues.login })
+            .then((data) => {
+                dispatch(setUserId(data.user.userId))
             })
             .catch((err) => {
-                console.error(err)
-                toast.error("Произошла ошибка отправки данных")
+                if (err instanceof AxiosError) {
+                    const {
+                        success: parseSuccess,
+                        data: parsedData,
+                        error: parseError,
+                    } = loginTgErrorDTO.safeParse(err.response?.data)
+
+                    if (parseSuccess) {
+                        console.error(err.message)
+                        toast.error("Something went wrong in login")
+
+                        // Displaying this message across all the app
+                        dispatch(setUserError({ message: parsedData.error }))
+                    } else {
+                        console.error(
+                            `Received unknown error content from server: ${parseError}`
+                        )
+                    }
+                } else {
+                    console.error(`Unknown error: ${err}`)
+                }
             })
     }
 
     return (
         <div className={classes.loginPage}>
             <h2 className={classes.title}>Login page</h2>
+            {loginError && (
+                <div className='text-red-500 font-bold'>{loginError}</div>
+            )}
             <form onSubmit={handleSubmit}>
-                <Input name='login' defaultValue={Telegram.WebApp.initData} />
+                <Input name='login' defaultValue={TELEGRAM_INIT_DATA} />
                 <Button type='submit'>send initData</Button>
             </form>
         </div>

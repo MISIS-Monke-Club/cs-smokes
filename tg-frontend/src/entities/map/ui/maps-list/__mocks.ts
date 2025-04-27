@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { mapDTOschema } from "../../model"
+import { mapDTOschema } from "../../model/domain"
 
 export const testData: z.infer<ReturnType<typeof mapDTOschema.array>> = [
     {

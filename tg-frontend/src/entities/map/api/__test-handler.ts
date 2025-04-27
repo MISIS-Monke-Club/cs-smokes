@@ -1,6 +1,6 @@
 import { delay, http, HttpResponse } from "msw"
+import { mockMapPage, mockMaps } from "../model/__mocks"
 import { api } from "./client"
-import { mockMapPage, mockMaps } from "./__mocks"
 import { BASE_BACKEND_URL } from "@shared/config/constants"
 
 export const testMapPageServer = ({

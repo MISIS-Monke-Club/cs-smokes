@@ -10,12 +10,19 @@ import { GuestProfilePage } from "@pages/guest-profile-page"
 import { EditProfilePage } from "@pages/edit-profile-page"
 import { OwnProfilePage } from "@pages/own-profile-page"
 import { FavoritesPage } from "@pages/favorites-page"
+import { loginThunk } from "@features/auth"
+import { store } from "@shared/model"
 
 export const router = createBrowserRouter(
     [
         {
             path: "/",
             element: <Layout />,
+            loader: () => {
+                store.dispatch(loginThunk())
+
+                return null
+            },
             errorElement: (
                 <div>Oups... Cant find that page or something is broken</div>
             ),
