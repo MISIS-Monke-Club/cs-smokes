@@ -2,7 +2,7 @@ import { Meta, StoryObj } from "@storybook/react"
 import { Canvas } from "storybook/internal/types"
 import { expect } from "@storybook/test"
 import { GrenadesList } from "./grenades-list"
-import { grenadesDTOmock, testGrenadesServer } from "@entities/grenade"
+import { grenadesDTOmock, testGrenadesServer } from "@entities/grenade/dev"
 
 const baseTestFunction = async (canvas: Canvas) => {
     const loadingPlaceholders = await canvas.findAllByLabelText(

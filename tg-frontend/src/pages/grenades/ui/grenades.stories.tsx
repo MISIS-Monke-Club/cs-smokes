@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from "@storybook/react"
 import { Grenades } from "./grenades"
-import { testGrenadesServer } from "@entities/grenade"
+import { testGrenadesServer } from "@entities/grenade/dev"
 
 const meta: Meta<typeof Grenades> = {
     component: Grenades,

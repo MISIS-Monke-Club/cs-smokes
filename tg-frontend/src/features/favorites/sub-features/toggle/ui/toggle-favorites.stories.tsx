@@ -3,7 +3,7 @@ import { expect, userEvent } from "@storybook/test"
 import { delay, http, HttpResponse } from "msw"
 import { ToggleFavorites } from "./toggle-favorites"
 import { BASE_BACKEND_URL } from "@shared/config/constants"
-import { grenadeDTOmock, testGrenadeServer } from "@entities/grenade"
+import { grenadeDTOmock, testGrenadeServer } from "@entities/grenade/dev"
 
 const meta: Meta<typeof ToggleFavorites> = {
     component: ToggleFavorites,

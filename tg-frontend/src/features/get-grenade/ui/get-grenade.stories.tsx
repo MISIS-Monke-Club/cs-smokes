@@ -6,7 +6,7 @@ import {
     grenadeOverviewTestFunc,
     grenadeDTOmock,
     testGrenadeServer,
-} from "@entities/grenade"
+} from "@entities/grenade/dev"
 
 const baseTestFunction = async (canvas: Canvas) => {
     const loader = canvas.getByTestId("grenade-overview-loader")

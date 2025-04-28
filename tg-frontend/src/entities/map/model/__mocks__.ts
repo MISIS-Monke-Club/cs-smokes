@@ -5,7 +5,7 @@ import { mapDTOschema, MapModel, mapPageDTOschema } from "./domain"
  * @warning Test feature to cross import model, not allowed in FSD
  */
 // eslint-disable-next-line @conarti/feature-sliced/layers-slices
-import { grenadesDTOmock } from "@entities/grenade"
+import { grenadesDTOmock } from "@entities/grenade/dev"
 
 export const mockMaps: z.infer<ReturnType<typeof mapDTOschema.array>> = [
     {

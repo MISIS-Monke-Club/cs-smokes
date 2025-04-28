@@ -1,7 +1,7 @@
 import { Meta, StoryObj } from "@storybook/react"
 import { expect } from "@storybook/test"
 import { MapOverview } from "./map-overview"
-import { mockMapPage, testMapPageServer } from "@entities/map"
+import { mockMapPage, testMapPageServer } from "@entities/map/dev"
 
 const meta: Meta<typeof MapOverview> = {
     component: MapOverview,
