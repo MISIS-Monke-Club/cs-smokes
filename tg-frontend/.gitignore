@@ -9,6 +9,9 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Mock REST API
+public/mockServiceWorker.js
+
 # Local project data
 node_modules
 dist
