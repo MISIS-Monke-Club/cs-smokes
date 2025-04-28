@@ -1,5 +1,5 @@
 export type { UserModel } from "./model/domain"
-export { defaultUser } from "./model/__mocks"
+export { defaultUser } from "./model/__mocks__"
 export { userDTOschema } from "./model/domain"
 
 export { fromUserDTO } from "./lib/from-dto"

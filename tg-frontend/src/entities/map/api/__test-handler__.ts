@@ -1,5 +1,5 @@
 import { delay, http, HttpResponse } from "msw"
-import { mockMapPage, mockMaps } from "../model/__mocks"
+import { mockMapPage, mockMaps } from "../model/__mocks__"
 import { api } from "./client"
 import { BASE_BACKEND_URL } from "@shared/config/constants"
 

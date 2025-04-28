@@ -1,6 +1,6 @@
 import { delay, http, HttpResponse } from "msw"
 import { z } from "zod"
-import { grenadeDTOmock, grenadesDTOmock } from "../model/__mocks"
+import { grenadeDTOmock, grenadesDTOmock } from "../model/__mocks__"
 import { grenadeDTOschema } from "../model/domain"
 import { api } from "./client"
 import { BASE_BACKEND_URL } from "@shared/config/constants"

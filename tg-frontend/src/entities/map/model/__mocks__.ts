@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { mapDTOschema, mapPageDTOschema } from "../model/domain"
+import { mapDTOschema, MapModel, mapPageDTOschema } from "./domain"
 
 /**
  * @warning Test feature to cross import model, not allowed in FSD
@@ -47,4 +47,11 @@ export const mockMapPage: z.infer<typeof mapPageDTOschema> = {
     map_id: 1,
     name: "Dust 2",
     map_lineups: [...grenadesDTOmock],
+}
+
+export const mockMapModel: MapModel = {
+    mapId: 1,
+    name: "dust 2",
+    imageLink: "https://example.com",
+    link: "https://example.com",
 }

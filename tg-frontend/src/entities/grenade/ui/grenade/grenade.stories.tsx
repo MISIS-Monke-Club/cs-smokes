@@ -1,7 +1,7 @@
 import { Meta, StoryObj } from "@storybook/react"
 import { expect, userEvent, within } from "@storybook/test"
 import { Canvas } from "@storybook/core/types"
-import { grenadeModelMock } from "../../model/__mocks"
+import { grenadeModelMock } from "../../model/__mocks__"
 import { Grenade } from "./grenade"
 import classes from "./grenade.stories.module.scss"
 import { dateFormatter } from "@shared/lib/date-formatter"

@@ -1,6 +1,6 @@
 import { expect } from "@storybook/test"
 import { Canvas } from "storybook/internal/types"
-import { grenadeModelMock } from "../../model/__mocks"
+import { grenadeModelMock } from "../../model/__mocks__"
 
 export const baseTestFunction = async (canvas: Canvas) => {
     const title = canvas.getByRole("heading", { level: 2 })

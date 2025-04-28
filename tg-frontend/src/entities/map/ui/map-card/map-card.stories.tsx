@@ -1,7 +1,7 @@
 import { Meta, StoryObj } from "@storybook/react"
 import { expect } from "@storybook/test"
+import { mockMapModel } from "../../model/__mocks__"
 import { MapCard } from "./map-card"
-import { mapMock } from "./__mocks"
 
 const meta: Meta<typeof MapCard> = {
     component: MapCard,
@@ -9,7 +9,7 @@ const meta: Meta<typeof MapCard> = {
         layout: "centered",
     },
     args: {
-        map: mapMock,
+        map: mockMapModel,
     },
     play: async ({ canvas }) => {
         // Basic tests for all card
@@ -19,7 +19,7 @@ const meta: Meta<typeof MapCard> = {
         await expect(mapCard).toBeVisible()
 
         // Title of the map
-        const title = canvas.getByText(mapMock.name)
+        const title = canvas.getByText(mockMapModel.name)
 
         await expect(title).toBeVisible()
         await expect(title).toBeInTheDocument()
@@ -29,7 +29,7 @@ const meta: Meta<typeof MapCard> = {
 
         await expect(image).toBeInTheDocument()
         await expect(image).toBeVisible()
-        await expect(image).toHaveAttribute("src", mapMock.imageLink)
+        await expect(image).toHaveAttribute("src", mockMapModel.imageLink)
     },
 }
 
