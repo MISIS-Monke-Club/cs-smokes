@@ -34,7 +34,7 @@ paths:
     post:
       tags:
         - AUTH
-      summary: Логин(Рабочая)
+      summary: Логин
       requestBody:
         required: true
         content:
@@ -54,11 +54,11 @@ paths:
               schema:
                 type: object
                 properties:
-                  user_id:
-                    type: integer
-                  auth_token:
+                  user:
+                    $ref: "#/components/schemas/User"
+                  access:
                     type: string
-                  refresh_token:
+                  refresh:
                     type: string
         "401":
           description: Неправильный логин или пароль
@@ -67,7 +67,7 @@ paths:
     post:
       tags:
         - AUTH
-      summary: Логин через тг(Рабочая)
+      summary: Логин через тг
       requestBody:
         required: true
         content:
@@ -85,9 +85,9 @@ paths:
               schema:
                 type: object
                 properties:
-                  user_id:
-                    type: integer
-                  auth_token:
+                  user:
+                    $ref: "#/components/schemas/User"
+                  access_token:
                     type: string
                   refresh_token:
                     type: string
@@ -97,7 +97,7 @@ paths:
     post:
       tags:
         - AUTH
-      summary: Регистрация(Рабочая)
+      summary: Регистрация
       requestBody:
         required: true
         content:
@@ -121,9 +121,29 @@ paths:
     get:
       tags:
         - Maps
-      summary: Получить все карты(Рабочая)
+      summary: Получить все карты
       security:
         - bearerAuth: []
+      parameters:
+      - in: query
+        name: esports_pool
+        schema:
+          type: boolean
+        description: Фильтр по киберспортивному пулу (актуальные карты Faceit и Premier режима)
+        example: true
+      - in: query
+        name: ordering
+        schema:
+          type: string
+          enum: [popularity, -popularity, by_alphabet, -by_alphabet, lineups_count, -lineups_count]
+        description: |
+          Поле для сортировки. 
+          Префикс "-" для обратного порядка.
+          Доступные значения:
+          - popularity (по популярности)
+          - name (по алфавиту)
+          - lineups_count (по количеству раскидок)
+        example: popularity
       responses:
         "200":
           description: Список всех карт
@@ -145,7 +165,7 @@ paths:
     post:
       tags:
         - Maps
-      summary: Создать новую карту(Рабочая)
+      summary: Создать новую карту
       security:
         - bearerAuth: []
       requestBody:
@@ -173,7 +193,7 @@ paths:
     get:
       tags:
         - Maps
-      summary: Получить карту по ID(Рабочая)
+      summary: Получить карту по ID
       security:
         - bearerAuth: []
       parameters:
@@ -192,7 +212,7 @@ paths:
     put:
       tags:
         - Maps
-      summary: Полностью обновить карту по ID(Рабочая)
+      summary: Полностью обновить карту по ID
       security:
         - bearerAuth: []
       parameters:
@@ -224,7 +244,7 @@ paths:
     patch:
       tags:
         - Maps
-      summary: Частично обновить карту по ID(Рабочая)
+      summary: Частично обновить карту по ID
       security:
         - bearerAuth: []
       parameters:
@@ -256,7 +276,7 @@ paths:
     delete:
       tags:
         - Maps
-      summary: Удалить карту по ID(Рабочая)
+      summary: Удалить карту по ID
       security:
         - bearerAuth: []
       parameters:
@@ -1534,6 +1554,8 @@ components:
         preview_image_link:
           type: string
           nullable: true
+        is_favorite:
+          type: boolean
         property_list:
           type: array
           items:
