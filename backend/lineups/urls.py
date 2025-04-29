@@ -6,6 +6,8 @@ from .lineups_views import (
     LineupViews as lv,
     LineupRUDViews as lvrud,
     ChangeGrenadeClassView as cgcV,
+    LineupViewSorts,
+    LineupViewFilters,
 )
 from .property_to_lineup_views import (
     PropertyListView,
@@ -53,5 +55,15 @@ urlpatterns = [
         r"lineups/(?P<pk>\d+)/change-grenade-class/?$",
         cgcV.as_view(),
         name="change grenade-class",
+    ),
+    re_path(
+        r"lineups/view_filters/?$",
+        LineupViewFilters.as_view(),
+        name="All filters",
+    ),
+    re_path(
+        r"lineups/view_sorts/?$",
+        LineupViewSorts.as_view(),
+        name="All sorts",
     ),
 ]

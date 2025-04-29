@@ -1,4 +1,9 @@
-from drf_spectacular.utils import extend_schema, OpenApiExample, OpenApiTypes
+from drf_spectacular.utils import (
+    extend_schema,
+    OpenApiExample,
+    OpenApiTypes,
+    OpenApiParameter,
+)
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -14,11 +19,45 @@ class LineupViews(APIView):
 
     @extend_schema(
         summary="Получить список всех гранат (Lineup)",
+        parameters=[
+            OpenApiParameter(
+                name="is_approved",
+                type=OpenApiTypes.BOOL,
+                location=OpenApiParameter.QUERY,
+                description="Фильтр по статусу одобрения (true/false)",
+            ),
+            OpenApiParameter(
+                name="ordering",
+                type=OpenApiTypes.STR,
+                location=OpenApiParameter.QUERY,
+                description='Поле для сортировки. "date_of_creation" или "by_alphabet", "-" для обратного порядка',
+            ),
+        ],
         responses={200: LineupSerializer(many=True)},
         tags=["Lineup"],
     )
     def get(self, request):
         lineups = Lineup.objects.all()
+        is_approved = request.query_params.get("is_approved")
+        if is_approved is not None:
+            if is_approved.lower() == "true":
+                lineups = lineups.filter(is_approved=True)
+            elif is_approved.lower() == "false":
+                lineups = lineups.filter(is_approved=False)
+
+        ordering = request.query_params.get("ordering")
+        if ordering:
+            if ordering.lstrip("-") == "date_of_creation":
+                ordering_field = "created_at"
+            elif ordering.lstrip("-") == "by_alphabet":
+                ordering_field = "title"
+            else:
+                ordering_field = None
+
+            if ordering_field:
+                if ordering.startswith("-"):
+                    ordering_field = "-" + ordering_field
+                lineups = lineups.order_by(ordering_field)
         serializer = LineupSerializer(lineups, many=True, context={"request": request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -161,3 +200,38 @@ class ChangeGrenadeClassView(APIView):
         lineup.grenade_class_id = grenade_class
         lineup.save()
         return Response(status=status.HTTP_200_OK)
+
+
+class LineupViewFilters(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(
+        summary="Получить доступные фильтры для Lineup",
+        responses={200: OpenApiTypes.OBJECT},
+        tags=["Lineup"],
+    )
+    def get(self, request):
+        filters = {
+            "is_approved": ["true", "false"],
+        }
+        return Response(filters, status=status.HTTP_200_OK)
+
+
+class LineupViewSorts(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(
+        summary="Получить доступные сортировки для Lineup",
+        responses={200: OpenApiTypes.OBJECT},
+        tags=["Lineup"],
+    )
+    def get(self, request):
+        sorts = {
+            "ordering": [
+                "date_of_creation",
+                "-date_of_creation",
+                "by_alphabet",
+                "-by_alphabet",
+            ]
+        }
+        return Response(sorts, status=status.HTTP_200_OK)
