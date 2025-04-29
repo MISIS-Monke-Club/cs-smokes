@@ -1,7 +1,8 @@
 import { Meta, StoryObj } from "@storybook/react"
 import { expect } from "@storybook/test"
 import { MapOverview } from "./map-overview"
-import { mockMapPage, testMapPageServer } from "@entities/map"
+import { mockMapPage, testMapPageServer } from "@entities/map/dev"
+import { testGrenadeServer } from "@entities/grenade/dev"
 
 const meta: Meta<typeof MapOverview> = {
     component: MapOverview,
@@ -9,9 +10,19 @@ const meta: Meta<typeof MapOverview> = {
         reactQueryDevTools: true,
         msw: {
             handlers: [
+                // Map
                 testMapPageServer({
                     mapId: mockMapPage.map_id,
                     delayInMs: 300,
+                }),
+                // Grenades
+                testGrenadeServer({
+                    grenadeId: mockMapPage.map_lineups[0].grenade_id,
+                    delayInMs: 200,
+                }),
+                testGrenadeServer({
+                    grenadeId: mockMapPage.map_lineups[1].grenade_id,
+                    delayInMs: 250,
                 }),
             ],
         },

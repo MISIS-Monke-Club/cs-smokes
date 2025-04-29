@@ -1,5 +1,5 @@
 import { Meta, StoryObj } from "@storybook/react"
-import { testMapsServer } from "../../api/__test-handler"
+import { testMapsServer } from "../../api/__test-handler__"
 import { MapsList } from "./maps-list"
 
 const meta: Meta<typeof MapsList> = {

@@ -1,8 +1,8 @@
 import { Meta, StoryObj } from "@storybook/react"
 import { expect } from "@storybook/test"
-import { grenadeModelMock } from "../../model/__mocks"
+import { grenadeModelMock } from "../../model/__mocks__"
 import { GrenadeOverview } from "./grenade-overview"
-import { baseTestFunction, oppositeTestFunction } from "./__tests"
+import { baseTestFunction, oppositeTestFunction } from "./__tests__"
 import { Button } from "@shared/ui/button"
 
 const meta: Meta<typeof GrenadeOverview> = {

@@ -24,15 +24,21 @@ jobs:
       - name: Types
         run: npm run type-check
         working-directory: ./tg-frontend
-      - name: Ability to Deploy
-        run: npm run build
-        working-directory: ./tg-frontend
       - name: Linters
         run: npm run lint
         working-directory: ./tg-frontend
       - name: Prepare for tests
-        run: npm run test:prepare
+        run: npm run test:prepare-ci
         working-directory: ./tg-frontend
       - name: Tests
         run: npm run test
+        working-directory: ./tg-frontend
+      - name: Reinstall production dependencies only
+        run: |
+          rm -rf node_modules
+          npm install --omit=dev
+        working-directory: ./tg-frontend
+
+      - name: Ability to Deploy (build with prod deps only)
+        run: npm run build
         working-directory: ./tg-frontend

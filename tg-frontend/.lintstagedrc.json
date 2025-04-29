@@ -2,6 +2,7 @@
     "**/src/**/*.{js,jsx,ts,tsx,html}": ["prettier --write", "eslint --fix"],
     "**/src/**/*.{ts,tsx}": [
         "bash -c 'npm run type-check'",
+        "bash -c 'npm run test:prepare'",
         "bash -c 'npm run test'"
     ],
     "**/src/**/*.{scss, css}": ["stylelint --fix", "prettier --write"]

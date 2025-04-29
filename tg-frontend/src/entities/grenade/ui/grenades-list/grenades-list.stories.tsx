@@ -2,7 +2,7 @@ import { Meta, StoryObj } from "@storybook/react"
 import { Canvas } from "storybook/internal/types"
 import { expect } from "@storybook/test"
 import { grenadesMaper } from "../../lib/grenade-maper"
-import { grenadesModelMocks } from "../../model/__mocks"
+import { grenadesModelMocks } from "../../model/__mocks__"
 import { GrenadesListComponent } from "./grenades-list"
 
 const baseTestFunction = async (canvas: Canvas) => {

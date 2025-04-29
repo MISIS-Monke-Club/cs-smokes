@@ -23,12 +23,7 @@ export default defineConfig(() => {
     return {
         server: {
             host: true,
-            allowedHosts: ["*"],
-        },
-        build: {
-            rollupOptions: {
-                external: (id) => id.includes("/__"),
-            },
+            allowedHosts: ["cs-lineups"],
         },
         plugins: [react(), tailwindcss()],
         resolve: {
