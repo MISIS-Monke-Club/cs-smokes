@@ -68,7 +68,7 @@ const preview: Preview = {
             </Provider>
         ),
     ],
-    tags: ["autodocs"],
+    tags: ["autodocs", "autodocs"],
 }
 
 export default preview
