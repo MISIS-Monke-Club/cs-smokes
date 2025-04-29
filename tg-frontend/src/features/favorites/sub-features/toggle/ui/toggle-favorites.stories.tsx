@@ -1,12 +1,18 @@
 import { Meta, StoryObj } from "@storybook/react"
-import { delay, http, HttpResponse } from "msw"
 import { ToggleFavorites } from "./toggle-favorites"
 import {
     baseTestFunction,
     testAddInFavorites,
+    testErrorAddInFavorites,
+    testErrorRemoveFromFavorites,
     testRemoveFromFavorites,
-} from "./__tests__"
-import { BASE_BACKEND_URL } from "@shared/config/constants"
+} from "./__tests__/__tests__"
+import {
+    testFavoritesDeleteErrorServer,
+    testFavoritesDeleteServer,
+    testFavoritesErrorPostServer,
+    testFavoritesPostServer,
+} from "./__tests__/__test-servers__"
 import {
     grenadeDTOmock,
     grenadesDTOmock,
@@ -29,41 +35,11 @@ const meta: Meta<typeof ToggleFavorites> = {
     },
     parameters: {
         layout: "centered",
-        reactQueryDevTools: true,
         msw: {
             handlers: [
-                http.post(`${BASE_BACKEND_URL}/favorites`, async () => {
-                    await delay(2000)
-
-                    return new HttpResponse(null, {
-                        status: 201,
-                    })
-                }),
-                http.delete(
-                    `${BASE_BACKEND_URL}/favorites/${grenadesDTOmock[1].grenade_id}`,
-                    async () => {
-                        await delay(2000)
-
-                        return new HttpResponse(null, {
-                            status: 201,
-                        })
-                    }
-                ),
                 testGrenadeServer({
                     grenadeId: grenadeDTOmock.grenade_id,
-                    delayInMs: 200,
-                    customData: {
-                        ...grenadeDTOmock,
-                        is_favorite: false,
-                    },
-                }),
-                testGrenadeServer({
-                    grenadeId: grenadesDTOmock[1].grenade_id,
-                    delayInMs: 200,
-                    customData: {
-                        ...grenadeDTOmock,
-                        is_favorite: true,
-                    },
+                    delayInMs: 0,
                 }),
             ],
         },
@@ -83,6 +59,18 @@ export const AddToFavorites: Story = {
     args: {
         grenadeId: grenadeDTOmock.grenade_id,
     },
+    parameters: {
+        msw: {
+            handlers: [
+                testGrenadeServer({
+                    grenadeId: grenadeDTOmock.grenade_id,
+                    delayInMs: 100,
+                    customData: { ...grenadeDTOmock, is_favorite: false },
+                }),
+                testFavoritesPostServer(),
+            ],
+        },
+    },
     beforeEach: async () => {
         await client.prefetchQuery(
             grenadeApi.getGrenadesByIdOptions({
@@ -95,9 +83,51 @@ export const AddToFavorites: Story = {
     },
 }
 
+export const AddToFavoritesError: Story = {
+    args: {
+        grenadeId: grenadeDTOmock.grenade_id,
+    },
+    parameters: {
+        msw: {
+            handlers: [
+                testGrenadeServer({
+                    grenadeId: grenadeDTOmock.grenade_id,
+                    delayInMs: 100,
+                    customData: { ...grenadeDTOmock, is_favorite: false },
+                }),
+                testFavoritesErrorPostServer(),
+            ],
+        },
+    },
+    beforeEach: async () => {
+        await client.prefetchQuery(
+            grenadeApi.getGrenadesByIdOptions({
+                grenadeId: grenadeDTOmock.grenade_id,
+            })
+        )
+    },
+    play: async ({ canvas }) => {
+        await testErrorAddInFavorites(canvas)
+    },
+}
+
 export const RemoveFromFavorites: Story = {
     args: {
         grenadeId: grenadesDTOmock[1].grenade_id,
+    },
+    parameters: {
+        msw: {
+            handlers: [
+                testGrenadeServer({
+                    grenadeId: grenadesDTOmock[1].grenade_id,
+                    delayInMs: 100,
+                    customData: { ...grenadesDTOmock[1], is_favorite: true },
+                }),
+                testFavoritesDeleteServer({
+                    grenadeId: grenadesDTOmock[1].grenade_id,
+                }),
+            ],
+        },
     },
     beforeEach: async () => {
         await client.prefetchQuery(
@@ -108,5 +138,34 @@ export const RemoveFromFavorites: Story = {
     },
     play: async ({ canvas }) => {
         await testRemoveFromFavorites(canvas)
+    },
+}
+export const RemoveFromFavoritesError: Story = {
+    args: {
+        grenadeId: grenadesDTOmock[1].grenade_id,
+    },
+    parameters: {
+        msw: {
+            handlers: [
+                testGrenadeServer({
+                    grenadeId: grenadesDTOmock[1].grenade_id,
+                    delayInMs: 100,
+                    customData: { ...grenadesDTOmock[1], is_favorite: true },
+                }),
+                testFavoritesDeleteErrorServer({
+                    grenadeId: grenadesDTOmock[1].grenade_id,
+                }),
+            ],
+        },
+    },
+    beforeEach: async () => {
+        await client.prefetchQuery(
+            grenadeApi.getGrenadesByIdOptions({
+                grenadeId: grenadesDTOmock[1].grenade_id,
+            })
+        )
+    },
+    play: async ({ canvas }) => {
+        await testErrorRemoveFromFavorites(canvas)
     },
 }
