@@ -19,7 +19,7 @@ class LineupViews(APIView):
     )
     def get(self, request):
         lineups = Lineup.objects.all()
-        serializer = LineupSerializer(lineups, many=True)
+        serializer = LineupSerializer(lineups, many=True, context={"request": request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @extend_schema(
@@ -59,7 +59,7 @@ class LineupRUDViews(APIView):
     )
     def get(self, request, pk):
         obj = get_object_or_404(Lineup, pk=pk)
-        serializer = LineupSerializer(obj)
+        serializer = LineupSerializer(obj, context={"request": request})
         return Response(serializer.data)
 
     @extend_schema(

@@ -69,6 +69,7 @@ class LineupSerializer(serializers.ModelSerializer):
     grenade_class = GrenadeClassSerializer(source="grenade_class_id", read_only=True)
 
     property_list = serializers.SerializerMethodField()
+    is_favorite = serializers.SerializerMethodField()
 
     class Meta:
         model = Lineup
@@ -81,6 +82,7 @@ class LineupSerializer(serializers.ModelSerializer):
             "title",
             "description",
             "is_approved",
+            "is_favorite",
             "views",
             "preview_image_link",
             "grenade_class_id",
@@ -90,6 +92,13 @@ class LineupSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         return Lineup.objects.create(**validated_data)
+
+    @extend_schema_field(serializers.BooleanField())
+    def get_is_favorite(self, obj):
+        user = self.context.get("request").user
+        if user.is_authenticated:
+            return Favorites.objects.filter(user_id=user, grenade_id=obj).exists()
+        return False
 
     @extend_schema_field(PropertyInlineSerializer(many=True))
     def get_property_list(self, obj):
