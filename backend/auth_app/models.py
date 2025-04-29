@@ -50,16 +50,15 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser):
     user_id = models.AutoField(primary_key=True)
     username = models.CharField(max_length=255, unique=True)
-    email = models.EmailField(max_length=255, default="")
-    first_name = models.CharField(max_length=255, default="", blank=True)
-    last_name = models.CharField(max_length=255, default="", blank=True)
-    avatar_url = models.CharField(max_length=255, default="", blank=True)
-    steam_link = models.CharField(max_length=255, default="", blank=True)
+    email = models.EmailField(max_length=255, unique=True, null=True, blank=True)
+    first_name = models.CharField(max_length=255, null=True, blank=True)
+    last_name = models.CharField(max_length=255, null=True, blank=True)
+    avatar_url = models.CharField(max_length=255, null=True, blank=True)
+    steam_link = models.CharField(max_length=255, null=True, blank=True)
     tg_id = models.IntegerField(null=True, blank=True)
     is_banned = models.BooleanField(default=False)
     objects = UserManager()
     USERNAME_FIELD = "username"
-    REQUIRED_FIELDS = ["email"]
 
     def __str__(self):
         return self.username
