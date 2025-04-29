@@ -74,9 +74,6 @@ services:
         env_file: ./.env
         environment:
             - VITE_BACKEND_URL=${VITE_BACKEND_URL}
-            - HUSKY=0
-            - NODE_ENV=production
-            - IN_TG_ENVIRONMENT=true
         volumes:
             - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
             # Created by certbot in server

@@ -9,7 +9,7 @@ import tailwindcss from "@tailwindcss/vite"
 
 const envSchema = z.object({
     VITE_BACKEND_URL: z.string().nonempty(),
-    IN_TG_ENVIRONMENT: z.string().nonempty(),
+    VITE_IN_TG_ENVIRONMENT: z.string().nonempty(),
 })
 
 // https://vitejs.dev/config/

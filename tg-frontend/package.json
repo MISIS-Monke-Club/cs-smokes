@@ -13,13 +13,13 @@
         "lint:auto-fix": "npx eslint ./src --fix && npx stylelint './src/**/*.scss' --fix",
         "lint:format": "npx prettier ./src --write",
         "prepare": "cd .. && husky ./tg-frontend/.husky || true",
-        "storybook": "VITE_BACKEND_URL=http://localhost:3000/api IN_TG_ENVIRONMENT=false storybook dev -p 6006",
+        "storybook": "VITE_BACKEND_URL=http://localhost:3000/api VITE_IN_TG_ENVIRONMENT=false storybook dev -p 6006",
         "test:prepare": "npx playwright install",
         "test:prepare-ci": "npx playwright install --with-deps",
-        "test": "VITE_BACKEND_URL=http://localhost:3000/api IN_TG_ENVIRONMENT=false npx vitest run",
+        "test": "VITE_BACKEND_URL=http://localhost:3000/api VITE_IN_TG_ENVIRONMENT=false npx vitest run",
         "type-check": "tsc --noEmit --pretty --skipLibCheck -p tsconfig.json",
-        "test-storybook": "VITE_BACKEND_URL=http://localhost:3000/api IN_TG_ENVIRONMENT=false npx test-storybook",
-        "build-storybook": "VITE_BACKEND_URL=http://localhost:3000/api IN_TG_ENVIRONMENT=false storybook build"
+        "test-storybook": "VITE_BACKEND_URL=http://localhost:3000/api VITE_IN_TG_ENVIRONMENT=false npx test-storybook",
+        "build-storybook": "VITE_BACKEND_URL=http://localhost:3000/api VITE_IN_TG_ENVIRONMENT=false storybook build"
     },
     "dependencies": {
         "@radix-ui/react-dialog": "^1.1.6",
