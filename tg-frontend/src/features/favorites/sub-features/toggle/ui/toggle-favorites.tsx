@@ -1,6 +1,6 @@
 import { Heart } from "lucide-react"
 import { useCallback } from "react"
-import { useToggleFavorite } from "../lib"
+import { useToggleFavorite } from "../lib/use-toggle-favorite"
 import { Button } from "@shared/ui/button"
 import { GrenadeModel } from "@entities/grenade"
 
@@ -25,7 +25,14 @@ export function ToggleFavorites({ grenadeId, ...rest }: ToggleFavoritesProps) {
     )
 
     return (
-        <Button onClick={clickHandler} variant='outline' size='icon' {...rest}>
+        <Button
+            onClick={clickHandler}
+            variant='outline'
+            size='icon'
+            {...rest}
+            data-status={currentState}
+            data-testid='favorites-toggle-button'
+        >
             {currentState === "in-favorites" ? (
                 <Heart fill='#fff' />
             ) : (

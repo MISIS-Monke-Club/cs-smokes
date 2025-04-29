@@ -1,1 +1,1 @@
-export { api as getFavoritesApi } from "./api"
+export { api as favoritesApi } from "./api"

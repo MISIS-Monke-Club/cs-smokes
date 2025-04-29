@@ -1,18 +1,21 @@
-import { useMutation, useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { useMemo } from "react"
-import { api } from "./api"
+import { addToFavoritesMutation } from "./add-to-favorites"
+import { deleteFromFavoritesMutation } from "./delete-from-favorites"
 import { grenadeApi, GrenadeModel } from "@entities/grenade"
 
 export function useToggleFavorite(hookParams: Pick<GrenadeModel, "grenadeId">) {
+    const client = useQueryClient()
     const { mutateAsync: deleteMutation, isPending: isDeletePending } =
-        useMutation(api.deleteFromFavorites())
+        useMutation(deleteFromFavoritesMutation(client))
     const { mutateAsync: addMutation, isPending: isAddPending } = useMutation(
-        api.addToFavoritesMutations()
+        addToFavoritesMutation(client)
     )
     const { data } = useQuery(
-        grenadeApi.getGrenadeById({ grenadeId: hookParams.grenadeId })
+        grenadeApi.getGrenadesByIdOptions({ grenadeId: hookParams.grenadeId })
     )
+
     const currentStatus: "in-favorites" | "not-in-favorite" = useMemo(() => {
         if (data) {
             const flag = data.isFavorite
@@ -38,7 +41,6 @@ export function useToggleFavorite(hookParams: Pick<GrenadeModel, "grenadeId">) {
             )
             toast.error("cant add grenade to favorites")
         })
-
     const deleteFromFavorites = () =>
         deleteMutation(hookParams).catch((err) => {
             console.error(

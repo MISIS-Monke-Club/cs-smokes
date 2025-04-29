@@ -5,9 +5,12 @@ import { grenadesMaper } from "@entities/grenade"
 export function GrenadesList() {
     const {
         data: grenades,
-        isError,
         isLoading,
-    } = useQuery(grenadeApi.getGrenades())
+        isError,
+    } = useQuery({
+        queryKey: [...grenadeApi.baseKey, "list"],
+        queryFn: grenadeApi.getGrenades,
+    })
 
     return (
         <GrenadesListComponent

@@ -19,7 +19,7 @@ export function GrenadeOverview({
 }: GrenadeOverviewProps) {
     if (isError) {
         return (
-            <PlaceholderBlock data-testId='data-overview-error-placeholder'>
+            <PlaceholderBlock data-testid='data-overview-error-placeholder'>
                 Something went wrong with grenade overview...
             </PlaceholderBlock>
         )
@@ -27,7 +27,7 @@ export function GrenadeOverview({
 
     if (isLoading) {
         return (
-            <div aria-label='loader' data-testId='grenade-overview-loader'>
+            <div aria-label='loader' data-testid='grenade-overview-loader'>
                 Loading...
             </div>
         )
@@ -35,7 +35,7 @@ export function GrenadeOverview({
 
     if (!grenade) {
         return (
-            <PlaceholderBlock data-testId='data-overview-empty-grenade'>
+            <PlaceholderBlock data-testid='data-overview-empty-grenade'>
                 Data was not provided(
             </PlaceholderBlock>
         )
@@ -50,13 +50,13 @@ export function GrenadeOverview({
                 <div className={classes.textInfo}>
                     <div className={classes.user}>
                         <span>Создана пользователем: </span>
-                        <span data-testId='grenade-overview-author'>
+                        <span data-testid='grenade-overview-author'>
                             {grenade?.userId}
                         </span>
                     </div>
                     <div className={classes.type}>
                         <span>Тип гранаты: </span>
-                        <span data-testId='grenade-overview-grenade-type'>
+                        <span data-testid='grenade-overview-grenade-type'>
                             {grenade?.typeId}
                         </span>
                     </div>

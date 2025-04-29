@@ -6,7 +6,7 @@ export function GetGrenadeById({ grenadeId }: { grenadeId: number }) {
         data: grenade,
         isLoading,
         isError,
-    } = useQuery(grenadeApi.getGrenadeById({ grenadeId }))
+    } = useQuery(grenadeApi.getGrenadesByIdOptions({ grenadeId }))
 
     return (
         <GrenadeOverview

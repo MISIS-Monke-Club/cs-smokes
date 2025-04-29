@@ -63,7 +63,7 @@ export const WithActions: Story = {
         actions: (
             <Button
                 variant='secondary'
-                data-testId='grenade-overview-fake-action'
+                data-testid='grenade-overview-fake-action'
             >
                 click me
             </Button>
