@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
 import { grenadeApi, GrenadeOverview } from "@entities/grenade"
 
-export function GetGrenade({ grenadeId }: { grenadeId: number }) {
+export function GetGrenadeById({ grenadeId }: { grenadeId: number }) {
     const {
         data: grenade,
         isLoading,

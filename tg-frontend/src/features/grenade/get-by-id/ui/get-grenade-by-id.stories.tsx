@@ -1,7 +1,7 @@
 import { Meta, StoryObj } from "@storybook/react"
 import { expect, waitFor } from "@storybook/test"
 import { Canvas } from "storybook/internal/types"
-import { GetGrenade } from "./get-grenade"
+import { GetGrenadeById } from "./get-grenade-by-id"
 import {
     grenadeOverviewTestFunc,
     grenadeDTOmock,
@@ -15,8 +15,8 @@ const baseTestFunction = async (canvas: Canvas) => {
     await expect(loader).toBeVisible()
 }
 
-const meta: Meta<typeof GetGrenade> = {
-    component: GetGrenade,
+const meta: Meta<typeof GetGrenadeById> = {
+    component: GetGrenadeById,
     parameters: {
         layout: "centered",
         msw: {
@@ -42,7 +42,7 @@ const meta: Meta<typeof GetGrenade> = {
 
 export default meta
 
-type Story = StoryObj<typeof GetGrenade>
+type Story = StoryObj<typeof GetGrenadeById>
 
 export const Default: Story = {}
 
