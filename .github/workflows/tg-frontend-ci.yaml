@@ -35,7 +35,7 @@ jobs:
         working-directory: ./tg-frontend
       - name: Reinstall production dependencies only
         run: |
-          rm -rf node_modules package-lock.json
+          rm -rf node_modules
           npm install --omit=dev
         working-directory: ./tg-frontend
 
