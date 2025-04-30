@@ -176,3 +176,23 @@ class UserResponseSerializer(serializers.ModelSerializer):
             "is_banned",
         )
         read_only_fields = ("user_id", "is_banned")
+
+
+class FavoritesCreateSerializer(serializers.ModelSerializer):
+    grenade_id = serializers.PrimaryKeyRelatedField(queryset=Lineup.objects.all())
+
+    class Meta:
+        model = Favorites
+        fields = ["grenade_id"]
+
+    def validate(self, attrs):
+        user = self.context["request"].user
+        grenade = attrs["grenade_id"]
+        if Favorites.objects.filter(user=user, grenade=grenade).exists():
+            raise serializers.ValidationError("Уже в избранном")
+        return attrs
+
+    def create(self, validated_data):
+        return Favorites.objects.create(
+            user=self.context["request"].user, grenade=validated_data["grenade_id"]
+        )
