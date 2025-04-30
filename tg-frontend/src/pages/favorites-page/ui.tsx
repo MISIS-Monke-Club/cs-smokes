@@ -2,9 +2,9 @@ import { useQuery } from "@tanstack/react-query"
 import { useSelector } from "react-redux"
 import classes from "./ui.module.scss"
 import { GrenadesListComponent } from "@entities/grenade"
-import { favoritesApi } from "@features/favorites/sub-features/get"
+import { favoritesApi } from "@features/favorites/get"
 import { selectUserId } from "@entities/session"
-import { favoritesMaper } from "@features/favorites"
+import { favoritesMaper } from "@features/favorites/get"
 
 export function FavoritesPage() {
     const userId = useSelector(selectUserId)

@@ -1,14 +1,17 @@
 import { Heart } from "lucide-react"
 import { useCallback } from "react"
-import { useToggleFavorite } from "../lib/use-toggle-favorite"
+import { useAddFavorite } from "../../lib/add-to-favorites/use-add-favorite"
 import { Button } from "@shared/ui/button"
 import { GrenadeModel } from "@entities/grenade"
 
-type ToggleFavoritesProps = Pick<GrenadeModel, "grenadeId"> &
+type DeleteFromFavoritesProps = Pick<GrenadeModel, "grenadeId"> &
     React.ComponentProps<"button">
 
-export function ToggleFavorites({ grenadeId, ...rest }: ToggleFavoritesProps) {
-    const { toggleFavorite, isPending, currentState } = useToggleFavorite({
+export function AddToFavorites({
+    grenadeId,
+    ...rest
+}: DeleteFromFavoritesProps) {
+    const { addToFavorites, getIsPending } = useAddFavorite({
         grenadeId,
     })
 
@@ -16,12 +19,12 @@ export function ToggleFavorites({ grenadeId, ...rest }: ToggleFavoritesProps) {
         (e: React.MouseEvent<HTMLButtonElement>) => {
             e.stopPropagation()
 
-            if (!isPending) {
+            if (!getIsPending(grenadeId)) {
                 // None of actions is running right now
-                toggleFavorite()
+                addToFavorites()
             }
         },
-        [isPending, toggleFavorite]
+        [addToFavorites, getIsPending, grenadeId]
     )
 
     return (
@@ -30,14 +33,9 @@ export function ToggleFavorites({ grenadeId, ...rest }: ToggleFavoritesProps) {
             variant='outline'
             size='icon'
             {...rest}
-            data-status={currentState}
-            data-testid='favorites-toggle-button'
+            data-testid='add-to-favorites-button'
         >
-            {currentState === "in-favorites" ? (
-                <Heart fill='#fff' />
-            ) : (
-                <Heart />
-            )}
+            <Heart />
         </Button>
     )
 }

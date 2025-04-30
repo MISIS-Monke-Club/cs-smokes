@@ -5,7 +5,7 @@ import { mapApi, MapPageModel } from "@entities/map"
 import { PlaceholderBlock } from "@shared/ui/placeholder-block"
 import { ImageComponent } from "@shared/ui/image"
 import { ItemsList } from "@shared/ui/items-list"
-import { favoritesMaper } from "@features/favorites"
+import { favoritesMaper } from "@features/favorites/get"
 
 export function MapOverview({ mapId }: { mapId: MapPageModel["mapId"] }) {
     const { data, isError, isLoading } = useQuery(mapApi.getMapById(mapId))

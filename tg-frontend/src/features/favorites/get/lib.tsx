@@ -1,4 +1,4 @@
-import { ToggleFavorites } from "./sub-features/toggle/ui/toggle-favorites"
+import { ToggleFavorites } from "../toggle/ui/toggle-favorites/toggle-favorites"
 import { Grenade, GrenadeModel } from "@entities/grenade"
 import { Maper } from "@shared/model"
 

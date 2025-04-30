@@ -1,7 +1,6 @@
 import { Meta, StoryObj } from "@storybook/react"
 import { ToggleFavorites } from "./toggle-favorites"
 import {
-    baseTestFunction,
     testAddInFavorites,
     testErrorAddInFavorites,
     testErrorRemoveFromFavorites,
@@ -43,9 +42,6 @@ const meta: Meta<typeof ToggleFavorites> = {
                 }),
             ],
         },
-    },
-    play: async ({ canvas }) => {
-        await baseTestFunction(canvas)
     },
 }
 
