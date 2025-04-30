@@ -69,7 +69,7 @@ class LineupSerializer(serializers.ModelSerializer):
     grenade_class = GrenadeClassSerializer(source="grenade_class_id", read_only=True)
 
     property_list = serializers.SerializerMethodField()
-    is_favorite = serializers.SerializerMethodField()
+    is_favorite = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Lineup

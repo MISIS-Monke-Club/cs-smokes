@@ -76,7 +76,7 @@ class LineupViews(APIView):
         tags=["Lineup"],
     )
     def post(self, request):
-        serializer = LineupSerializer(data=request.data)
+        serializer = LineupSerializer(data=request.data, context={"request": request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
