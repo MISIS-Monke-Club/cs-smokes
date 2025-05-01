@@ -56,3 +56,12 @@ export type AddLineupModel = {
     link_to_video: string
     preview_image_link: string | null
 }
+
+export const convertToApiLineup = (data: LineupFormData, userId: number) => ({
+    title: data.title,
+    description: data.description,
+    map_id: mapNameToId[data.map],
+    link_to_video: data.link_to_video,
+    preview_image_link: data.preview_image_link,
+    user_id: userId,
+})
