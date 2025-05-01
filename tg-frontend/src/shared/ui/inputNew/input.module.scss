@@ -1,0 +1,19 @@
+.inputGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.label {
+    font-size: toRem(20);
+}
+
+.input {
+    border: 1px solid var(--color-border);
+    padding: toRem(7);
+    border-radius: 5px;
+
+    &::placeholder {
+        color: var(--muted-foreground);
+    }
+}

@@ -1,5 +1,5 @@
 import { MutationOptions } from "@tanstack/react-query"
-import { LineupFormData, mapNameToId } from "./model"
+import { LineupFormData, convertToApiLineup } from "./model"
 import { instance, client } from "@shared/api"
 
 type CreateLineupParams = {
@@ -16,15 +16,9 @@ export const api = {
         unknown,
         CreateLineupParams
     > => ({
-        mutationFn: ({ data, userId }) => {
-            return instance.post(api.baseUrl, {
-                title: data.title,
-                description: data.description,
-                map_id: mapNameToId[data.map],
-                link_to_video: data.link_to_video,
-                preview_image_link: data.preview_image_link,
-                user_id: userId,
-            })
+        mutationFn: async ({ data, userId }) => {
+            const payload = convertToApiLineup(data, userId)
+            await instance.post(api.baseUrl, payload)
         },
         onSuccess: () => {
             client.invalidateQueries({

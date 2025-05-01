@@ -4,6 +4,7 @@ import { Canvas } from "storybook/internal/types"
 import { AddLineupModel } from "../model"
 import { AddLineupForm } from "./add-lineup-form"
 import classes from "./add-lineup-form.stories.module.scss"
+import { mockAddLineup } from "./__mocks"
 
 const meta: Meta<typeof AddLineupForm> = {
     component: AddLineupForm,
@@ -17,14 +18,7 @@ const baseTestData: {
     mocks: AddLineupModel
     baseTestFunction: (canvas: Canvas) => Promise<unknown>
 } = {
-    mocks: {
-        title: "Dust2 A Site Smokes",
-        description:
-            "Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas veniam deserunt nostrum adipisci facilis ex at minus nam illum. Quos, magni odit? Ullam sit molestias quibusdam at placeat est labore nihil ea, quidem adipisci repudiandae eligendi, porro quas numquam. Harum, autem atque excepturi, temporibus omnis quas, nemo similique eligendi.",
-        map: "Dust2",
-        link_to_video: "https://youtube.com/example-video",
-        preview_image_link: null,
-    },
+    mocks: mockAddLineup,
     baseTestFunction: async (canvas) => {
         const form = canvas.getByRole("form")
 
@@ -60,15 +54,15 @@ export const Default: Story = {
     },
 }
 
-export const Small: Story = {
+export const CustomClassName: Story = {
     args: {
-        name: "Small Form",
-        className: classes.small,
+        name: "Custom Class Name",
+        className: classes.testClass,
     },
     play: async ({ canvas }) => {
         const form = canvas.getByRole("form")
         await baseTestData.baseTestFunction(canvas)
-        await expect(form).toHaveClass(classes.small)
+        await expect(form).toHaveClass(classes.testClass)
     },
 }
 

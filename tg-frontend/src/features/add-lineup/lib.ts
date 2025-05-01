@@ -11,25 +11,24 @@ export function useAddLineup() {
     const userId = useSelector(selectUserId)
 
     const { mutateAsync, isPending } = useMutation(api.createLineup())
-
-    const addLineup = async (form: LineupFormData) => {
+    const addLineup = (form: LineupFormData) => {
         if (!userId) {
             toast.error("Вы не авторизованы.")
             throw new Error("Пользователь не авторизован")
-        } else {
-            try {
-                await mutateAsync({
-                    data: form,
-                    userId,
-                })
+        }
 
+        mutateAsync({
+            data: form,
+            userId,
+        })
+            .then(() => {
                 toast.success("Лайнап добавлен успешно!")
                 navigate("/lineups")
-            } catch (err) {
+            })
+            .catch((err) => {
                 console.error(err)
                 toast.error("Ошибка при добавлении лайнапа.")
-            }
-        }
+            })
     }
 
     return {

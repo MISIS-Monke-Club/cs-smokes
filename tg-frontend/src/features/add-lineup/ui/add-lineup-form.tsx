@@ -3,7 +3,7 @@ import { toast } from "sonner"
 import { AddLineupModel, lineupSchema, mapOptions } from "../model"
 import { useAddLineup } from "../lib"
 import classes from "./add-lineup-form.module.scss"
-import { Input } from "@shared/ui/input"
+import { Input } from "@shared/ui/inputNew"
 import { Button } from "@shared/ui/button"
 
 type AddLineupFormProps = {
@@ -37,60 +37,38 @@ export function AddLineupForm({ className }: AddLineupFormProps) {
             onSubmit={handleSubmit}
             role='form'
         >
-            <div className={classes.formGroup}>
-                <label className={classes.label} htmlFor='title'>
-                    Название лайнапа
-                </label>
-                <Input
-                    type='text'
-                    id='title'
-                    name='title'
-                    placeholder='Название лайнапа'
-                    required
-                />
-            </div>
+            <Input
+                withLabel
+                label='Название лайнапа'
+                type='text'
+                placeholder='Название лайнапа'
+                required
+            />
 
-            <div className={classes.formGroup}>
-                <label className={classes.label} htmlFor='description'>
-                    Описание
-                </label>
-                <textarea
-                    className={classes.textarea}
-                    id='description'
-                    name='description'
-                    placeholder='Описание лайнапа'
-                    required
-                ></textarea>
-            </div>
+            <Input
+                withLabel
+                label='Описание'
+                type='textarea'
+                placeholder='Описание лайнапа'
+                required
+            />
 
-            <div className={classes.formGroup}>
-                <label className={classes.label} htmlFor='map'>
-                    Карта
-                </label>
-                <select id='map' name='map' className={classes.select} required>
-                    <option value='' disabled selected>
-                        Выберите карту
-                    </option>
-                    {mapOptions.map((map) => (
-                        <option key={map} value={map}>
-                            {map}
-                        </option>
-                    ))}
-                </select>
-            </div>
+            <Input
+                withLabel
+                label='Карта'
+                type='select'
+                options={mapOptions.map((map) => ({ value: map, label: map }))}
+                placeholder='Описание лайнапа'
+                required
+            />
 
-            <div className={classes.formGroup}>
-                <label className={classes.label} htmlFor='link_to_video'>
-                    Ссылка на видео (YouTube / Rutube)
-                </label>
-                <Input
-                    type='url'
-                    id='link_to_video'
-                    name='link_to_video'
-                    placeholder='https://www.youtube.com/watch?v=...'
-                    required
-                />
-            </div>
+            <Input
+                withLabel
+                label='Ссылка на видео (YouTube / Rutube)'
+                type='text'
+                placeholder='https://www.youtube.com/watch?v=...'
+                required
+            />
 
             <Button
                 className={classes.button}
