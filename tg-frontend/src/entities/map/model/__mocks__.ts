@@ -55,3 +55,18 @@ export const mockMapModel: MapModel = {
     imageLink: "https://example.com",
     link: "https://example.com",
 }
+
+export const mockMapsModel: MapModel[] = [
+    {
+        mapId: 1,
+        name: "dust 2",
+        imageLink: "https://example.com",
+        link: "https://example.com",
+    },
+    {
+        mapId: 2,
+        name: "overpass",
+        imageLink: "https://example.com",
+        link: "https://example.com",
+    },
+]
