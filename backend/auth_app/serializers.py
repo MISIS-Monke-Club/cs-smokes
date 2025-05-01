@@ -171,11 +171,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         user = User(
             username=validated_data["username"],
             email=validated_data["email"],
-            first_name="",
-            last_name="",
-            avatar_url="",
-            steam_link="",
-            is_banned=False,
         )
         user.set_password(validated_data["password"])
         user.save()

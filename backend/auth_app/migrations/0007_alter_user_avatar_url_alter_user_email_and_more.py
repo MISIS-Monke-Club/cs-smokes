@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("auth_app", "0006_create_mock_users"),
+        ("auth_app", "0005_alter_user_tg_id"),
     ]
 
     operations = [
