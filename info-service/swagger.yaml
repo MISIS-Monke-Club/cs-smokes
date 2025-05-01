@@ -608,6 +608,8 @@ paths:
           description: Раскидка или класс гранат не найдены
   /lineups/view_filters/:
     get:
+      security:
+        - bearerAuth: []
       tags:
         - Lineups
       summary: Получить список всех доступных фильтров
@@ -644,6 +646,8 @@ paths:
 
   /lineups/view_sorts/:
     get:
+      security:
+        - bearerAuth: []
       tags:
         - Lineups
       summary: Получить список всех доступных сортировок
