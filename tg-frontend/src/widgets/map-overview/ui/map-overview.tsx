@@ -8,7 +8,9 @@ import { ItemsList } from "@shared/ui/items-list"
 import { favoritesMaper } from "@features/favorites/get"
 
 export function MapOverview({ mapId }: { mapId: MapPageModel["mapId"] }) {
-    const { data, isError, isLoading } = useQuery(mapApi.getMapById(mapId))
+    const { data, isError, isLoading } = useQuery(
+        mapApi.getMapByIdOptions(mapId)
+    )
 
     if (isLoading) {
         return <ItemsList isLoading loadingItemsLength={15} />

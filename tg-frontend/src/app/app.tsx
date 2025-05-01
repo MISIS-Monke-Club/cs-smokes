@@ -4,6 +4,7 @@ import "./tailwind.css"
 import { Provider } from "react-redux"
 import { QueryClientProvider } from "@tanstack/react-query"
 import { Toaster } from "sonner"
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 import { router } from "./router/router"
 import { ThemeProvider } from "./providers/theme-provider"
 import { store } from "@shared/model"
@@ -27,6 +28,7 @@ export function App() {
                         theme='system'
                     />
                 </ThemeProvider>
+                <ReactQueryDevtools initialIsOpen={false} />
             </QueryClientProvider>
         </Provider>
     )

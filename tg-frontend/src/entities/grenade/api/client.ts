@@ -9,6 +9,18 @@ export const api = {
     baseKey: ["grenade"],
     baseApiUrl: "grenades",
 
+    getGrenadesByIdOptions: ({ grenadeId }: Pick<GrenadeModel, "grenadeId">) =>
+        queryOptions({
+            queryKey: [...api.baseKey, { type: "byId", grenadeId }],
+            queryFn: () => api.getGrenadeById({ grenadeId }),
+        }),
+
+    getGrenadesOptions: () =>
+        queryOptions({
+            queryKey: [...api.baseKey, { type: "list" }],
+            queryFn: api.getGrenades,
+        }),
+
     getGrenades: () =>
         typedQuery({
             request: instance.get(api.baseApiUrl),
@@ -22,21 +34,11 @@ export const api = {
 
             throw err
         }),
-    getGrenadesOptions: () =>
-        queryOptions({
-            queryKey: [...api.baseKey, { type: "list" }],
-            queryFn: api.getGrenades,
-        }),
 
     getGrenadeById: ({ grenadeId }: Pick<GrenadeModel, "grenadeId">) =>
         typedQuery({
             request: instance.get(`/${api.baseApiUrl}/${grenadeId}`),
             dtoSchema: grenadeDTOschema,
             fromDTO: fromGrenadeDTO,
-        }),
-    getGrenadesByIdOptions: ({ grenadeId }: Pick<GrenadeModel, "grenadeId">) =>
-        queryOptions({
-            queryKey: [...api.baseKey, { type: "byId", grenadeId }],
-            queryFn: () => api.getGrenadeById({ grenadeId }),
         }),
 }

@@ -13,7 +13,11 @@ type MapsListProps = {
 }
 
 export function MapsList({ mapFunction = mapsMaper }: MapsListProps) {
-    const { data: maps = [], isLoading, isError } = useQuery(mapApi.getMaps())
+    const {
+        data: maps = [],
+        isLoading,
+        isError,
+    } = useQuery(mapApi.getMapsOptions())
 
     if (isLoading) {
         return (
