@@ -114,5 +114,7 @@ class FavoritesView(APIView):
                 },
                 status=200,
             )
-        serializer = FavoritesSerializer(favorites, many=True)
+        serializer = FavoritesSerializer(
+            favorites, many=True, context={"request": request}
+        )
         return Response(serializer.data, status=200)

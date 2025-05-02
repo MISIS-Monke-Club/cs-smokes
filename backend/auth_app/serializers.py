@@ -95,7 +95,10 @@ class LineupSerializer(serializers.ModelSerializer):
 
     @extend_schema_field(serializers.BooleanField())
     def get_is_favorite(self, obj):
-        user = self.context.get("request").user
+        request = self.context.get("request")
+        if not request or not hasattr(request, "user"):
+            return False
+        user = request.user
         if user.is_authenticated:
             return Favorites.objects.filter(user_id=user, grenade_id=obj).exists()
         return False
@@ -242,13 +245,30 @@ class FavoritesCreateSerializer(serializers.ModelSerializer):
         fields = ["grenade_id"]
 
     def validate(self, attrs):
-        user = self.context["request"].user
+        request = self.context.get("request")
+        if request is None:
+            raise serializers.ValidationError(
+                {"non_field_errors": ["Request context is missing"]}
+            )
+
+        user = request.user
         grenade = attrs["grenade_id"]
-        if Favorites.objects.filter(user=user, grenade=grenade).exists():
-            raise serializers.ValidationError("Уже в избранном")
+
+        if Favorites.objects.filter(user_id=user, grenade_id=grenade).exists():
+            raise serializers.ValidationError({"non_field_errors": ["Уже в избранном"]})
         return attrs
 
     def create(self, validated_data):
+        request = self.context.get("request")
+        if (
+            not request
+            or not hasattr(request, "user")
+            or not request.user.is_authenticated
+        ):
+            raise serializers.ValidationError(
+                {"non_field_errors": ["Пользователь не авторизован"]}
+            )
+
         return Favorites.objects.create(
-            user=self.context["request"].user, grenade=validated_data["grenade_id"]
+            user_id=request.user, grenade_id=validated_data["grenade_id"]
         )
