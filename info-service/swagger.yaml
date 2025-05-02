@@ -624,23 +624,13 @@ paths:
               schema:
                 type: object
                 properties:
-                  filters:
+                  is_approved:
                     type: array
                     items:
-                      type: object
-                      properties:
-                        name:
-                          type: string
-                          example: "is_approved"
-                          description: "Название фильтра"
-                        description:
-                          type: string
-                          example: "Фильтр по статусу одобрения (true/false)"
-                          description: "Описание фильтра"
-                example:
-                  filters:
-                    - name: "is_approved"
-                      description: "Фильтр по статусу одобрения (true/false)"
+                      type: string
+                    example:
+                      - "true"
+                      - "false"
         500:
           description: Внутренняя ошибка сервера
 
@@ -662,29 +652,15 @@ paths:
               schema:
                 type: object
                 properties:
-                  sorts:
+                  ordering:
                     type: array
                     items:
-                      type: object
-                      properties:
-                        name:
-                          type: string
-                          example: "date_of_creation"
-                          description: "Название сортировки"
-                        description:
-                          type: string
-                          example: "Сортировка по дате создания (от старых к новым)"
-                          description: "Описание сортировки"
-                example:
-                  sorts:
-                    - name: "date_of_creation"
-                      description: "Сортировка по дате создания (от старых к новым)"
-                    - name: "-date_of_creation"
-                      description: "Сортировка по дате создания (от новых к старым)"
-                    - name: "by_alphabet"
-                      description: "Сортировка по алфавиту "
-                    - name: "-by_alphabet"
-                      description: "Сортировка по алфавиту"
+                      type: string
+                    example:
+                      - "date_of_creation"
+                      - "-date_of_creation"
+                      - "by_alphabet"
+                      - "-by_alphabet"
         500:
           description: Внутренняя ошибка сервера
 
