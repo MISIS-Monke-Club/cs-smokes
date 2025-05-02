@@ -44,9 +44,15 @@ class FavoritesAddView(APIView):
         serializer = FavoritesCreateSerializer(
             data=request.data, context={"request": request}
         )
+
         if serializer.is_valid():
             favorite = serializer.save()
-            return Response(FavoritesSerializer(favorite).data, status=201)
+
+            return Response(
+                {"user_id": favorite.user_id.pk, "grenade_id": favorite.grenade_id.pk},
+                status=201,
+            )
+
         return Response(serializer.errors, status=400)
 
 
@@ -105,7 +111,9 @@ class FavoritesView(APIView):
     def get(self, request, pk=None):
         if not pk:
             return Response({"error": "Не указан user_id"}, status=400)
+
         favorites = Favorites.objects.filter(user_id=pk)
+
         if not favorites.exists():
             return Response(
                 {
@@ -114,7 +122,8 @@ class FavoritesView(APIView):
                 },
                 status=200,
             )
-        serializer = FavoritesSerializer(
+
+        serializer = FavoritesCreateSerializer(
             favorites, many=True, context={"request": request}
         )
         return Response(serializer.data, status=200)
