@@ -1,15 +1,15 @@
 .landingSection {
     display: flex;
     flex-direction: column;
-    align-items: start;
     gap: 32px;
+    align-items: start;
 
     .main {
         display: flex;
         flex-direction: row;
+        gap: 16px;
         align-items: center;
         justify-content: space-between;
-        gap: 16px;
     }
 
     .header {

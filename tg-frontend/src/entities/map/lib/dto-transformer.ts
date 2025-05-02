@@ -4,7 +4,7 @@ import {
     MapModel,
     mapPageDTOschema,
     MapPageModel,
-} from "../model"
+} from "../model/domain"
 /** Not legally enabling cross import
  * TEST FEATURE!!!
  */

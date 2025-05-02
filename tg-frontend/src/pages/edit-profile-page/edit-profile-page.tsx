@@ -1,6 +1,6 @@
 import classes from "./edit-profile-page.module.scss"
 import { GoBack } from "@features/go-back"
-import { EditProfileForm } from "@features/edit-profile"
+import { EditProfileForm } from "@features/profile/edit"
 
 export function EditProfilePage() {
     return (

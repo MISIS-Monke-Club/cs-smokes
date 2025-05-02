@@ -1,0 +1,30 @@
+.grenade {
+    width: 100%;
+}
+
+.title {
+    margin-bottom: 1rem;
+    font-size: 2rem;
+    font-weight: 800;
+}
+
+.content {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    align-items: center;
+    justify-content: space-between;
+
+    width: 100%;
+}
+
+.textInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: start;
+}
+
+.image {
+    border-radius: 16px;
+}

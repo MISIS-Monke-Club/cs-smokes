@@ -4,9 +4,10 @@ import { Skeleton } from "../skeleton"
 import classes from "./items-list.module.scss"
 
 type ItemsListProps<T> = React.ComponentProps<"div"> & {
-    elements: T[]
-    mapFunction: (items: T[]) => ReactNode
+    elements?: T[]
+    mapFunction?: (items: T[]) => ReactNode
     isLoading?: boolean
+    isPending?: boolean
     loadingItemsLength?: number
     type?: "grid" | "column"
     gap?: "small" | "medium" | "large"
@@ -64,13 +65,13 @@ export function ItemsList<T>({
             classesArray.push(className)
         }
 
-        if (type && elements.length !== 0) {
+        if (type && elements?.length !== 0) {
             classesArray.push(typeClasses[type])
-        } else if (elements.length === 0) {
+        } else if (elements?.length === 0) {
             classesArray.push(typeClasses.column)
         }
 
-        if (elements.length === 0) {
+        if (elements?.length === 0) {
             classesArray.push(classes.emptyList as string)
         }
 
@@ -79,20 +80,7 @@ export function ItemsList<T>({
         }
 
         return classesArray.join(" ")
-    }, [className, type, gap, elements.length])
-
-    if (elements.length === 0) {
-        return (
-            <div
-                className={combinedClassName}
-                aria-label='empty-items-list'
-                style={computedStyles}
-                {...rest}
-            >
-                <p>No data was provided(</p>
-            </div>
-        )
-    }
+    }, [className, type, gap, elements?.length])
 
     if (isLoading) {
         return (
@@ -105,6 +93,19 @@ export function ItemsList<T>({
                 <ComponentsRepeater length={loadingItemsLength}>
                     {displayedLoadingItem}
                 </ComponentsRepeater>
+            </div>
+        )
+    }
+
+    if (!elements || elements.length === 0 || !mapFunction) {
+        return (
+            <div
+                className={combinedClassName}
+                aria-label='empty-items-list'
+                style={computedStyles}
+                {...rest}
+            >
+                <p>No data was provided(</p>
             </div>
         )
     }

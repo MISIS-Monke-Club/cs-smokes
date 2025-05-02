@@ -1,10 +1,12 @@
 import { ReactNode } from "react"
-import classes from "./placeholder-block.module.scss"
+
+type PlaceholderBlockProps = React.ComponentProps<"div"> & {
+    children?: ReactNode
+}
 
 export function PlaceholderBlock({
     children = "No data was provided(",
-}: {
-    children?: ReactNode
-}) {
-    return <div className={classes.placeholderBlock}>{children}</div>
+    ...rest
+}: PlaceholderBlockProps) {
+    return <div {...rest}>{children}</div>
 }

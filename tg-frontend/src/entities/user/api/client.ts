@@ -1,35 +1,19 @@
 import { queryOptions } from "@tanstack/react-query"
-import { AxiosResponse } from "axios"
 import { toast } from "sonner"
 import { userDTOschema, UserModel } from "../model/domain"
 import { fromUserDTO } from "../lib/from-dto"
-import { mockUsers } from "./__mocks"
 import { typedQuery } from "@shared/lib/precooked-methods"
+import { instance } from "@shared/api"
 
 export const api = {
     baseKey: "user",
     baseUrl: "profile",
-    getUserById: (userId: number | null) =>
+    getUserById: (userId: number) =>
         queryOptions<UserModel>({
             queryKey: [api.baseKey, "ById", userId],
-            queryFn: () => {
-                let req: Promise<AxiosResponse>
-
-                // If there is no user id - request will be catched (prevented)
-                if (userId === null) {
-                    req = Promise.reject(
-                        new Error("User id was not provided, rejecting request")
-                    )
-                } else {
-                    // req = instance.get(`${api.baseUrl}/${userId}`)
-                    // TODO: Remove this is mock
-                    req = Promise.resolve({
-                        data: mockUsers[userId],
-                    } as AxiosResponse)
-                }
-
-                return typedQuery({
-                    request: req,
+            queryFn: () =>
+                typedQuery({
+                    request: instance.get(`/api.baseUrl/${userId}`),
                     dtoSchema: userDTOschema,
                     fromDTO: fromUserDTO,
                 }).catch((err) => {
@@ -37,7 +21,6 @@ export const api = {
                     toast.error(`cant get data about user (id:${userId})`)
 
                     throw err
-                })
-            },
+                }),
         }),
 }

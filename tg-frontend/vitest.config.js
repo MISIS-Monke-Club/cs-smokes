@@ -6,5 +6,7 @@ export default defineConfig({
         coverage: {
             exclude: ["**/index.ts"],
         },
+        cache: false,
+        isolate: true,
     },
 })

@@ -18,8 +18,8 @@ tags:
     description: Карты
   - name: Lineups
     description: Раскидки
-  - name: LineupTypes
-    description: Типы раскидок
+  - name: Properties
+    description: Свойства гранат
   - name: GrenadeClasses
     description: Классы гранат
   - name: Users
@@ -34,7 +34,7 @@ paths:
     post:
       tags:
         - AUTH
-      summary: Логин(Рабочая)
+      summary: Логин
       requestBody:
         required: true
         content:
@@ -54,11 +54,11 @@ paths:
               schema:
                 type: object
                 properties:
-                  user_id:
-                    type: integer
-                  auth_token:
+                  user:
+                    $ref: "#/components/schemas/User"
+                  access:
                     type: string
-                  refresh_token:
+                  refresh:
                     type: string
         "401":
           description: Неправильный логин или пароль
@@ -67,7 +67,7 @@ paths:
     post:
       tags:
         - AUTH
-      summary: Логин через тг(Рабочая)
+      summary: Логин через тг
       requestBody:
         required: true
         content:
@@ -85,9 +85,9 @@ paths:
               schema:
                 type: object
                 properties:
-                  user_id:
-                    type: integer
-                  auth_token:
+                  user:
+                    $ref: "#/components/schemas/User"
+                  access_token:
                     type: string
                   refresh_token:
                     type: string
@@ -97,7 +97,7 @@ paths:
     post:
       tags:
         - AUTH
-      summary: Регистрация(Рабочая)
+      summary: Регистрация
       requestBody:
         required: true
         content:
@@ -121,9 +121,29 @@ paths:
     get:
       tags:
         - Maps
-      summary: Получить все карты(Рабочая)
+      summary: Получить все карты
       security:
         - bearerAuth: []
+      parameters:
+      - in: query
+        name: esports_pool
+        schema:
+          type: boolean
+        description: Фильтр по киберспортивному пулу (актуальные карты Faceit и Premier режима)
+        example: true
+      - in: query
+        name: ordering
+        schema:
+          type: string
+          enum: [popularity, -popularity, by_alphabet, -by_alphabet, lineups_count, -lineups_count]
+        description: |
+          Поле для сортировки. 
+          Префикс "-" для обратного порядка.
+          Доступные значения:
+          - popularity (по популярности)
+          - name (по алфавиту)
+          - lineups_count (по количеству раскидок)
+        example: popularity
       responses:
         "200":
           description: Список всех карт
@@ -145,7 +165,7 @@ paths:
     post:
       tags:
         - Maps
-      summary: Создать новую карту(Рабочая)
+      summary: Создать новую карту
       security:
         - bearerAuth: []
       requestBody:
@@ -173,7 +193,7 @@ paths:
     get:
       tags:
         - Maps
-      summary: Получить карту по ID(Рабочая)
+      summary: Получить карту по ID
       security:
         - bearerAuth: []
       parameters:
@@ -192,7 +212,7 @@ paths:
     put:
       tags:
         - Maps
-      summary: Полностью обновить карту по ID(Рабочая)
+      summary: Полностью обновить карту по ID
       security:
         - bearerAuth: []
       parameters:
@@ -224,7 +244,7 @@ paths:
     patch:
       tags:
         - Maps
-      summary: Частично обновить карту по ID(Рабочая)
+      summary: Частично обновить карту по ID
       security:
         - bearerAuth: []
       parameters:
@@ -256,7 +276,7 @@ paths:
     delete:
       tags:
         - Maps
-      summary: Удалить карту по ID(Рабочая)
+      summary: Удалить карту по ID
       security:
         - bearerAuth: []
       parameters:
@@ -278,6 +298,25 @@ paths:
       summary: Получить все раскидки
       security:
         - bearerAuth: []
+      parameters:
+        - in: query
+          name: is_approved
+          schema:
+            type: boolean
+          description: Фильтр по статусу одобрения (true/false)
+          example: true
+        - in: query
+          name: ordering
+          schema:
+            type: string
+            enum: [date_of_creation, -date_of_creation, by_alphabet, -by_alphabet]
+          description: |
+            Поле для сортировки. 
+            Префикс "-" для обратного порядка.
+            Доступные значения: 
+            - date_of_creation (по дате создания)
+            - by_alphabet (по алфавиту)
+          example: date_of_creation
       responses:
         "200":
           description: Список всех раскидок
@@ -319,18 +358,8 @@ paths:
                 preview_image_link:
                   type: string
                   nullable: true
-                property_list:
-                  type: object
-                  properties:
-                    info_about:
-                      type: string
-                    info_value:
-                      type: string
-                    grenade_class:
-                      type: object
-                      properties:
-                        greande_info:
-                          type: string
+                grenade_class_id:
+                  type: integer
       responses:
         "201":
           description: Раскидка успешно создана
@@ -380,8 +409,6 @@ paths:
                   type: integer
                 grenade_class_id:
                   type: integer
-                type_id:
-                  type: integer
                 link_to_video:
                   type: string
                   nullable: true
@@ -399,18 +426,8 @@ paths:
                 preview_image_link:
                   type: string
                   nullable: true
-                property:
-                  type: object
-                  properties:
-                    info_about:
-                      type: string
-                    info_value:
-                      type: string
                 grenade_class:
-                  type: object
-                  properties:
-                    greande_info:
-                      type: string
+                  type: integer
 
       responses:
         "200":
@@ -440,8 +457,6 @@ paths:
                   type: integer
                 grenade_class_id:
                   type: integer
-                type_id:
-                  type: integer
                 link_to_video:
                   type: string
                   nullable: true
@@ -459,18 +474,8 @@ paths:
                 preview_image_link:
                   type: string
                   nullable: true
-                property:
-                  type: object
-                  properties:
-                    info_about:
-                      type: string
-                    info_value:
-                      type: string
                 grenade_class:
-                  type: object
-                  properties:
-                    greande_info:
-                      type: string
+                  type: integer
 
       responses:
         "200":
@@ -494,6 +499,304 @@ paths:
           description: Раскидка успешно удалена
         "401":
           description: Неавторизованный доступ
+  /lineups/{grenade_id}/properties/{property_id}/:
+    delete:
+      tags:
+        - Lineups
+      summary: Удалить свойство у раскидки, ручка будет, но принято решение ее не использовать
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: grenade_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID раскидки
+        - name: property_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID свойства
+      responses:
+        "204":
+          description: Свойство успешно удалено у раскидки
+        "401":
+          description: Неавторизованный доступ
+        "404":
+          description: Раскидка или свойство не найдены
+
+  /lineups/{grenade_id}/properties/:
+    post:
+      tags:
+        - Lineups
+      summary: Добавить свойство к раскидке, ручка будет, но принято решение ее не использовать
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: grenade_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID раскидки
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                property_id:
+                  type: integer
+                  description: ID добавляемого свойства
+              required:
+                - property_id
+      responses:
+        "201":
+          description: Свойство успешно добавлено к раскидке
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Lineup"
+        "400":
+          description: Некорректные данные
+        "401":
+          description: Неавторизованный доступ
+        "404":
+          description: Раскидка или свойство не найдены
+
+  /lineups/{id}/change-grenade-class/:
+    patch:
+      tags:
+        - Lineups
+      summary: Изменить класс гранаты у раскидки
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID раскидки
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                grenade_class_id:
+                  type: integer
+                  description: ID нового класса гранат
+              required:
+                - grenade_class_id
+      responses:
+        "200":
+          description: Класс гранаты успешно изменен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Lineup"
+        "400":
+          description: Некорректные данные
+        "401":
+          description: Неавторизованный доступ
+        "404":
+          description: Раскидка или класс гранат не найдены
+  /lineups/view_filters/:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Lineups
+      summary: Получить список всех доступных фильтров
+      description: |
+        Возвращает фиксированный список всех доступных фильтров.
+        Фильтры неизменны и всегда возвращаются в ответе.
+      responses:
+        200:
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  is_approved:
+                    type: array
+                    items:
+                      type: string
+                    example:
+                      - "true"
+                      - "false"
+        500:
+          description: Внутренняя ошибка сервера
+
+  /lineups/view_sorts/:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Lineups
+      summary: Получить список всех доступных сортировок
+      description: |
+        Возвращает фиксированный список всех доступных сортировок.
+        Сортировки неизменны и всегда возвращаются в ответе.
+      responses:
+        200:
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ordering:
+                    type: array
+                    items:
+                      type: string
+                    example:
+                      - "date_of_creation"
+                      - "-date_of_creation"
+                      - "by_alphabet"
+                      - "-by_alphabet"
+        500:
+          description: Внутренняя ошибка сервера
+
+  /properties/:
+    get:
+      tags:
+        - Properties
+      summary: Получить все свойства
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Список всех свойств
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Property"
+    
+    post:
+      tags:
+        - Properties
+      summary: Создать новое свойство
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PropertyCreate"
+      responses:
+        "201":
+          description: Свойство успешно создано
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Property"
+
+  /properties/{id}/:
+    get:
+      tags:
+        - Properties
+      summary: Получить свойство по ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Информация о свойстве
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Property"
+        "404":
+          description: Свойство не найдено
+    
+    put:
+      tags:
+        - Properties
+      summary: Полностью обновить свойство
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PropertyUpdate"
+      responses:
+        "200":
+          description: Свойство успешно обновлено
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Property"
+        "404":
+          description: Свойство не найдено
+    
+    patch:
+      tags:
+        - Properties
+      summary: Частично обновить свойство
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PropertyUpdate"
+      responses:
+        "200":
+          description: Свойство успешно обновлено
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Property"
+        "404":
+          description: Свойство не найдено
+    
+    delete:
+      tags:
+        - Properties
+      summary: Удалить свойство
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Свойство успешно удалено
+        "404":
+          description: Свойство не найдено
 
   /grenade-classes/:
     get:
@@ -522,18 +825,135 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                name:
-                  type: string
+              $ref: "#/components/schemas/GrenadeClassCreate"
       responses:
         "201":
           description: Класс гранаты успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GrenadeClass"
+        "401":
+          description: Неавторизованный доступ
+        "400":
+          description: Некорректные данные
+
+  /grenade-classes/{id}/:
+    get:
+      tags:
+        - GrenadeClasses
+      summary: Получить данные одного класса гранат по ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID класса гранат
+      responses:
+        "200":
+          description: Данные класса гранат
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GrenadeClass"
+        "404":
+          description: Класс гранат не найден
+        "401":
+          description: Неавторизованный доступ
+
+    put:
+      tags:
+        - GrenadeClasses
+      summary: Обновить класс гранат (полная замена)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID класса гранат
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GrenadeClassUpdate"
+      responses:
+        "200":
+          description: Класс гранат успешно обновлен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GrenadeClass"
+        "404":
+          description: Класс гранат не найден
+        "401":
+          description: Неавторизованный доступ
+        "400":
+          description: Некорректные данные
+
+    patch:
+      tags:
+        - GrenadeClasses
+      summary: Частично обновить класс гранат
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID класса гранат
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GrenadeClassUpdate"
+      responses:
+        "200":
+          description: Класс гранат успешно обновлен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GrenadeClass"
+        "404":
+          description: Класс гранат не найден
+        "401":
+          description: Неавторизованный доступ
+        "400":
+          description: Некорректные данные
+
+    delete:
+      tags:
+        - GrenadeClasses
+      summary: Удалить класс гранат
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID класса гранат
+      responses:
+        "204":
+          description: Класс гранат успешно удален
+        "404":
+          description: Класс гранат не найден
         "401":
           description: Неавторизованный доступ
 
   /users/:
     get:
+      deprecated: true
       tags:
         - Users
       summary: Получить данные всех пользователей
@@ -549,6 +969,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/User"
     post:
+      deprecated: true
       tags:
         - Users
       summary: Создать нового пользователя
@@ -591,6 +1012,7 @@ paths:
 
   /users/{id}/:
     get:
+      deprecated: true
       tags:
         - Users
       summary: Получить данные пользователя по ID
@@ -610,6 +1032,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/User"
     put:
+      deprecated: true
       tags:
         - Users
       summary: Полностью обновить пользователя по ID
@@ -656,6 +1079,7 @@ paths:
         "401":
           description: Неавторизованный доступ
     patch:
+      deprecated: true
       tags:
         - Users
       summary: Частично обновить пользователя по ID
@@ -702,6 +1126,7 @@ paths:
         "401":
           description: Неавторизованный доступ
     delete:
+      deprecated: true
       tags:
         - Users
       summary: Удалить пользователя по ID
@@ -721,6 +1146,7 @@ paths:
 
   /admins/:
     get:
+      deprecated: true
       tags:
         - Admins
       summary: Получить всех администраторов
@@ -736,6 +1162,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/Admins"
     post:
+      deprecated: true
       tags:
         - Admins
       summary: Назначить администратора
@@ -760,6 +1187,7 @@ paths:
 
   /admins/{id}/:
     get:
+      deprecated: true
       tags:
         - Admins
       summary: Получить администратора по ID
@@ -779,6 +1207,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Admins"
     patch:
+      deprecated: true
       tags:
         - Admins
       summary: Частично обновить администратора по ID
@@ -805,6 +1234,7 @@ paths:
         "401":
           description: Неавторизованный доступ
     delete:
+      deprecated: true
       tags:
         - Admins
       summary: Удалить администратора по ID
@@ -824,6 +1254,7 @@ paths:
 
   /admin-types/:
     get:
+      deprecated: true
       tags:
         - Admins
       summary: Получить все типы администраторов
@@ -839,6 +1270,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/AdminType"
     post:
+      deprecated: true
       tags:
         - Admins
       summary: Создать новый тип администратора
@@ -865,6 +1297,7 @@ paths:
 
   /admin-types/{id}/:
     get:
+      deprecated: true
       tags:
         - Admins
       summary: Получить тип администратора по ID
@@ -884,6 +1317,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/AdminType"
     put:
+      deprecated: true
       tags:
         - Admins
       summary: Полностью обновить тип администратора по ID
@@ -914,6 +1348,7 @@ paths:
         "401":
           description: Неавторизованный доступ
     patch:
+      deprecated: true
       tags:
         - Admins
       summary: Частично обновить тип администратора по ID
@@ -944,6 +1379,7 @@ paths:
         "401":
           description: Неавторизованный доступ
     delete:
+      deprecated: true
       tags:
         - Admins
       summary: Удалить тип администратора по ID
@@ -963,6 +1399,7 @@ paths:
 
   /favorites/:
     post:
+      deprecated: true
       tags:
         - Favorites
       summary: Добавить раскидку в избранное(Рабочая)
@@ -985,6 +1422,7 @@ paths:
 
   /favorites/{userId}/:
     get:
+      deprecated: true
       tags:
         - Favorites
       summary: Получить избранные раскидки пользователя(Рабочая)
@@ -1008,6 +1446,7 @@ paths:
 
   /favorites/{grenadeId}/:
     delete:
+      deprecated: true
       tags:
         - Favorites
       summary: Удалить раскидку из избранного(Рабочая)
@@ -1052,8 +1491,6 @@ components:
           type: integer
         map_id:
           type: integer
-        type_id:
-          type: integer
         link_to_video:
           type: string
           nullable: true
@@ -1074,33 +1511,58 @@ components:
         preview_image_link:
           type: string
           nullable: true
+        is_favorite:
+          type: boolean
         property_list:
           type: array
           items:
             type: object
             properties:
-              key:
+              name:
                 type: string
-              value:
+              value:  
                 type: string
         grenade_class:
           $ref: "#/components/schemas/GrenadeClass"
 
-    LineupType:
+    Property:
       type: object
       properties:
-        type_id:
+        property_id:
           type: integer
-        key_name:
+          format: int64
+          readOnly: true
+        name:
           type: string
-        value_id:
-          type: integer
+        value:
+          type: string
+    
+    PropertyCreate:
+      type: object
+      properties:
+        name:
+          type: string
+        value:
+          type: string
+      required:
+        - name
+    
+    PropertyUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        value:
+          type: string
+      minProperties: 1  
 
     GrenadeClass:
       type: object
       properties:
         grenade_class_id:
           type: integer
+          format: int64
+          readOnly: true
         name:
           type: string
         description:
@@ -1108,6 +1570,38 @@ components:
           nullable: true
         price:
           type: integer
+          format: int32
+      required:
+        - name
+        - price
+
+    GrenadeClassCreate:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        price:
+          type: integer
+          format: int32
+      required:
+        - name
+        - price
+
+    GrenadeClassUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        price:
+          type: integer
+          format: int32
+      minProperties: 1
 
     User:
       type: object
@@ -1182,8 +1676,6 @@ components:
           type: integer
         grenade_class_id:
           type: integer
-        type_id:
-          type: integer
         link_to_video:
           type: string
           nullable: true
@@ -1201,20 +1693,6 @@ components:
         preview_image_link:
           type: string
           nullable: true
-
-    LineupTypeUpdate:
-      type: object
-      properties:
-        key_name:
-          type: string
-        value_id:
-          type: integer
-
-    GrenadeClassUpdate:
-      type: object
-      properties:
-        name:
-          type: string
 
     UserUpdate:
       type: object

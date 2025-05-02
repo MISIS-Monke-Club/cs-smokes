@@ -1,48 +1,44 @@
+import { toast } from "sonner"
 import { queryOptions } from "@tanstack/react-query"
-import { AxiosResponse } from "axios"
-import { grenadeDTOschema, GrenadeModel } from "../domain"
+import { grenadeDTOschema, GrenadeModel } from "../model/domain"
 import { fromGrenadeArrayDTO, fromGrenadeDTO } from "../lib/dto-transformer"
-import { mockGrenades } from "./__mocks"
 import { typedQuery } from "@shared/lib/precooked-methods"
+import { instance } from "@shared/api/instance"
 
 export const api = {
     baseKey: ["grenade"],
-    getGrenades: () =>
-        queryOptions<GrenadeModel[]>({
-            queryKey: [...api.baseKey, "list"],
-            queryFn: () =>
-                typedQuery({
-                    // request: instance.get("/grenades")
-                    // TODO: Remove this mocks
-                    request: Promise.resolve({
-                        data: mockGrenades,
-                        headers: {},
-                        request: {},
-                        status: 0,
-                        statusText: "",
-                        config: {} as any,
-                    } satisfies AxiosResponse),
-                    dtoSchema: grenadeDTOschema.array(),
-                    fromDTO: fromGrenadeArrayDTO,
-                }),
+    baseApiUrl: "grenades",
+
+    getGrenadesByIdOptions: ({ grenadeId }: Pick<GrenadeModel, "grenadeId">) =>
+        queryOptions({
+            queryKey: [...api.baseKey, { type: "byId", grenadeId }],
+            queryFn: () => api.getGrenadeById({ grenadeId }),
         }),
-    getGrenadeById: ({ grenadeId }: { grenadeId: number }) =>
-        queryOptions<GrenadeModel>({
-            queryKey: [...api.baseKey, "ById", grenadeId],
-            queryFn: () =>
-                typedQuery({
-                    // request: instance.get(`/grenades/${grenadeId}`),
-                    // TODO: remove this mock
-                    request: Promise.resolve({
-                        data: mockGrenades[grenadeId - 1],
-                        headers: {},
-                        request: {},
-                        status: 0,
-                        statusText: "",
-                        config: {} as any,
-                    } satisfies AxiosResponse),
-                    dtoSchema: grenadeDTOschema,
-                    fromDTO: fromGrenadeDTO,
-                }),
+
+    getGrenadesOptions: () =>
+        queryOptions({
+            queryKey: [...api.baseKey, { type: "list" }],
+            queryFn: api.getGrenades,
+        }),
+
+    getGrenades: () =>
+        typedQuery({
+            request: instance.get(api.baseApiUrl),
+            dtoSchema: grenadeDTOschema.array(),
+            fromDTO: fromGrenadeArrayDTO,
+        }).catch((err) => {
+            console.error(err)
+            toast.error(
+                "Произошла ошибка при получении раскидок, проверьте консоль разработчика"
+            )
+
+            throw err
+        }),
+
+    getGrenadeById: ({ grenadeId }: Pick<GrenadeModel, "grenadeId">) =>
+        typedQuery({
+            request: instance.get(`/${api.baseApiUrl}/${grenadeId}`),
+            dtoSchema: grenadeDTOschema,
+            fromDTO: fromGrenadeDTO,
         }),
 }

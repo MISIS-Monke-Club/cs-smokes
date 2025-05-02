@@ -1,1 +1,0 @@
-export { GrenadesWidget } from "./ui"

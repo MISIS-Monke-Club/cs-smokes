@@ -1,21 +1,26 @@
 import { useQuery } from "@tanstack/react-query"
 import { useSelector } from "react-redux"
 import classes from "./ui.module.scss"
-import { grenadesMaper, GrenadesList } from "@entities/grenade"
-import { getFavoritesApi } from "@features/get-favorite-lineups"
+import { GrenadesListComponent } from "@entities/grenade"
+import { favoritesApi } from "@features/favorites/get"
 import { selectUserId } from "@entities/session"
+import { favoritesMaper } from "@features/favorites/get"
 
 export function FavoritesPage() {
     const userId = useSelector(selectUserId)
 
-    const { data } = useQuery(
-        getFavoritesApi.getFavoriteLineupsByUserId(userId)
-    )
+    const { data: grenades } = useQuery({
+        ...favoritesApi.getFavoritesByUserIdOptions({ userId: userId! }),
+        enabled: Boolean(userId),
+    })
 
     return (
         <>
             <h1 className={classes.title}>Favorites</h1>
-            <GrenadesList grenades={data} mapFunction={grenadesMaper} />
+            <GrenadesListComponent
+                grenades={grenades}
+                mapFunction={favoritesMaper}
+            />
         </>
     )
 }

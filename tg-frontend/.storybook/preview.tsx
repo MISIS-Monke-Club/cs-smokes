@@ -9,6 +9,8 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 import { QueryClientProvider } from "@tanstack/react-query"
 import { client } from "../src/shared/api"
 import "../src/app/tailwind.css"
+import { store } from "../src/shared/model"
+import { Provider } from "react-redux"
 import "../src/app/index.scss"
 
 initialize()
@@ -35,36 +37,38 @@ const preview: Preview = {
     beforeEach: () => client.clear(),
     decorators: [
         (Story, context) => (
-            <ThemeProvider>
-                <QueryClientProvider client={client}>
-                    <MemoryRouter
-                        initialEntries={
-                            context.parameters.route
-                                ? [context.parameters.route]
-                                : ["/*"]
-                        }
-                    >
-                        <Routes>
-                            <Route
-                                path={context.parameters.routeSetup || "/*"}
-                                element={<Story />}
-                            />
-                        </Routes>
-                    </MemoryRouter>
-                    <Toaster
-                        duration={3500}
-                        closeButton
-                        richColors
-                        theme='system'
-                    />
-                    {context.parameters.reactQueryDevTools && (
-                        <ReactQueryDevtools initialIsOpen={false} />
-                    )}
-                </QueryClientProvider>
-            </ThemeProvider>
+            <Provider store={store}>
+                <ThemeProvider>
+                    <QueryClientProvider client={client}>
+                        <MemoryRouter
+                            initialEntries={
+                                context.parameters.route
+                                    ? [context.parameters.route]
+                                    : ["/*"]
+                            }
+                        >
+                            <Routes>
+                                <Route
+                                    path={context.parameters.routeSetup || "/*"}
+                                    element={<Story />}
+                                />
+                            </Routes>
+                        </MemoryRouter>
+                        <Toaster
+                            duration={3500}
+                            closeButton
+                            richColors
+                            theme='system'
+                        />
+                        {context.parameters.reactQueryDevTools && (
+                            <ReactQueryDevtools initialIsOpen={false} />
+                        )}
+                    </QueryClientProvider>
+                </ThemeProvider>
+            </Provider>
         ),
     ],
-    tags: ["autodocs"],
+    tags: ["autodocs", "autodocs"],
 }
 
 export default preview

@@ -30,12 +30,6 @@ export function Header() {
                     <Link to='/profile'>Profile</Link>
                 </Button>
             </nav>
-            <div className={classes.actions}>
-                <Button>Sign up</Button>
-                <Button variant='secondary' asChild>
-                    <Link to='/login'>Login</Link>
-                </Button>
-            </div>
         </header>
     )
 }
