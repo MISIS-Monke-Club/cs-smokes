@@ -3,7 +3,7 @@ import { userDTOschema, UserModel } from "@entities/user"
 
 export type LoginTgModel = {
     user: UserModel
-    authToken: string
+    accessToken: string
     refreshToken: string
 }
 export const loginTgDTOschema = z.object({

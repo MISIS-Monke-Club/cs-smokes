@@ -2,7 +2,7 @@ import { MutationObserver } from "@tanstack/react-query"
 import { AxiosError } from "axios"
 import { toast } from "sonner"
 import { api } from "../api"
-import { setUserError, setUserId } from "@entities/session"
+import { setAuthSession, setAuthorizeError } from "@entities/session"
 import { client } from "@shared/api"
 import { TELEGRAM_INIT_DATA } from "@shared/config/constants"
 import { AppThunk } from "@shared/model/store"
@@ -19,11 +19,18 @@ export const loginThunk = (): AppThunk => (dispatch, _) => {
                     userApi.getUserById(loginResult.user.userId).queryKey,
                     loginResult.user
                 )
-                dispatch(setUserId(loginResult.user.userId))
+                dispatch(
+                    setAuthSession({
+                        accessToken: loginResult.accessToken,
+                        refreshToken: loginResult.refreshToken,
+                        userId: loginResult.user.userId,
+                    })
+                )
+                localStorage.setItem("accessToken", loginResult.accessToken)
             } else {
                 console.error("unexpected result of request")
                 dispatch(
-                    setUserError({
+                    setAuthorizeError({
                         message: "something unexpected happened...",
                     })
                 )
