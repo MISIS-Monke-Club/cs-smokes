@@ -982,7 +982,7 @@ paths:
               properties:
                 username:
                   type: string
-                avatar_link:
+                avatar_url:
                   type: string
                   nullable: true
                 steam_link:
@@ -1049,7 +1049,7 @@ paths:
               properties:
                 username:
                   type: string
-                avatar_link:
+                avatar_url:
                   type: string
                   nullable: true
                 steam_link:
@@ -1095,7 +1095,7 @@ paths:
               properties:
                 username:
                   type: string
-                avatar_link:
+                avatar_url:
                   type: string
                   nullable: true
                 steam_link:
@@ -1604,7 +1604,7 @@ components:
           type: integer
         username:
           type: string
-        avatar_link:
+        avatar_url:
           type: string
           nullable: true
         steam_link:
@@ -1694,7 +1694,7 @@ components:
         username:
           type: string
           nullable: true
-        avatar_link:
+        avatar_url:
           type: string
           nullable: true
         steam_link:
