@@ -1,5 +1,5 @@
 import classes from "./grenades.module.scss"
-import { GrenadesList } from "@features/grenades-list"
+import { GrenadesList } from "@features/grenade/get-list"
 
 export function Grenades() {
     return (

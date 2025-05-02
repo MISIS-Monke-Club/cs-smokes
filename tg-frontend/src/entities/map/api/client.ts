@@ -3,6 +3,7 @@ import { toast } from "sonner"
 import { fromMapArrayDTO, fromMapPageDTO } from "../lib/dto-transformer"
 import {
     mapDTOschema,
+    MapId,
     MapModel,
     mapPageDTOschema,
     MapPageModel,
@@ -11,36 +12,41 @@ import { typedQuery } from "@shared/lib/precooked-methods"
 import { instance } from "@shared/api"
 
 export const api = {
-    baseKey: "map",
+    baseKey: ["map"],
     baseApiUrl: "maps",
-    getMaps: () =>
+    getMapsOptions: () =>
         queryOptions<MapModel[]>({
-            queryKey: [api.baseKey, "list"],
-            queryFn: () =>
-                typedQuery({
-                    request: instance.get(`/${api.baseApiUrl}`),
-                    dtoSchema: mapDTOschema.array(),
-                    fromDTO: fromMapArrayDTO,
-                }).catch((err) => {
-                    toast.error("Error acquired while getting maps from server")
-                    console.error(err)
-
-                    throw err
-                }),
+            queryKey: [...api.baseKey, { type: "list" }],
+            queryFn: api.getMaps,
         }),
-    getMapById: (mapId: MapModel["mapId"]) =>
-        queryOptions<MapPageModel>({
-            queryKey: [api.baseKey, "ById", mapId],
-            queryFn: () =>
-                typedQuery({
-                    request: instance.get(`${api.baseApiUrl}/${mapId}`),
-                    dtoSchema: mapPageDTOschema,
-                    fromDTO: fromMapPageDTO,
-                }).catch((err) => {
-                    toast.error("Error acquired while getting map from server")
-                    console.error(err)
 
-                    throw err
-                }),
+    getMapByIdOptions: (mapId: MapModel["mapId"]) =>
+        queryOptions<MapPageModel>({
+            queryKey: [...api.baseKey, { type: "byId", mapId }],
+            queryFn: () => api.getMapsById(mapId),
+        }),
+
+    getMaps: () =>
+        typedQuery({
+            request: instance.get(api.baseApiUrl),
+            dtoSchema: mapDTOschema.array(),
+            fromDTO: fromMapArrayDTO,
+        }).catch((err) => {
+            toast.error("Error acquired while getting maps from server")
+            console.error(err)
+
+            throw err
+        }),
+
+    getMapsById: (mapId: MapId) =>
+        typedQuery({
+            request: instance.get(`${api.baseApiUrl}/${mapId}`),
+            dtoSchema: mapPageDTOschema,
+            fromDTO: fromMapPageDTO,
+        }).catch((err) => {
+            toast.error("Error acquired while getting map from server")
+            console.error(err)
+
+            throw err
         }),
 }

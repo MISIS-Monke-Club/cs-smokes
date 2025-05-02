@@ -1,7 +1,5 @@
-import { useQuery } from "@tanstack/react-query"
 import { mapsMaper } from "../../lib/maper"
 import { MapModel } from "../../model/domain"
-import { mapApi } from "../../"
 import { PlaceholderBlock } from "@shared/ui/placeholder-block"
 import { ItemsList } from "@shared/ui/items-list"
 import { Maper } from "@shared/model"
@@ -9,12 +7,16 @@ import { ComponentsRepeater } from "@shared/ui/components-repeater"
 import { Skeleton } from "@shared/ui/skeleton"
 
 type MapsListProps = {
+    maps?: MapModel[]
     mapFunction?: Maper<MapModel>
+    isLoading?: boolean
 }
 
-export function MapsList({ mapFunction = mapsMaper }: MapsListProps) {
-    const { data: maps = [], isLoading, isError } = useQuery(mapApi.getMaps())
-
+export function MapsList({
+    maps = [],
+    mapFunction = mapsMaper,
+    isLoading = false,
+}: MapsListProps) {
     if (isLoading) {
         return (
             <ItemsList type='grid' isLoading>
@@ -30,12 +32,6 @@ export function MapsList({ mapFunction = mapsMaper }: MapsListProps) {
             <PlaceholderBlock>
                 Something went wrong, no maps was provided
             </PlaceholderBlock>
-        )
-    }
-
-    if (isError) {
-        return (
-            <PlaceholderBlock>Error acquired in maps list...</PlaceholderBlock>
         )
     }
 

@@ -18,10 +18,12 @@ const meta: Meta<typeof MapOverview> = {
                 // Grenades
                 testGrenadeServer({
                     grenadeId: mockMapPage.map_lineups[0].grenade_id,
+                    customData: mockMapPage.map_lineups[0],
                     delayInMs: 200,
                 }),
                 testGrenadeServer({
                     grenadeId: mockMapPage.map_lineups[1].grenade_id,
+                    customData: mockMapPage.map_lineups[1],
                     delayInMs: 250,
                 }),
             ],

@@ -19,11 +19,13 @@ export const mapPageDTOschema = z
     .extend(mapDTOschema.shape)
 
 export type MapModel = {
-    mapId: number
+    mapId: MapId
     name: string
     link: string | null
     imageLink: string | null
 }
+
+export type MapId = number
 
 export type MapPageModel = MapModel & {
     mapLineups: GrenadeModel[]

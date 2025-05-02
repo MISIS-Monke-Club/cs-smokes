@@ -1,8 +1,9 @@
 export {
-    slice as userSlice,
     selectUserId,
-    setUserId,
     selectError,
-    deleteUser,
-    setUserError,
+    deleteAuthSession,
+    selectAuthSession,
+    setAuthSession,
+    setAuthorizeError,
+    setAccessToken,
 } from "./model/slice"
