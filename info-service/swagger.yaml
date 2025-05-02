@@ -964,7 +964,6 @@ paths:
           content:
             application/json:
               schema:
-                type: array
                 items:
                   $ref: "#/components/schemas/User"
     post:
@@ -982,26 +981,11 @@ paths:
               properties:
                 username:
                   type: string
-                avatar_url:
-                  type: string
-                  nullable: true
-                steam_link:
-                  type: string
-                  nullable: true
-                tg_id:
-                  type: integer
-                  nullable: true
                 email:
                   type: string
                   nullable: true
-                first_name:
+                password:
                   type: string
-                  nullable: true
-                last_name:
-                  type: string
-                  nullable: true
-                is_banned:
-                  type: boolean
       responses:
         "201":
           description: Пользователь успешно создан
