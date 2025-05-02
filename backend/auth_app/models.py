@@ -5,8 +5,8 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 class Map(models.Model):
     map_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255)
-    link = models.CharField(max_length=255)
-    image_link = models.CharField(max_length=255)
+    link = models.CharField(max_length=255, null=True)
+    image_link = models.CharField(max_length=255, null=True)
 
     def __str__(self):
         return self.name
@@ -15,26 +15,20 @@ class Map(models.Model):
 class GrenadeClass(models.Model):
     grenade_class_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255)
+    description = models.CharField(max_length=255, null=True, blank=True)
+    price = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name
 
 
-class LineupTypeValues(models.Model):
-    value_id = models.AutoField(primary_key=True)
-    value = models.CharField(max_length=255)
+class Property(models.Model):
+    property_id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=255)
+    value = models.CharField(max_length=255, null=True)
 
     def __str__(self):
-        return self.value
-
-
-class LineupType(models.Model):
-    type_id = models.AutoField(primary_key=True)
-    key_name = models.CharField(max_length=255)
-    value_id = models.ForeignKey(LineupTypeValues, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.key_name
+        return self.name
 
 
 class UserManager(BaseUserManager):
@@ -67,19 +61,29 @@ class User(AbstractBaseUser):
 class Lineup(models.Model):
     grenade_id = models.AutoField(primary_key=True)
     map_id = models.ForeignKey(Map, on_delete=models.CASCADE)
-    grenade_class_id = models.ForeignKey(GrenadeClass, on_delete=models.CASCADE)
-    type_id = models.ForeignKey(LineupType, on_delete=models.CASCADE)
-    link_to_video = models.CharField(max_length=255)
+    link_to_video = models.CharField(max_length=255, null=True)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     title = models.CharField(max_length=255)
-    description = models.TextField()
-    approved = models.BooleanField(default=False)
+    description = models.TextField(null=True)
+    is_approved = models.BooleanField(default=False)
     views = models.IntegerField(default=0)
-    preview_image_link = models.CharField(max_length=255)
+    preview_image_link = models.CharField(max_length=255, null=True)
+    grenade_class_id = models.ForeignKey(GrenadeClass, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.title
+
+
+class PropertyList(models.Model):
+    property_id = models.ForeignKey(Property, on_delete=models.CASCADE)
+    grenade_id = models.ForeignKey(Lineup, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ("property_id", "grenade_id")
+
+    def __str__(self):
+        return f"{self.property_id} — {self.grenade_id}"
 
 
 class AdminType(models.Model):

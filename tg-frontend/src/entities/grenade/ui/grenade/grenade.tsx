@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom"
 import React, { ReactNode, useMemo } from "react"
-import { GrenadeModel } from "../../domain"
+import { GrenadeModel } from "../../model/domain"
 import classes from "./grenade.module.scss"
 import {
     Card,
@@ -11,17 +11,22 @@ import {
     CardTitle,
 } from "@shared/ui/card"
 import { dateFormatter } from "@shared/lib/date-formatter"
+import { PlaceholderBlock } from "@shared/ui/placeholder-block"
 
 type GrenadeProps = React.ComponentProps<"div"> & {
     grenade: GrenadeModel
     bottomSlot?: ReactNode
     className?: string
+    isLoading?: boolean
+    isError?: boolean
 }
 
 export function Grenade({
     grenade,
     bottomSlot = "",
     className = "",
+    isLoading = false,
+    isError = false,
     ...rest
 }: GrenadeProps) {
     const navigate = useNavigate()
@@ -31,6 +36,14 @@ export function Grenade({
     }
 
     const date = useMemo(() => {
+        if (!grenade) {
+            return dateFormatter({
+                isoDatetime: new Date().toString(),
+                day: true,
+                month: true,
+            })
+        }
+
         return dateFormatter({
             isoDatetime: grenade.createdAt,
             day: true,
@@ -48,10 +61,22 @@ export function Grenade({
         return draftClass.join(" ")
     }, [className])
 
+    if (isLoading) {
+        return <div>loading...</div>
+    }
+
+    if (isError) {
+        return <PlaceholderBlock>Error happened...</PlaceholderBlock>
+    }
+
+    if (!grenade) {
+        return <PlaceholderBlock>Something went wrong...</PlaceholderBlock>
+    }
+
     return (
         <Card className={combinedClass} onClick={clickHandler} {...rest}>
             <CardHeader>
-                <CardTitle>Grenade id:{grenade.grenadeId}</CardTitle>
+                <CardTitle>Grenade id:{grenade?.grenadeId}</CardTitle>
                 <CardDescription>view cool grenade</CardDescription>
             </CardHeader>
             <CardContent>

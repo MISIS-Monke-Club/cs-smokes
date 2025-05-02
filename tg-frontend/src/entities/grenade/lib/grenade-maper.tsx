@@ -1,5 +1,5 @@
 import { ReactNode } from "react"
-import { GrenadeModel } from "../domain"
+import { GrenadeModel } from "../model/domain"
 import { Grenade } from "../ui/grenade/grenade"
 
 export const grenadesMaper = (elements: GrenadeModel[]): ReactNode => (
