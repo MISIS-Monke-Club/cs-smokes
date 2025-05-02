@@ -22,19 +22,17 @@ class UserListAPIView(APIView):
         examples=[
             OpenApiExample(
                 "Пример успешного ответа",
-                value=[
-                    {
-                        "user_id": 1,
-                        "username": "usename",
-                        "email": "user@example.com",
-                        "first_name": "",
-                        "last_name": "",
-                        "avatar_url": "",
-                        "steam_link": "",
-                        "tg_id": None,
-                        "is_banned": False,
-                    }
-                ],
+                value={
+                    "user_id": 1,
+                    "username": "usename",
+                    "email": "user@example.com",
+                    "first_name": "",
+                    "last_name": "",
+                    "avatar_url": "",
+                    "steam_link": "",
+                    "tg_id": None,
+                    "is_banned": False,
+                },
                 response_only=True,
                 status_codes=["200"],
             ),
