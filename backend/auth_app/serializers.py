@@ -216,8 +216,8 @@ class LoginSerializer(TokenObtainPairSerializer):
         refresh = self.get_token(user)
 
         data = {
-            "refresh": str(refresh),
-            "access": str(refresh.access_token),
+            "refresh_token": str(refresh),
+            "access_token": str(refresh.access_token),
             "user": UserResponseSerializer(user).data,
         }
 

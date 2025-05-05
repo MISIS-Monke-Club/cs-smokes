@@ -56,9 +56,9 @@ paths:
                 properties:
                   user:
                     $ref: "#/components/schemas/User"
-                  access:
+                  access_token:
                     type: string
-                  refresh:
+                  refresh_token:
                     type: string
         "401":
           description: Неправильный логин или пароль
