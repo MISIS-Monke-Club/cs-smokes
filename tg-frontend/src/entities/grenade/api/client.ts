@@ -7,7 +7,7 @@ import { instance } from "@shared/api/instance"
 
 export const api = {
     baseKey: ["grenade"],
-    baseApiUrl: "grenades",
+    baseApiUrl: "lineups",
 
     getGrenadesByIdOptions: ({ grenadeId }: Pick<GrenadeModel, "grenadeId">) =>
         queryOptions({
