@@ -119,13 +119,7 @@ class FavoritesView(APIView):
         favorites = Favorites.objects.filter(user_id=pk).select_related("grenade_id")
 
         if not favorites.exists():
-            return Response(
-                {
-                    "message": "The user has no grenades in their favorites.",
-                    "user_id": pk,
-                },
-                status=200,
-            )
+            return Response([], status=200)
 
         lineups = [fav.grenade_id for fav in favorites]
 
