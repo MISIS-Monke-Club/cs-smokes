@@ -22,6 +22,19 @@ class MapSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class MapDetailSerializer(serializers.ModelSerializer):
+    map_lineups = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Map
+        fields = ["map_id", "name", "link", "image_link", "map_lineups"]
+
+    def get_map_lineups(self, obj):
+        lineups = Lineup.objects.filter(map_id=obj)
+        serializer = LineupSerializer(lineups, many=True)
+        return serializer.data
+
+
 class GrenadeClassSerializer(serializers.ModelSerializer):
     class Meta:
         model = GrenadeClass
@@ -119,7 +132,10 @@ class LineupSerializer(serializers.ModelSerializer):
 
     @extend_schema_field(serializers.BooleanField())
     def get_is_favorite(self, obj):
-        user = self.context.get("request").user
+        request = self.context.get("request")
+        if not request or not hasattr(request, "user"):
+            return False
+        user = request.user
         if user.is_authenticated:
             return Favorites.objects.filter(user_id=user, grenade_id=obj).exists()
         return False
@@ -200,8 +216,8 @@ class LoginSerializer(TokenObtainPairSerializer):
         refresh = self.get_token(user)
 
         data = {
-            "refresh": str(refresh),
-            "access": str(refresh.access_token),
+            "refresh_token": str(refresh),
+            "access_token": str(refresh.access_token),
             "user": UserResponseSerializer(user).data,
         }
 
