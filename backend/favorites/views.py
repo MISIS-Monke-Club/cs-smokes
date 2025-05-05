@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from auth_app.models import Favorites
-from auth_app.serializers import FavoritesSerializer, FavoritesCreateSerializer
+from auth_app.serializers import FavoritesCreateSerializer
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExample
 from drf_spectacular.types import OpenApiTypes
 from auth_app.serializers import LineupSerializer
@@ -14,7 +14,7 @@ class FavoritesAddView(APIView):
 
     @extend_schema(
         request=FavoritesCreateSerializer,
-        responses={201: FavoritesSerializer, 400: OpenApiTypes.OBJECT},
+        responses={201: OpenApiTypes.OBJECT, 400: OpenApiTypes.OBJECT},
         description="Добавление гранаты в избранное",
         examples=[
             OpenApiExample(
@@ -24,19 +24,7 @@ class FavoritesAddView(APIView):
             ),
             OpenApiExample(
                 "Пример ответа",
-                value={
-                    "id": 1,
-                    "user_id": {
-                        "id": 5,
-                        "username": "example_user",
-                        # другие поля
-                    },
-                    "grenade_id": {
-                        "id": 123,
-                        "title": "Smoke Jungle",
-                        # другие поля Lineup
-                    },
-                },
+                value={"user_id": 1, "grenade_id": 2},
                 response_only=True,
             ),
         ],
@@ -87,21 +75,37 @@ class FavoritesView(APIView):
             )
         ],
         responses={
-            200: FavoritesSerializer(many=True),
+            200: LineupSerializer(many=True),
             400: OpenApiTypes.OBJECT,
             404: OpenApiTypes.OBJECT,
         },
         description="Получение списка избранных гранат пользователя",
         examples=[
             OpenApiExample(
-                "Example response",
+                "Пример ответа",
                 value=[
                     {
-                        "id": 1,
-                        "user": 1,
-                        "grenade": {
-                            "grenade_id": "123",
+                        "grenade_id": 123,
+                        "map_id": 1,
+                        "link_to_video": "https://example.com/video",
+                        "user_id": 5,
+                        "created_at": "2025-05-05T06:32:03.493Z",
+                        "title": "Smoke Jungle",
+                        "description": "Бросок с точки A на джангл",
+                        "is_approved": True,
+                        "is_favorite": True,
+                        "views": 42,
+                        "preview_image_link": "https://example.com/image.jpg",
+                        "grenade_class_id": 2,
+                        "grenade_class": {
+                            "grenade_class_id": 2,
+                            "name": "Smoke",
+                            "description": "дымовая граната",
+                            "price": 300,
                         },
+                        "property_list": [
+                            {"name": "Откуда кидать", "value": "Угол стены"}
+                        ],
                     }
                 ],
                 response_only=True,
