@@ -237,44 +237,12 @@ class UserResponseSerializer(serializers.ModelSerializer):
         read_only_fields = ("user_id", "is_banned")
 
 
-class SlimLineupSerializer(serializers.ModelSerializer):
-    grenade_class = GrenadeClassSerializer(source="grenade_class_id", read_only=True)
-    is_favorite = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Lineup
-        fields = [
-            "grenade_id",
-            "map_id",
-            "link_to_video",
-            "user_id",
-            "created_at",
-            "title",
-            "description",
-            "is_approved",
-            "views",
-            "preview_image_link",
-            "grenade_class",
-            "is_favorite",
-        ]
-
-    def get_is_favorite(self, obj):
-        user = self.context.get("request").user
-        return Favorites.objects.filter(user_id=user, grenade_id=obj).exists()
-
-
 class FavoritesCreateSerializer(serializers.ModelSerializer):
-    grenade_id = serializers.PrimaryKeyRelatedField(
-        queryset=Lineup.objects.all(), write_only=True
-    )
-    grenade = serializers.SerializerMethodField(read_only=True)
+    grenade_id = serializers.PrimaryKeyRelatedField(queryset=Lineup.objects.all())
 
     class Meta:
         model = Favorites
-        fields = [
-            "grenade_id",
-            "grenade",
-        ]  # grenade_id — только для записи, grenade — только для чтения
+        fields = ["grenade_id"]
 
     def validate(self, attrs):
         request = self.context.get("request")
@@ -305,6 +273,3 @@ class FavoritesCreateSerializer(serializers.ModelSerializer):
             user_id=request.user, grenade_id=validated_data["grenade_id"]
         )
         return favorite
-
-    def get_grenade(self, obj):
-        return SlimLineupSerializer(obj.grenade_id, context=self.context).data

@@ -1399,10 +1399,9 @@ paths:
 
   /favorites/:
     post:
-      deprecated: true
       tags:
         - Favorites
-      summary: Добавить раскидку в избранное(Рабочая)
+      summary: Добавить раскидку в избранное
       security:
         - bearerAuth: []
       requestBody:
@@ -1422,10 +1421,9 @@ paths:
 
   /favorites/{userId}/:
     get:
-      deprecated: true
       tags:
         - Favorites
-      summary: Получить избранные раскидки пользователя(Рабочая)
+      summary: Получить избранные раскидки пользователя
       security:
         - bearerAuth: []
       parameters:
@@ -1446,10 +1444,9 @@ paths:
 
   /favorites/{grenadeId}/:
     delete:
-      deprecated: true
       tags:
         - Favorites
-      summary: Удалить раскидку из избранного(Рабочая)
+      summary: Удалить раскидку из избранного
       security:
         - bearerAuth: []
       parameters:

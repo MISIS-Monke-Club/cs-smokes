@@ -6,6 +6,7 @@ from auth_app.models import Favorites
 from auth_app.serializers import FavoritesSerializer, FavoritesCreateSerializer
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExample
 from drf_spectacular.types import OpenApiTypes
+from auth_app.serializers import LineupSerializer
 
 
 class FavoritesAddView(APIView):
@@ -65,7 +66,7 @@ class FavoritesView(APIView):
                 name="id",
                 type=OpenApiTypes.INT,
                 location=OpenApiParameter.PATH,
-                description="ID гранаты или пользователя",
+                description="ID гранаты пользователя, которую хотим удалить из избранного",
             )
         ],
         responses={204: None, 400: OpenApiTypes.OBJECT, 404: OpenApiTypes.OBJECT},
@@ -100,7 +101,6 @@ class FavoritesView(APIView):
                         "user": 1,
                         "grenade": {
                             "grenade_id": "123",
-                            # другие поля Lineup
                         },
                     }
                 ],
@@ -112,7 +112,7 @@ class FavoritesView(APIView):
         if not pk:
             return Response({"error": "Не указан user_id"}, status=400)
 
-        favorites = Favorites.objects.filter(user_id=pk)
+        favorites = Favorites.objects.filter(user_id=pk).select_related("grenade_id")
 
         if not favorites.exists():
             return Response(
@@ -123,7 +123,7 @@ class FavoritesView(APIView):
                 status=200,
             )
 
-        serializer = FavoritesCreateSerializer(
-            favorites, many=True, context={"request": request}
-        )
+        lineups = [fav.grenade_id for fav in favorites]
+
+        serializer = LineupSerializer(lineups, many=True, context={"request": request})
         return Response(serializer.data, status=200)
