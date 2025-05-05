@@ -31,7 +31,7 @@ def create_mock_users(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("auth_app", "0005_alter_user_tg_id"),
+        ("auth_app", "0007_alter_user_avatar_url_alter_user_email_and_more"),
     ]
 
     operations = [
