@@ -22,6 +22,19 @@ class MapSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class MapDetailSerializer(serializers.ModelSerializer):
+    map_lineups = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Map
+        fields = ["map_id", "name", "link", "image_link", "map_lineups"]
+
+    def get_map_lineups(self, obj):
+        lineups = Lineup.objects.filter(map_id=obj)
+        serializer = LineupSerializer(lineups, many=True)
+        return serializer.data
+
+
 class GrenadeClassSerializer(serializers.ModelSerializer):
     class Meta:
         model = GrenadeClass
@@ -53,8 +66,32 @@ class PropertySerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        exclude = ("password", "last_login")
-        read_only_fields = ("id", "is_banned")
+        exclude = (
+            "password",
+            "last_login",
+        )
+        read_only_fields = ("id",)
+
+    def validate(self, attrs):
+        user_id = self.instance.pk if self.instance else None
+
+        # Проверка email
+        if "email" in attrs:
+            email = attrs["email"]
+            if User.objects.exclude(pk=user_id).filter(email=email).exists():
+                raise serializers.ValidationError(
+                    {"email": "Этот email уже используется."}
+                )
+
+        # Проверка username
+        if "username" in attrs:
+            username = attrs["username"]
+            if User.objects.exclude(pk=user_id).filter(username=username).exists():
+                raise serializers.ValidationError(
+                    {"username": "Этот username уже используется."}
+                )
+
+        return attrs
 
 
 class PropertyInlineSerializer(serializers.Serializer):
@@ -179,8 +216,8 @@ class LoginSerializer(TokenObtainPairSerializer):
         refresh = self.get_token(user)
 
         data = {
-            "refresh": str(refresh),
-            "access": str(refresh.access_token),
+            "refresh_token": str(refresh),
+            "access_token": str(refresh.access_token),
             "user": UserResponseSerializer(user).data,
         }
 
@@ -206,11 +243,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         user = User(
             username=validated_data["username"],
             email=validated_data["email"],
-            first_name="",
-            last_name="",
-            avatar_url="",
-            steam_link="",
-            is_banned=False,
         )
         user.set_password(validated_data["password"])
         user.save()

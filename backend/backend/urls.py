@@ -29,6 +29,7 @@ urlpatterns = [
     re_path("api/", include("lineups.urls")),
     re_path(r"api/schema/?$", SpectacularAPIView.as_view(), name="schema"),
     re_path("api/", include("favorites.urls")),
+    re_path("^api/", include("user.urls")),
     # Swagger UI
     re_path(
         r"api/docs/?$",
