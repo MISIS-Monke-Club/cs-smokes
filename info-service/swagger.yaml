@@ -1377,7 +1377,6 @@ paths:
 
   /favorites/:
     post:
-      deprecated: true
       tags:
         - Favorites
       summary: Добавить раскидку в избранное
@@ -1400,7 +1399,6 @@ paths:
 
   /favorites/{userId}/:
     get:
-      deprecated: true
       tags:
         - Favorites
       summary: Получить избранные раскидки пользователя
@@ -1424,14 +1422,13 @@ paths:
 
   /favorites/{grenadeId}/:
     delete:
-      deprecated: true
       tags:
         - Favorites
       summary: Удалить раскидку из избранного
       security:
         - bearerAuth: []
       parameters:
-        - name: grenade_id
+        - name: grenadeId
           in: path
           required: true
           schema:
