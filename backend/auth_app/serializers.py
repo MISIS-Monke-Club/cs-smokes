@@ -2,65 +2,11 @@ from .models import User
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth import authenticate
-from drf_spectacular.utils import extend_schema_field
 from auth_app.models import (
-    Map,
-    GrenadeClass,
     User,
-    Lineup,
     AdminType,
     Admins,
-    Favorites,
-    Property,
-    PropertyList,
 )
-
-
-class MapSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Map
-        fields = "__all__"
-
-
-class MapDetailSerializer(serializers.ModelSerializer):
-    map_lineups = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Map
-        fields = ["map_id", "name", "link", "image_link", "map_lineups"]
-
-    def get_map_lineups(self, obj):
-        lineups = Lineup.objects.filter(map_id=obj)
-        serializer = LineupSerializer(lineups, many=True)
-        return serializer.data
-
-
-class GrenadeClassSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = GrenadeClass
-        fields = ["grenade_class_id", "name", "description", "price"]
-
-
-class PropertyListSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PropertyList
-        fields = "__all__"
-
-
-class PropertyListPostSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PropertyList
-        fields = ["grenade_id", "property_id"]
-        extra_kwargs = {
-            "grenade_id": {"read_only": True},
-        }
-
-
-class PropertySerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Property
-        fields = "__all__"
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -94,67 +40,6 @@ class UserSerializer(serializers.ModelSerializer):
         return attrs
 
 
-class PropertyInlineSerializer(serializers.Serializer):
-    property_id = serializers.IntegerField()
-    name = serializers.CharField()
-
-
-class LineupSerializer(serializers.ModelSerializer):
-    grenade_class_id = serializers.PrimaryKeyRelatedField(
-        queryset=GrenadeClass.objects.all(), write_only=True
-    )
-    grenade_class = GrenadeClassSerializer(source="grenade_class_id", read_only=True)
-
-    property_list = serializers.SerializerMethodField()
-    is_favorite = serializers.SerializerMethodField(read_only=True)
-
-    class Meta:
-        model = Lineup
-        fields = [
-            "grenade_id",
-            "map_id",
-            "link_to_video",
-            "user_id",
-            "created_at",
-            "title",
-            "description",
-            "is_approved",
-            "is_favorite",
-            "views",
-            "preview_image_link",
-            "grenade_class_id",
-            "grenade_class",
-            "property_list",
-        ]
-
-    def create(self, validated_data):
-        return Lineup.objects.create(**validated_data)
-
-    @extend_schema_field(serializers.BooleanField())
-    def get_is_favorite(self, obj):
-        request = self.context.get("request")
-        if not request or not hasattr(request, "user"):
-            return False
-        user = request.user
-        if user.is_authenticated:
-            return Favorites.objects.filter(user_id=user, grenade_id=obj).exists()
-        return False
-
-    @extend_schema_field(PropertyInlineSerializer(many=True))
-    def get_property_list(self, obj):
-        property_links = PropertyList.objects.filter(grenade_id=obj).select_related(
-            "property_id"
-        )
-        return [
-            {
-                "property_id": pl.property_id.property_id,
-                "name": pl.property_id.name,
-                "value": pl.property_id.value,
-            }
-            for pl in property_links
-        ]
-
-
 class AdminTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = AdminType
@@ -167,15 +52,6 @@ class AdminsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Admins
-        fields = "__all__"
-
-
-class FavoritesSerializer(serializers.ModelSerializer):
-    user_id = UserSerializer()
-    grenade_id = LineupSerializer()
-
-    class Meta:
-        model = Favorites
         fields = "__all__"
 
 
@@ -267,41 +143,3 @@ class UserResponseSerializer(serializers.ModelSerializer):
             "is_banned",
         )
         read_only_fields = ("user_id", "is_banned")
-
-
-class FavoritesCreateSerializer(serializers.ModelSerializer):
-    grenade_id = serializers.PrimaryKeyRelatedField(queryset=Lineup.objects.all())
-
-    class Meta:
-        model = Favorites
-        fields = ["grenade_id"]
-
-    def validate(self, attrs):
-        request = self.context.get("request")
-        if request is None:
-            raise serializers.ValidationError(
-                {"non_field_errors": ["Request context is missing"]}
-            )
-
-        user = request.user
-        grenade = attrs["grenade_id"]
-
-        if Favorites.objects.filter(user_id=user, grenade_id=grenade).exists():
-            raise serializers.ValidationError({"non_field_errors": ["Уже в избранном"]})
-        return attrs
-
-    def create(self, validated_data):
-        request = self.context.get("request")
-        if (
-            not request
-            or not hasattr(request, "user")
-            or not request.user.is_authenticated
-        ):
-            raise serializers.ValidationError(
-                {"non_field_errors": ["Пользователь не авторизован"]}
-            )
-
-        favorite = Favorites.objects.create(
-            user_id=request.user, grenade_id=validated_data["grenade_id"]
-        )
-        return favorite

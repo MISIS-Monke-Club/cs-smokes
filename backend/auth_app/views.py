@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from .models import User as CustomUser
-from auth_app.serializers import UserSerializer
+from .serializers import UserSerializer
 from drf_spectacular.utils import extend_schema
 from drf_spectacular.utils import extend_schema, OpenApiExample, OpenApiResponse
 
