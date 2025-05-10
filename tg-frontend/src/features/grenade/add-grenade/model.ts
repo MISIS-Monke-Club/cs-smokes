@@ -1,27 +1,5 @@
 import { z } from "zod"
 
-export const mapOptions = [
-    "Dust2",
-    "Mirage",
-    "Inferno",
-    "Nuke",
-    "Overpass",
-    "Vertigo",
-    "Ancient",
-    "Train",
-] as const
-
-export const mapNameToId: Record<(typeof mapOptions)[number], number> = {
-    Dust2: 1,
-    Mirage: 2,
-    Inferno: 3,
-    Nuke: 4,
-    Overpass: 5,
-    Vertigo: 6,
-    Ancient: 7,
-    Train: 8,
-}
-
 export const lineupSchema = z.object({
     title: z
         .string()
@@ -31,7 +9,15 @@ export const lineupSchema = z.object({
         .string()
         .min(10, "Описание должно содержать минимум 10   символов")
         .max(1000, "Описание слишком длинное"),
-    map: z.enum(mapOptions),
+    map_id: z
+        .string()
+        .transform(Number)
+        .refine((val) => !isNaN(val), {
+            message: "Выберите карту",
+        }),
+    grenade_class_id: z.string().refine((val) => !isNaN(Number(val)), {
+        message: "Некорректный тип гранаты",
+    }),
     link_to_video: z
         .string()
         .url("Введите корректную ссылку")
@@ -53,6 +39,7 @@ export type AddLineupModel = {
     title: string
     description: string
     map: string
+    grenade_class_id: string
     link_to_video: string
     preview_image_link: string | null
 }
@@ -60,7 +47,8 @@ export type AddLineupModel = {
 export const convertToApiLineup = (data: LineupFormData, userId: number) => ({
     title: data.title,
     description: data.description,
-    map_id: mapNameToId[data.map],
+    map_id: data.map_id,
+    grenade_class_id: data.grenade_class_id,
     link_to_video: data.link_to_video,
     preview_image_link: data.preview_image_link,
     user_id: userId,

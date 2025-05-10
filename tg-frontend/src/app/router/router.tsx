@@ -33,9 +33,7 @@ export const router = createBrowserRouter(
                 {
                     element: <LoginProvider />,
                     children: [
-                        {   path: "/",
-                            element: <Homepage />
-                        },
+                        { path: "/", element: <Homepage /> },
                         {
                             path: "grenades",
                             element: <Grenades />,

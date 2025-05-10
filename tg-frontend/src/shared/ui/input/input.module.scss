@@ -9,8 +9,8 @@
 }
 
 .input {
-    border: 1px solid var(--color-border);
     padding: toRem(7);
+    border: 1px solid var(--color-border);
     border-radius: 5px;
 
     &::placeholder {
