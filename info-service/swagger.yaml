@@ -30,7 +30,7 @@ tags:
     description: Избранное
   - name: PullRequest
     description: Pull Request
-  - name: PullRequestComments
+  - name: Comments
     description: Комментарии к Pull Request
 paths:
   /login/:
@@ -1447,6 +1447,8 @@ paths:
       tags:
         - PullRequest
       summary: Получить список всех PR
+      security:
+        - bearerAuth: []
       parameters:
         - in: query
           name: creator_id
@@ -1473,16 +1475,16 @@ paths:
       tags:
         - PullRequest
       summary: Создать PR
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              required: [lineup_id, creator_id]
+              required: [lineup_id]
               properties:
                 lineup_id:
-                  type: integer
-                creator_id:
                   type: integer
       responses:
         "201":
@@ -1493,6 +1495,8 @@ paths:
       tags:
         - PullRequest
       summary: Получить конкретный PR
+      security:
+        - bearerAuth: []
       parameters:
         - in: path
           name: id
@@ -1511,6 +1515,8 @@ paths:
       tags:
         - PullRequest
       summary: Изменить статус PR (только админ)
+      security:
+        - bearerAuth: []
       parameters:
         - in: path
           name: id
@@ -1537,6 +1543,8 @@ paths:
       tags:
         - PullRequest
       summary: Отменить PR (пользователь или админ) 
+      security:
+        - bearerAuth: []
       parameters:
         - in: path
           name: id
@@ -1550,8 +1558,10 @@ paths:
   /pull_requests/{pr_id}/comments/:
     get:
       tags:
-        - PullRequestComments
+        - PullRequest
       summary: Получить комментарии к PR
+      security:
+        - bearerAuth: []
       parameters:
         - name: pr_id
           in: path
@@ -1570,8 +1580,10 @@ paths:
 
     post:
       tags:
-        - PullRequestComments
+        - PullRequest
       summary: Добавить комментарий к PR
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -1593,8 +1605,10 @@ paths:
   /comments/{id}/:
     patch:
       tags:
-        - PullRequestComments
+        - Comments
       summary: Обновить комментарий
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -1616,8 +1630,10 @@ paths:
 
     delete:
       tags:
-        - PullRequestComments
+        - Comments
       summary: Удалить комментарий
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -1628,6 +1644,20 @@ paths:
         "204":
           description: Комментарий удалён
 
+  /pull_requests/{pr_id}/comments/ws:
+    get:
+      tags:
+        - PullRequest
+      summary: WebSocket endpoint для комментариев к PR
+      parameters:
+        - name: pr_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "101":
+          description: Переключение протокола на WebSocket
 components:
   schemas:
     Map:
@@ -1929,7 +1959,7 @@ components:
           format: date-time
           nullable: true
 
-    PullRequestComment:
+    Comment:
       type: object
       properties:
         id:
@@ -1946,6 +1976,58 @@ components:
         created_at:
           type: string
           format: date-time
+
+    PullRequestCreator:
+      type: object
+      properties:
+        user_id:
+          type: integer
+        username:
+          type: string
+        first_name:
+          type: string
+          nullable: true
+        last_name:
+          type: string
+          nullable: true
+        avatar_url:
+          type: string
+          nullable: true
+
+    PullRequestApprover:
+      type: object
+      properties:
+        user_id:
+          type: integer
+        username:
+          type: string
+        first_name:
+          type: string
+          nullable: true
+        last_name:
+          type: string
+          nullable: true
+        avatar_url:
+          type: string
+          nullable: true
+        admin_type:
+          $ref: '#/components/schemas/AdminType'
+
+    PullRequestDetails:
+      allOf:
+        - $ref: '#/components/schemas/PullRequest'
+        - type: object
+          properties:
+            creator:
+              $ref: '#/components/schemas/PullRequestCreator'
+            approver:
+              $ref: '#/components/schemas/PullRequestApprover'
+            replies_at:
+              oneOf:
+                - $ref: '#/components/schemas/Comment'
+                - type: "null"
+            lineup:
+              $ref: '#/components/schemas/Lineup'
 
   securitySchemes:
     bearerAuth:
