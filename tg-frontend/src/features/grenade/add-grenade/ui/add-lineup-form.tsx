@@ -1,10 +1,15 @@
 import { FormEvent } from "react"
 import { toast } from "sonner"
-import { AddLineupModel, lineupSchema, mapOptions } from "../model"
+import { useQuery } from "@tanstack/react-query"
+import { AddLineupModel, lineupSchema } from "../model"
 import { useAddLineup } from "../lib"
 import classes from "./add-lineup-form.module.scss"
-import { Input } from "@shared/ui/inputNew"
+import { Input } from "@shared/ui/input"
+import { Textarea } from "@shared/ui/textarea"
+import { Select } from "@shared/ui/select"
 import { Button } from "@shared/ui/button"
+import { mapApi } from "@entities/map"
+import { grenadeClassApi } from "@entities/grenade-class"
 
 type AddLineupFormProps = {
     name?: string
@@ -13,6 +18,16 @@ type AddLineupFormProps = {
 }
 
 export function AddLineupForm({ className }: AddLineupFormProps) {
+    const {
+        data: maps,
+        isLoading: isMapsLoading,
+        isError,
+    } = useQuery(mapApi.getMapsOptions())
+    const {
+        data: grenadeClasses,
+        isLoading: isGrenadeClassLoading,
+        isError: isGrenadeClassError,
+    } = useQuery(grenadeClassApi.getGrenadeClassOptions())
     const { addLineup, isLoading } = useAddLineup()
 
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -43,23 +58,43 @@ export function AddLineupForm({ className }: AddLineupFormProps) {
                 type='text'
                 placeholder='Название лайнапа'
                 required
+                name='title'
             />
 
-            <Input
+            <Textarea
                 withLabel
                 label='Описание'
-                type='textarea'
                 placeholder='Описание лайнапа'
                 required
+                name='description'
             />
 
-            <Input
+            <Select
                 withLabel
                 label='Карта'
-                type='select'
-                options={mapOptions.map((map) => ({ value: map, label: map }))}
-                placeholder='Описание лайнапа'
+                name='map_id'
                 required
+                disabled={isMapsLoading || isError}
+                options={
+                    maps?.map((map) => ({
+                        value: String(map.mapId),
+                        label: map.name,
+                    })) ?? []
+                }
+            />
+
+            <Select
+                withLabel
+                label='Тип гранаты'
+                name='grenade_class_id'
+                required
+                disabled={isGrenadeClassLoading || isGrenadeClassError}
+                options={
+                    grenadeClasses?.map((grenadeClasse) => ({
+                        value: String(grenadeClasse.id),
+                        label: grenadeClasse.name,
+                    })) ?? []
+                }
             />
 
             <Input
@@ -68,6 +103,7 @@ export function AddLineupForm({ className }: AddLineupFormProps) {
                 type='text'
                 placeholder='https://www.youtube.com/watch?v=...'
                 required
+                name='link_to_video'
             />
 
             <Button

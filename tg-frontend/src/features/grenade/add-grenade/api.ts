@@ -8,7 +8,7 @@ type CreateLineupParams = {
 }
 
 export const api = {
-    baseUrl: "/lineups",
+    baseUrl: "/lineups/",
     baseKey: "lineups",
 
     createLineup: (): MutationOptions<
