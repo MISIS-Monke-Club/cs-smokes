@@ -8,7 +8,7 @@ import { AddLineupForm } from "./add-lineup-form"
 import classes from "./add-lineup-form.stories.module.scss"
 import { mockAddLineup } from "./__mocks"
 import { testAddLineupSuccess } from "./__tests__/__test-servers__"
-import { testGrenadeClassesServer } from "@entities/grenade-class/"
+import { testGrenadeClassesServer } from "@entities/grenade-class//dev"
 import { testMapsServer } from "@entities/map/dev"
 import { rootReducer } from "@shared/model"
 
