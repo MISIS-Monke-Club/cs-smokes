@@ -2,11 +2,11 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
-from auth_app.models import Favorites
-from auth_app.serializers import FavoritesCreateSerializer
+from .models import Favorites
+from .serializers import FavoritesCreateSerializer
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExample
 from drf_spectacular.types import OpenApiTypes
-from auth_app.serializers import LineupSerializer
+from lineups.serializers import LineupSerializer
 
 
 class FavoritesAddView(APIView):

@@ -7,8 +7,9 @@ from drf_spectacular.utils import (
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from auth_app.models import Lineup, GrenadeClass
-from auth_app.serializers import LineupSerializer
+from .models import Lineup
+from grenade_class.models import GrenadeClass
+from .serializers import LineupSerializer
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 
