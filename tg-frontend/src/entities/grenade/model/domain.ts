@@ -4,7 +4,6 @@ import { z } from "zod"
 export const grenadeDTOschema = z.object({
     grenade_id: z.number().int(),
     map_id: z.number().int(),
-    type_id: z.number().int(),
     grenade_class: z.object({
         name: z.string(),
         description: z.string(),
@@ -12,7 +11,8 @@ export const grenadeDTOschema = z.object({
     }),
     property_list: z
         .object({
-            key: z.string(),
+            property_id: z.number(),
+            name: z.string(),
             value: z.string(),
         })
         .array(),
@@ -23,21 +23,21 @@ export const grenadeDTOschema = z.object({
     description: z.string().nullable(),
     is_approved: z.boolean(),
     is_favorite: z.boolean(),
-    views: z.number().positive(),
+    views: z.number(),
     preview_image_link: z.string().nullable(),
 })
 
 export type GrenadeModel = {
     grenadeId: number
     mapId: number
-    typeId: number
     grenadeClass: {
         name: string
         description: string
         price: number
     }
     propertyList: {
-        key: string
+        propertyId: number
+        name: string
         value: string
     }[]
     linkToVideo: string | null

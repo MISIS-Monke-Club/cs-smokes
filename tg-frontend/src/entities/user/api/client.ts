@@ -13,7 +13,7 @@ export const api = {
             queryKey: [...api.baseKey, "ById", userId],
             queryFn: () =>
                 typedQuery({
-                    request: instance.get(`/api.baseUrl/${userId}`),
+                    request: instance.get(`/${api.baseUrl}/${userId}`),
                     dtoSchema: userDTOschema,
                     fromDTO: fromUserDTO,
                 }).catch((err) => {

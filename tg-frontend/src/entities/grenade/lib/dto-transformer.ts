@@ -8,15 +8,15 @@ export const fromGrenadeDTO = (
     return {
         grenadeId: dto.grenade_id,
         mapId: dto.map_id,
-        typeId: dto.type_id,
         grenadeClass: {
             name: dto.grenade_class.name,
             description: dto.grenade_class.description,
             price: dto.grenade_class.price,
         },
         propertyList: dto.property_list.map((el) => ({
-            key: el.key,
-            value: el.value,
+            propertyId: el.property_id,
+            name: el.name,
+            value: el.name,
         })),
         linkToVideo: dto.link_to_video,
         userId: dto.user_id,

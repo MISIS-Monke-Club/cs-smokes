@@ -54,12 +54,6 @@ export function GrenadeOverview({
                             {grenade?.userId}
                         </span>
                     </div>
-                    <div className={classes.type}>
-                        <span>Тип гранаты: </span>
-                        <span data-testid='grenade-overview-grenade-type'>
-                            {grenade?.typeId}
-                        </span>
-                    </div>
                     <div className={classes.video}>
                         <span>Ссылка на видео: </span>
                         <Button variant='link'>click me</Button>

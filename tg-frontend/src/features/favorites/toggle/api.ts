@@ -7,7 +7,7 @@ export const api = {
     baseKey: [...grenadeApi.baseKey, ...favoriteApi.baseKey],
 
     postAddToFavorites: ({ grenadeId }: Pick<GrenadeModel, "grenadeId">) =>
-        instance.post(api.baseUrl, { grenadeId }),
+        instance.post(api.baseUrl, { grenade_id: grenadeId }),
 
     deleteFromFavorites: ({ grenadeId }: Pick<GrenadeModel, "grenadeId">) =>
         instance.delete(`${api.baseUrl}/${grenadeId}`),

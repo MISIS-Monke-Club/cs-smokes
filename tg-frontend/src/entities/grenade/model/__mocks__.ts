@@ -4,15 +4,17 @@ import { grenadeDTOschema, GrenadeModel } from "./domain"
 export const grenadeModelMock: GrenadeModel = {
     grenadeId: 1,
     mapId: 1,
-    typeId: 1,
     grenadeClass: {
         name: "Smoke",
         description: "Blocks vision temporarily",
         price: 300,
     },
     propertyList: [
-        { key: "bounce", value: "medium" },
-        { key: "duration", value: "18s" },
+        {
+            propertyId: 1,
+            name: "длина",
+            value: "3",
+        },
     ],
     linkToVideo: "https://example.com/video1",
     userId: 101,
@@ -29,15 +31,17 @@ export const grenadesModelMocks: GrenadeModel[] = [
     {
         grenadeId: 1,
         mapId: 101,
-        typeId: 5,
         grenadeClass: {
             name: "Flashbang",
             description: "A grenade that blinds enemies.",
             price: 200,
         },
         propertyList: [
-            { key: "effect_duration", value: "2.5s" },
-            { key: "radius", value: "400 units" },
+            {
+                propertyId: 1,
+                name: "длина",
+                value: "3",
+            },
         ],
         linkToVideo: "https://example.com/flashbang-guide",
         userId: 42,
@@ -53,7 +57,6 @@ export const grenadesModelMocks: GrenadeModel[] = [
     {
         grenadeId: 2,
         mapId: 102,
-        typeId: 6,
         grenadeClass: {
             name: "Smoke Grenade",
             description:
@@ -61,8 +64,11 @@ export const grenadesModelMocks: GrenadeModel[] = [
             price: 300,
         },
         propertyList: [
-            { key: "duration", value: "18s" },
-            { key: "radius", value: "500 units" },
+            {
+                propertyId: 1,
+                name: "длина",
+                value: "3",
+            },
         ],
         linkToVideo: "https://example.com/smoke-setup",
         userId: 67,
@@ -79,15 +85,17 @@ export const grenadesModelMocks: GrenadeModel[] = [
 export const grenadeDTOmock: z.infer<typeof grenadeDTOschema> = {
     grenade_id: 1,
     map_id: 1,
-    type_id: 1,
     grenade_class: {
         name: "Smoke",
         description: "Blocks vision temporarily",
         price: 300,
     },
     property_list: [
-        { key: "bounce", value: "medium" },
-        { key: "duration", value: "18s" },
+        {
+            property_id: 1,
+            name: "длина",
+            value: "3",
+        },
     ],
     link_to_video: "https://example.com/video1",
     user_id: 101,
@@ -107,7 +115,6 @@ export const grenadesDTOmock: z.infer<
     {
         grenade_id: 2,
         map_id: 102,
-        type_id: 6,
         grenade_class: {
             name: "Smoke Grenade",
             description:
@@ -115,8 +122,11 @@ export const grenadesDTOmock: z.infer<
             price: 300,
         },
         property_list: [
-            { key: "duration", value: "18s" },
-            { key: "radius", value: "500 units" },
+            {
+                property_id: 1,
+                name: "длина",
+                value: "3",
+            },
         ],
         link_to_video: "https://example.com/smoke-setup",
         user_id: 67,
