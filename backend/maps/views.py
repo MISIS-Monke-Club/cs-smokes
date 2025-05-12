@@ -2,8 +2,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
-from auth_app.models import Map
-from auth_app.serializers import MapSerializer
+from .models import Map
+from .serializers import MapSerializer, MapDetailSerializer
 from drf_spectacular.utils import extend_schema, OpenApiExample
 from rest_framework.permissions import IsAuthenticated
 
@@ -61,7 +61,7 @@ class MapDetailRUDView(APIView):
     )
     def get(self, request, pk):
         map_obj = get_object_or_404(Map, pk=pk)
-        serializer = MapSerializer(map_obj)
+        serializer = MapDetailSerializer(map_obj)
         return Response(serializer.data)
 
     @extend_schema(

@@ -3,8 +3,9 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema
-from auth_app.models import PropertyList, Lineup
-from auth_app.serializers import (
+from .models import PropertyList
+from lineups.models import Lineup
+from .serializers import (
     PropertyListSerializer,
     PropertyListPostSerializer as PLPSerializer,
 )

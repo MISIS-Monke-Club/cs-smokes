@@ -6,11 +6,11 @@ import { typedQuery } from "@shared/lib/precooked-methods"
 import { instance } from "@shared/api"
 
 export const api = {
-    baseKey: "user",
-    baseUrl: "profile",
+    baseKey: ["user"],
+    baseUrl: "users",
     getUserById: (userId: number) =>
         queryOptions<UserModel>({
-            queryKey: [api.baseKey, "ById", userId],
+            queryKey: [...api.baseKey, "ById", userId],
             queryFn: () =>
                 typedQuery({
                     request: instance.get(`/api.baseUrl/${userId}`),

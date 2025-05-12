@@ -2,7 +2,7 @@ from django.db import migrations
 
 
 def create_mock_maps(apps, schema_editor):
-    Map = apps.get_model("auth_app", "Map")
+    Map = apps.get_model("maps", "Map")
 
     mock_maps = [
         {
@@ -22,12 +22,12 @@ def create_mock_maps(apps, schema_editor):
 
 
 def delete_mock_maps(apps, schema_editor):
-    Map = apps.get_model("auth_app", "Map")
+    Map = apps.get_model("maps", "Map")
     Map.objects.all().delete()
 
 
 def create_mock_greande_class(apps, schema_editor):
-    grenade_class = apps.get_model("auth_app", "GrenadeClass")
+    grenade_class = apps.get_model("grenade_class", "GrenadeClass")
 
     grenade_classes = [
         {
@@ -52,12 +52,12 @@ def create_mock_greande_class(apps, schema_editor):
 
 
 def delete_mock_grenade_class(apps, schema_editor):
-    gc = apps.get_model("auth_app", "GrenadeClass")
+    gc = apps.get_model("grenade_class", "GrenadeClass")
     gc.objects.all().delete()
 
 
 def create_mock_properties(apps, schema_editor):
-    Property = apps.get_model("auth_app", "Property")
+    Property = apps.get_model("properties", "Property")
 
     mock_properties = [
         {"name": "Дальность броска", "value": "300"},
@@ -70,14 +70,14 @@ def create_mock_properties(apps, schema_editor):
 
 
 def delete_mock_properties(apps, schema_editor):
-    Property = apps.get_model("auth_app", "Property")
+    Property = apps.get_model("properties", "Property")
     Property.objects.all().delete()
 
 
 def create_mock_property_list(apps, schema_editor):
-    PropertyList = apps.get_model("auth_app", "PropertyList")
-    Property = apps.get_model("auth_app", "Property")
-    Lineup = apps.get_model("auth_app", "Lineup")
+    PropertyList = apps.get_model("properties", "PropertyList")
+    Property = apps.get_model("properties", "Property")
+    Lineup = apps.get_model("lineups", "Lineup")
 
     property1 = Property.objects.get(pk=1)
     property2 = Property.objects.get(pk=2)
@@ -100,14 +100,14 @@ def create_mock_property_list(apps, schema_editor):
 
 
 def delete_mock_property_list(apps, schema_editor):
-    PropertyList = apps.get_model("auth_app", "PropertyList")
+    PropertyList = apps.get_model("properties", "PropertyList")
     PropertyList.objects.all().delete()
 
 
 def create_mock_lineups(apps, schema_editor):
-    Lineup = apps.get_model("auth_app", "Lineup")
-    GrenadeClass = apps.get_model("auth_app", "GrenadeClass")
-    Map = apps.get_model("auth_app", "Map")
+    Lineup = apps.get_model("lineups", "Lineup")
+    GrenadeClass = apps.get_model("grenade_class", "GrenadeClass")
+    Map = apps.get_model("maps", "Map")
     User = apps.get_model("auth_app", "User")
 
     grenade1 = GrenadeClass.objects.get(pk=1)
@@ -147,11 +147,19 @@ def create_mock_lineups(apps, schema_editor):
 
 
 def delete_mock_lineups(apps, schema_editor):
-    Lineup = apps.get_model("auth_app", "Lineup")
+    Lineup = apps.get_model("lineups", "Lineup")
     Lineup.objects.all().delete()
 
 
 class Migration(migrations.Migration):
+
+    dependencies = [
+        ("lineups", "0001_initial"),
+        ("maps", "0001_initial"),
+        ("grenade_class", "0001_initial"),
+        ("properties", "0001_initial"),
+        ("user", "migrations"),
+    ]
 
     operations = [
         migrations.RunPython(create_mock_maps, delete_mock_maps),

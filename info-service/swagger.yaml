@@ -56,9 +56,9 @@ paths:
                 properties:
                   user:
                     $ref: "#/components/schemas/User"
-                  access:
+                  access_token:
                     type: string
-                  refresh:
+                  refresh_token:
                     type: string
         "401":
           description: Неправильный логин или пароль
@@ -953,7 +953,6 @@ paths:
 
   /users/:
     get:
-      deprecated: true
       tags:
         - Users
       summary: Получить данные всех пользователей
@@ -965,11 +964,9 @@ paths:
           content:
             application/json:
               schema:
-                type: array
                 items:
                   $ref: "#/components/schemas/User"
     post:
-      deprecated: true
       tags:
         - Users
       summary: Создать нового пользователя
@@ -984,26 +981,11 @@ paths:
               properties:
                 username:
                   type: string
-                avatar_link:
-                  type: string
-                  nullable: true
-                steam_link:
-                  type: string
-                  nullable: true
-                tg_id:
-                  type: integer
-                  nullable: true
                 email:
                   type: string
                   nullable: true
-                first_name:
+                password:
                   type: string
-                  nullable: true
-                last_name:
-                  type: string
-                  nullable: true
-                is_banned:
-                  type: boolean
       responses:
         "201":
           description: Пользователь успешно создан
@@ -1012,7 +994,6 @@ paths:
 
   /users/{id}/:
     get:
-      deprecated: true
       tags:
         - Users
       summary: Получить данные пользователя по ID
@@ -1032,7 +1013,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/User"
     put:
-      deprecated: true
       tags:
         - Users
       summary: Полностью обновить пользователя по ID
@@ -1053,7 +1033,7 @@ paths:
               properties:
                 username:
                   type: string
-                avatar_link:
+                avatar_url:
                   type: string
                   nullable: true
                 steam_link:
@@ -1079,7 +1059,6 @@ paths:
         "401":
           description: Неавторизованный доступ
     patch:
-      deprecated: true
       tags:
         - Users
       summary: Частично обновить пользователя по ID
@@ -1100,7 +1079,7 @@ paths:
               properties:
                 username:
                   type: string
-                avatar_link:
+                avatar_url:
                   type: string
                   nullable: true
                 steam_link:
@@ -1126,7 +1105,6 @@ paths:
         "401":
           description: Неавторизованный доступ
     delete:
-      deprecated: true
       tags:
         - Users
       summary: Удалить пользователя по ID
@@ -1399,7 +1377,6 @@ paths:
 
   /favorites/:
     post:
-      deprecated: true
       tags:
         - Favorites
       summary: Добавить раскидку в избранное
@@ -1422,7 +1399,6 @@ paths:
 
   /favorites/{userId}/:
     get:
-      deprecated: true
       tags:
         - Favorites
       summary: Получить избранные раскидки пользователя
@@ -1446,14 +1422,13 @@ paths:
 
   /favorites/{grenadeId}/:
     delete:
-      deprecated: true
       tags:
         - Favorites
       summary: Удалить раскидку из избранного
       security:
         - bearerAuth: []
       parameters:
-        - name: grenade_id
+        - name: grenadeId
           in: path
           required: true
           schema:
@@ -1610,7 +1585,7 @@ components:
           type: integer
         username:
           type: string
-        avatar_link:
+        avatar_url:
           type: string
           nullable: true
         steam_link:
@@ -1700,7 +1675,7 @@ components:
         username:
           type: string
           nullable: true
-        avatar_link:
+        avatar_url:
           type: string
           nullable: true
         steam_link:

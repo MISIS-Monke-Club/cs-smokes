@@ -11,14 +11,14 @@ def create_mock_users(apps, schema_editor):
             "email": "admin@example.com",
             "first_name": "Admin",
             "last_name": "Super",
-            "password": "IDINAXUI123IDINAXUI123IDINAXUI",
+            "password": "CrutoiTestPass123",
         },
         {
             "username": "test_user",
-            "email": "user@example.com",
+            "email": "user@example.ru",
             "first_name": "John",
             "last_name": "Doe",
-            "password": "IDINAXUI123IDINAXUI123IDINAXUI",
+            "password": "Nekrutoipass123",
         },
     ]
 
@@ -31,7 +31,7 @@ def create_mock_users(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("auth_app", "0005_alter_user_tg_id"),
+        ("auth_app", "0001_initial"),
     ]
 
     operations = [

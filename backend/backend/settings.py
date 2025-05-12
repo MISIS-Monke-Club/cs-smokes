@@ -47,7 +47,12 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     "drf_spectacular",
     "auth_app",
+    "user",
     "lineups",
+    "maps",
+    "grenade_class",
+    "properties",
+    "favorites",
 ]
 
 REST_FRAMEWORK = {
