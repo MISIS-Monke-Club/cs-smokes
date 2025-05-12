@@ -7,7 +7,8 @@ on:
 
 env: 
   VITE_BACKEND_URL: http://localhost:3000/api
-  VITE_IN_TG_ENVIRONMENT: false  
+  VITE_IN_TG_ENVIRONMENT: false 
+  VITE_TG_INIT_DATA: 123 
 
 jobs:
   build:
