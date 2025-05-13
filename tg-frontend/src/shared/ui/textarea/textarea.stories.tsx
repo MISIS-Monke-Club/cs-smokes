@@ -39,12 +39,12 @@ export const WithLabel: Story = {
         const canvas = within(canvasElement)
         const label = canvas.getByText("Текстовое поле")
         const input = canvas.getByPlaceholderText("Введите текст")
+        const inputId = label.getAttribute("for")
 
         await expect(label).toBeInTheDocument()
         await expect(input).toBeInTheDocument()
 
-        await expect(label).toHaveAttribute("for", "Текстовое поле-textarea")
-        await expect(input).toHaveAttribute("id", "Текстовое поле-textarea")
+        await expect(input).toHaveAttribute("id", inputId)
 
         await expect(label).toBeVisible()
         await expect(input).toBeVisible()
@@ -62,12 +62,12 @@ export const Disabled: Story = {
         const canvas = within(canvasElement)
         const label = canvas.getByText("Неактивное поле")
         const input = canvas.getByPlaceholderText("Введите текст")
+        const inputId = label.getAttribute("for")
 
         await expect(label).toBeInTheDocument()
         await expect(input).toBeInTheDocument()
 
-        await expect(label).toHaveAttribute("for", "Неактивное поле-textarea")
-        await expect(input).toHaveAttribute("id", "Неактивное поле-textarea")
+        await expect(input).toHaveAttribute("id", inputId)
 
         await expect(label).toBeVisible()
         await expect(input).toBeVisible()

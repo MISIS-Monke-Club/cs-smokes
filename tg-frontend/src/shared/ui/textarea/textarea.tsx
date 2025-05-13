@@ -1,4 +1,5 @@
 import clsx from "clsx"
+import { useId } from "react"
 import classes from "./textarea.module.scss"
 
 type TextareaProps = React.ComponentProps<"textarea"> & {
@@ -18,7 +19,8 @@ export const Textarea = ({
     const textareaClass = clsx(classes.textarea, textareaClassName)
     const labelClass = clsx(classes.label, labelClassName)
 
-    const id = label ? `${label}-textarea` : undefined
+    const generatedId = useId()
+    const id = label ? `${label}-${generatedId}` : generatedId
 
     const textareaElement = (
         <textarea id={id} className={textareaClass} {...props} />

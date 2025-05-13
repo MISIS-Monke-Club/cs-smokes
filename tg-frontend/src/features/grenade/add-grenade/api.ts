@@ -1,6 +1,7 @@
 import { MutationOptions } from "@tanstack/react-query"
 import { LineupFormData, convertToApiLineup } from "./model"
 import { instance, client } from "@shared/api"
+import { grenadeApi } from "@entities/grenade"
 
 type CreateLineupParams = {
     data: LineupFormData
@@ -8,6 +9,7 @@ type CreateLineupParams = {
 }
 
 export const api = {
+    ...grenadeApi,
     baseUrl: "/lineups/",
     baseKey: "lineups",
 
@@ -19,10 +21,15 @@ export const api = {
         mutationFn: async ({ data, userId }) => {
             const payload = convertToApiLineup(data, userId)
             await instance.post(api.baseUrl, payload)
+            return payload
         },
-        onSuccess: () => {
+        onSuccess: (_, variables) => {
+            client.invalidateQueries({ queryKey: ["lineups"] })
             client.invalidateQueries({
-                queryKey: [api.baseKey],
+                queryKey: [
+                    "map",
+                    { type: "byId", mapId: variables.data.map_id },
+                ],
             })
         },
     }),

@@ -37,12 +37,12 @@ export const WithLabel: Story = {
         const canvas = within(canvasElement)
         const label = canvas.getByText("Выбор опции")
         const select = canvas.getByLabelText("Выбор опции")
+        const selectId = label.getAttribute("for")
 
         await expect(label).toBeInTheDocument()
         await expect(select).toBeInTheDocument()
 
-        await expect(label).toHaveAttribute("for", "Выбор опции-select")
-        await expect(select).toHaveAttribute("id", "Выбор опции-select")
+        await expect(select).toHaveAttribute("id", selectId)
     },
 }
 

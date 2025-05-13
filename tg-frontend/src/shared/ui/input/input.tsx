@@ -1,24 +1,26 @@
 import clsx from "clsx"
+import { useId } from "react"
 import classes from "./input.module.scss"
 
 type InputProps = React.ComponentProps<"input"> & {
     withLabel?: boolean
     label?: string
-    inputClassNmae?: string
+    inputClassName?: string
     labelClassName?: string
 }
 
 export const Input = ({
     withLabel = false,
     label,
-    inputClassNmae,
+    inputClassName,
     labelClassName,
     ...props
 }: InputProps) => {
-    const inputClass = clsx(classes.input, inputClassNmae)
+    const inputClass = clsx(classes.input, inputClassName)
     const labelClass = clsx(classes.label, labelClassName)
 
-    const id = label ? `${label}-input` : undefined
+    const generatedId = useId()
+    const id = label ? `${label}-${generatedId}` : generatedId
 
     const inputElement = <input id={id} className={inputClass} {...props} />
 

@@ -40,12 +40,12 @@ export const WithLabel: Story = {
         const canvas = within(canvasElement)
         const label = canvas.getByText("Имя пользователя")
         const input = canvas.getByPlaceholderText("Введите ваше имя")
+        const inputId = label.getAttribute("for")
 
         await expect(label).toBeInTheDocument()
         await expect(input).toBeInTheDocument()
 
-        await expect(label).toHaveAttribute("for", "Имя пользователя-input")
-        await expect(input).toHaveAttribute("id", "Имя пользователя-input")
+        await expect(input).toHaveAttribute("id", inputId)
 
         await expect(label).toBeVisible()
         await expect(input).toBeVisible()
@@ -63,12 +63,12 @@ export const Password: Story = {
         const canvas = within(canvasElement)
         const label = canvas.getByText("Пароль")
         const input = canvas.getByPlaceholderText("Введите пароль")
+        const inputId = label.getAttribute("for")
 
         await expect(label).toBeInTheDocument()
         await expect(input).toBeInTheDocument()
 
-        await expect(label).toHaveAttribute("for", "Пароль-input")
-        await expect(input).toHaveAttribute("id", "Пароль-input")
+        await expect(input).toHaveAttribute("id", inputId)
 
         await expect(label).toBeVisible()
         await expect(input).toBeVisible()
@@ -86,12 +86,12 @@ export const Email: Story = {
         const canvas = within(canvasElement)
         const label = canvas.getByText("Email")
         const input = canvas.getByPlaceholderText("example@mail.com")
+        const inputId = label.getAttribute("for")
 
         await expect(label).toBeInTheDocument()
         await expect(input).toBeInTheDocument()
 
-        await expect(label).toHaveAttribute("for", "Email-input")
-        await expect(input).toHaveAttribute("id", "Email-input")
+        await expect(input).toHaveAttribute("id", inputId)
 
         await expect(label).toBeVisible()
         await expect(input).toBeVisible()
@@ -149,19 +149,19 @@ export const CustomClass: Story = {
         withLabel: true,
         label: "Имя пользователя",
         placeholder: "Введите ваше имя",
-        inputClassNmae: classes.customInput,
+        inputClassName: classes.customInput,
         labelClassName: classes.customLabel,
     },
     play: async ({ canvasElement }) => {
         const canvas = within(canvasElement)
         const label = canvas.getByText("Имя пользователя")
         const input = canvas.getByPlaceholderText("Введите ваше имя")
+        const inputId = label.getAttribute("for")
 
         await expect(label).toBeInTheDocument()
         await expect(input).toBeInTheDocument()
 
-        await expect(label).toHaveAttribute("for", "Имя пользователя-input")
-        await expect(input).toHaveAttribute("id", "Имя пользователя-input")
+        await expect(input).toHaveAttribute("id", inputId)
 
         await expect(label).toBeVisible()
         await expect(input).toBeVisible()

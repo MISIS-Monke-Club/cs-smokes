@@ -1,4 +1,5 @@
 import clsx from "clsx"
+import { useId } from "react"
 import classes from "./select.module.scss"
 
 type SelectProps = React.ComponentProps<"select"> & {
@@ -20,7 +21,8 @@ export const Select = ({
     const selectClass = clsx(classes.select, selectClassName)
     const labelClass = clsx(classes.label, labelClassName)
 
-    const id = label ? `${label}-select` : undefined
+    const generatedId = useId()
+    const id = label ? `${label}-${generatedId}` : generatedId
 
     const selectElement = (
         <select id={id} className={selectClass} {...props}>
