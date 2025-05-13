@@ -19,8 +19,7 @@ export const Input = ({
     const inputClass = clsx(classes.input, inputClassName)
     const labelClass = clsx(classes.label, labelClassName)
 
-    const generatedId = useId()
-    const id = label ? `${label}-${generatedId}` : generatedId
+    const id = useId()
 
     const inputElement = <input id={id} className={inputClass} {...props} />
 

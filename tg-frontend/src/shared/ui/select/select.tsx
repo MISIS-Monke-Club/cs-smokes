@@ -21,8 +21,7 @@ export const Select = ({
     const selectClass = clsx(classes.select, selectClassName)
     const labelClass = clsx(classes.label, labelClassName)
 
-    const generatedId = useId()
-    const id = label ? `${label}-${generatedId}` : generatedId
+    const id = useId()
 
     const selectElement = (
         <select id={id} className={selectClass} {...props}>

@@ -19,8 +19,7 @@ export const Textarea = ({
     const textareaClass = clsx(classes.textarea, textareaClassName)
     const labelClass = clsx(classes.label, labelClassName)
 
-    const generatedId = useId()
-    const id = label ? `${label}-${generatedId}` : generatedId
+    const id = useId()
 
     const textareaElement = (
         <textarea id={id} className={textareaClass} {...props} />
