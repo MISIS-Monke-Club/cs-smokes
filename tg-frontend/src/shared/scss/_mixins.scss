@@ -55,3 +55,45 @@
 @function toRem($px, $base-font-size: 16) {
     @return calc(#{$px} / #{$base-font-size} * 1rem);
 }
+
+@mixin font-arial-regular($weight: normal, $style: normal) {
+    font-family: "Arial Regular", sans-serif;
+    font-weight: $weight;
+    font-style: $style;
+}
+
+@mixin font-arial-narrow($weight: normal, $style: normal) {
+    font-family: "Arial Narrow", sans-serif;
+    font-weight: $weight;
+    font-style: $style;
+}
+
+@mixin font-arial-italic($weight: normal) {
+    font-family: "Arial Italic", sans-serif;
+    font-weight: $weight;
+    font-style: italic;
+}
+
+@mixin font-arial-bold($style: normal) {
+    font-family: "Arial Bold", sans-serif;
+    font-weight: bold;
+    font-style: $style;
+}
+
+@mixin font-arial-black($style: normal) {
+    font-family: "Arial Black", sans-serif;
+    font-weight: bold;
+    font-style: $style;
+}
+
+@mixin font-arial-light($style: normal) {
+    font-family: "Arial Light Regular", sans-serif;
+    font-weight: 300;
+    font-style: $style;
+}
+
+@mixin font-arial-rounded-mt($weight: bold, $style: normal) {
+    font-family: "Arial Rounded MT", sans-serif;
+    font-weight: $weight;
+    font-style: $style;
+}

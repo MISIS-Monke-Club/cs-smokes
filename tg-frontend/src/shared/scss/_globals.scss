@@ -1,12 +1,17 @@
+@use "./mixins" as *;
+
 #root {
     width: 100%;
     height: 100%;
-    font-family: "Roboto", sans-serif;
+
+    @include font-arial-regular;
+
+    font-size: var(--text-normal);
     color: var(--color-text-main);
 }
 
 body {
-    background-color: var(--color-background);
+    background-color: var(--color-main-background);
 }
 
 h1,
@@ -15,7 +20,13 @@ h3,
 h4,
 h5,
 h6 {
-    // font-weight: ;
+    @include font-arial-bold;
+}
+
+button {
+    @include font-arial-rounded-mt;
+
+    font-size: var(--ui-normal);
 }
 
 // -- FONT SIZE --
