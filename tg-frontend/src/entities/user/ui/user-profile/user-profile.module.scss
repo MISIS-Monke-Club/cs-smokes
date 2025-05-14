@@ -5,7 +5,8 @@
 }
 
 .avatar {
-    max-width: 100%;
+    min-width: 310px;
+    min-height: 310px;
     border-radius: toRem(8);
 }
 

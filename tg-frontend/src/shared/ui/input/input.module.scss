@@ -1,7 +1,7 @@
 .inputGroup {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: toRem(5);
 }
 
 .label {
@@ -13,7 +13,12 @@
     border: 1px solid var(--color-border);
     border-radius: 5px;
 
+    font-size: toRem(16);
+    font-weight: bold;
+
     &::placeholder {
-        color: var(--muted-foreground);
+        font-size: toRem(16);
+        font-weight: bold;
+        color: var(--color-placeholder);
     }
 }

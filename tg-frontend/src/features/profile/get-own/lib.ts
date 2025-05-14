@@ -5,10 +5,10 @@ import { userApi } from "@entities/user"
 
 export function useGetOwnProfile() {
     const userId = useSelector(selectUserId)
-    const { data: profile } = useQuery({
+    const { data: profile, isLoading } = useQuery({
         ...userApi.getUserById(userId!),
         enabled: Boolean(userId),
     })
 
-    return { profile, userId }
+    return { profile, userId, isLoading }
 }

@@ -10,9 +10,9 @@ type ProfileOverviewProps = {
 }
 
 export function ProfileOverview({ isEditable }: ProfileOverviewProps) {
-    const { profile } = useGetOwnProfile()
+    const { profile, isLoading } = useGetOwnProfile()
 
-    if (!profile) {
+    if (!profile || isLoading) {
         return <div>Data was not provided...</div>
     }
 
@@ -20,7 +20,7 @@ export function ProfileOverview({ isEditable }: ProfileOverviewProps) {
         <div className={classes.container}>
             <h1 className={classes.title}>@{profile.username}</h1>
             <div className={classes.profile}>
-                <UserProfile user={profile} />
+                <UserProfile user={profile} isLoading={isLoading} />
             </div>
             {isEditable && (
                 <Button size='lg' asChild className={classes.editButton}>

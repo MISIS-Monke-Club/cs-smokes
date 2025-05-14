@@ -6,20 +6,22 @@ import { ImageComponent } from "@shared/ui/image"
 
 type UserProfileProps = {
     user: UserModel
+    isLoading: boolean
 }
 
-export const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
+export const UserProfile: React.FC<UserProfileProps> = ({
+    user,
+    isLoading,
+}) => {
     return (
         <div className={classes.profile}>
             <ImageComponent
                 url={
-                    user?.avatarUrl
-                        ? user.avatarUrl
-                        : "/@public/defaultProfileImg.png"
+                    user?.avatarUrl ? user.avatarUrl : "/defaultProfileImg.png"
                 }
                 className={classes.avatar}
                 skeletonClasses={classes.skeleton}
-                isLoading={false}
+                isLoading={isLoading}
                 width={310}
                 height={310}
             />

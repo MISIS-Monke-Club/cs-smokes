@@ -1,26 +1,39 @@
-.wrapper {
-    width: toReam(400);
-}
-
-.form {
-    display: flex;
-    flex-direction: column;
-    gap: toRem(20);
-}
-
-.buttons {
-    display: flex;
-    justify-content: space-between;
-}
-
-.title {
-    margin-bottom: toRem(30);
-    font-size: toRem(32);
-    text-align: center;
-}
-
 .form {
     display: flex;
     flex-direction: column;
     gap: toRem(15);
+    padding: 0 0 toRem(15);
+}
+
+.label {
+    font-size: toRem(16);
+    font-weight: bold;
+}
+
+.buttons {
+    position: fixed;
+    bottom: toRem(15);
+    left: 50%;
+    transform: translateX(-50%);
+
+    display: flex;
+    gap: toRem(10);
+
+    width: 100%;
+    padding: 0 toRem(5);
+}
+
+.btn {
+    display: flex;
+    flex: 1;
+
+    font-size: toRem(16);
+    font-weight: bold;
+    color: var(--color-text-main);
+
+    background-color: var(--color-background-alt);
+}
+
+.accent {
+    background-color: var(--color-accent);
 }
