@@ -22,6 +22,7 @@ from drf_spectacular.views import (
     SpectacularSwaggerView,
 )
 from django.http import JsonResponse
+from pull_requests.routing import websocket_urlpatterns
 
 urlpatterns = [
     re_path(r"^$", lambda request: JsonResponse({"status": "ok"})),
@@ -35,6 +36,7 @@ urlpatterns = [
     re_path("api/", include("properties.urls")),
     re_path("api/", include("grenade_class.urls")),
     re_path("api/", include("pull_requests.urls")),
+    *websocket_urlpatterns,
     # Swagger UI
     re_path(
         r"api/docs/?$",

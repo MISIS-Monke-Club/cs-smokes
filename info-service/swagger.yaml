@@ -1444,7 +1444,6 @@ paths:
     
   /pull_requests/:
     get:
-      deprecated: true
       tags:
         - PullRequest
       summary: Получить список всех PR
@@ -1473,7 +1472,6 @@ paths:
                   $ref: "#/components/schemas/PullRequestDetails"
 
     post:
-      deprecated: true
       tags:
         - PullRequest
       summary: Создать PR
@@ -1494,7 +1492,6 @@ paths:
 
   /pull_requests/{id}/:
     get:
-      deprecated: true
       tags:
         - PullRequest
       summary: Получить конкретный PR
@@ -1515,7 +1512,6 @@ paths:
                 $ref: "#/components/schemas/PullRequestDetails"
 
     patch:
-      deprecated: true
       tags:
         - PullRequest
       summary: Изменить статус PR (только админ)
@@ -1544,7 +1540,6 @@ paths:
           description: PR обновлён
 
     delete:
-      deprecated: true
       tags:
         - PullRequest
       summary: Отменить PR (пользователь или админ) 
@@ -1562,7 +1557,6 @@ paths:
 
   /pull_requests/{pr_id}/comments/:
     get:
-      deprecated: true
       tags:
         - PullRequest
       summary: Получить комментарии к PR
@@ -1585,7 +1579,6 @@ paths:
                   $ref: "#/components/schemas/Comment"
 
     post:
-      deprecated: true
       tags:
         - PullRequest
       summary: Добавить комментарий к PR
@@ -1611,7 +1604,6 @@ paths:
 
   /comments/{id}/:
     patch:
-      deprecated: true
       tags:
         - Comments
       summary: Обновить комментарий
@@ -1637,7 +1629,6 @@ paths:
           description: Комментарий обновлён
       
     get:
-      deprecated: true
       tags:
         - Comments
       summary: Получить комментарий по ID
@@ -1666,7 +1657,6 @@ paths:
 
 
     delete:
-      deprecated: true
       tags:
         - Comments
       summary: Удалить комментарий
@@ -1684,7 +1674,6 @@ paths:
 
   /pull_requests/{pr_id}/comments/ws:
     get:
-      deprecated: true
       tags:
         - PullRequest
       summary: WebSocket endpoint для комментариев к PR
