@@ -1,7 +1,7 @@
 .form {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: toRem(15);
 
     max-width: toRem(500);
     margin: 0 auto;
@@ -19,6 +19,18 @@
 }
 
 .button {
+    position: fixed;
+    bottom: toRem(15);
+    left: 50%;
+    transform: translateX(-50%);
+
     display: flex;
+
+    width: calc(100% - toRem(10));
     margin: 0 auto;
+    padding: 0 toRem(5);
+
+    color: var(--color-main-text);
+
+    background-color: var(--color-accent);
 }

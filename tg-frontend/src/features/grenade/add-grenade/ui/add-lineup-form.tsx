@@ -54,24 +54,24 @@ export function AddLineupForm({ className }: AddLineupFormProps) {
         >
             <Input
                 withLabel
-                label='Название лайнапа'
+                label='Name'
                 type='text'
-                placeholder='Название лайнапа'
+                placeholder='Enter lineup name'
                 required
                 name='title'
             />
 
             <Textarea
                 withLabel
-                label='Описание'
-                placeholder='Описание лайнапа'
+                label='Description'
+                placeholder='Enter lineup description'
                 required
                 name='description'
             />
 
             <Select
                 withLabel
-                label='Карта'
+                label='Map'
                 name='map_id'
                 required
                 disabled={isMapsLoading || isError}
@@ -85,7 +85,7 @@ export function AddLineupForm({ className }: AddLineupFormProps) {
 
             <Select
                 withLabel
-                label='Тип гранаты'
+                label='Grenade class'
                 name='grenade_class_id'
                 required
                 disabled={isGrenadeClassLoading || isGrenadeClassError}
@@ -99,7 +99,7 @@ export function AddLineupForm({ className }: AddLineupFormProps) {
 
             <Input
                 withLabel
-                label='Ссылка на видео (YouTube / Rutube)'
+                label='Link to video (Rutube / YouTube)'
                 type='text'
                 placeholder='https://www.youtube.com/watch?v=...'
                 required
@@ -111,7 +111,7 @@ export function AddLineupForm({ className }: AddLineupFormProps) {
                 type='submit'
                 disabled={isLoading}
             >
-                {isLoading ? "Добавление..." : "Добавить лайнап"}
+                {isLoading ? "Adding..." : "Add lineup"}
             </Button>
         </form>
     )
