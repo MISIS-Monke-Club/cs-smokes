@@ -51,11 +51,11 @@ const baseTestData: {
     baseTestFunction: async (canvas) => {
         const form = canvas.getByRole("form")
 
-        const titleInput = canvas.getByLabelText(/название лайнапа/i)
-        const descriptionInput = canvas.getByLabelText(/описание/i)
-        const mapSelect = canvas.getByLabelText(/карта/i)
-        const grenadeClassSelect = canvas.getByLabelText(/тип гранаты/i)
-        const linkInput = canvas.getByLabelText(/ссылка на видео/i)
+        const titleInput = canvas.getByLabelText(/name/i)
+        const descriptionInput = canvas.getByLabelText(/description/i)
+        const mapSelect = canvas.getByLabelText(/map/i)
+        const grenadeClassSelect = canvas.getByLabelText(/grenade class/i)
+        const linkInput = canvas.getByLabelText(/Link to video/i)
 
         await expect(form).toBeInTheDocument()
         await expect(form).toBeVisible()
@@ -110,11 +110,11 @@ export const Filled: Story = {
     play: async ({ canvasElement }) => {
         const canvas = within(canvasElement)
 
-        const titleInput = canvas.getByLabelText(/название лайнапа/i)
-        const descriptionInput = canvas.getByLabelText(/описание/i)
-        const mapSelect = canvas.getByLabelText(/карта/i)
-        const grenadeClassSelect = canvas.getByLabelText(/тип гранаты/i)
-        const linkInput = canvas.getByLabelText(/ссылка на видео/i)
+        const titleInput = canvas.getByLabelText(/name/i)
+        const descriptionInput = canvas.getByLabelText(/description/i)
+        const mapSelect = canvas.getByLabelText(/map/i)
+        const grenadeClassSelect = canvas.getByLabelText(/grenade class/i)
+        const linkInput = canvas.getByLabelText(/Link to video/i)
 
         const data = baseTestData.mocks
 
@@ -150,13 +150,13 @@ export const SubmitSuccess: Story = {
         const canvas = within(canvasElement)
         const data = baseTestData.mocks
 
-        const titleInput = canvas.getByLabelText(/название лайнапа/i)
-        const descriptionInput = canvas.getByLabelText(/описание/i)
-        const mapSelect = canvas.getByLabelText(/карта/i)
-        const grenadeClassSelect = canvas.getByLabelText(/тип гранаты/i)
-        const linkInput = canvas.getByLabelText(/ссылка на видео/i)
+        const titleInput = canvas.getByLabelText(/name/i)
+        const descriptionInput = canvas.getByLabelText(/description/i)
+        const mapSelect = canvas.getByLabelText(/map/i)
+        const grenadeClassSelect = canvas.getByLabelText(/grenade class/i)
+        const linkInput = canvas.getByLabelText(/Link to video/i)
         const submitButton = canvas.getByRole("button", {
-            name: /добавить лайнап/i,
+            name: /add lineup/i,
         })
 
         await waitFor(() => {
@@ -174,7 +174,7 @@ export const SubmitSuccess: Story = {
 
         await waitFor(() => {
             expect(submitButton).toBeDisabled()
-            expect(submitButton).toHaveTextContent(/добавление.../i)
+            expect(submitButton).toHaveTextContent(/adding.../i)
         })
     },
 }

@@ -8,12 +8,14 @@
     border-radius: 5px;
 
     &::placeholder {
-        color: var(--muted-foreground);
+        font-size: toRem(16);
+        font-weight: bold;
+        color: var(--color-placeholder);
     }
 }
 
 .selectGroup {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: toRem(5);
 }

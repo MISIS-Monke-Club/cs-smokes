@@ -3,8 +3,7 @@ import { AddLineupForm } from "@features/grenade/add-grenade"
 
 export function AddLineupPage() {
     return (
-        <div>
-            <h1 className={classes.title}>Add Lineup Page</h1>
+        <div className={classes.wrapper}>
             <AddLineupForm />
         </div>
     )
