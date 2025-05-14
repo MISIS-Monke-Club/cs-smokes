@@ -155,10 +155,12 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("lineups", "0001_initial"),
+        ("grenade_class", "0001_initial"),
         ("maps", "0001_initial"),
         ("grenade_class", "0001_initial"),
         ("properties", "0001_initial"),
         ("user", "migrations"),
+        ("auth_app", "0001_initial"),
     ]
 
     operations = [
