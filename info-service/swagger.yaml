@@ -28,7 +28,10 @@ tags:
     description: Администраторы
   - name: Favorites
     description: Избранное
-
+  - name: PullRequest
+    description: Pull Request
+  - name: Comments
+    description: Комментарии к Pull Request
 paths:
   /login/:
     post:
@@ -1438,7 +1441,223 @@ paths:
           description: Раскидка успешно удалена из избранного
         "401":
           description: Неавторизованный доступ
+    
+  /pull_requests/:
+    get:
+      tags:
+        - PullRequest
+      summary: Получить список всех PR
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: creator_id
+          schema: { type: integer }
+        - in: query
+          name: lineup_id
+          schema: { type: integer }
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [open, approved, rejected, cancelled]
+      responses:
+        "200":
+          description: Список PR
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PullRequest"
 
+    post:
+      tags:
+        - PullRequest
+      summary: Создать PR
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required: [lineup_id]
+              properties:
+                lineup_id:
+                  type: integer
+      responses:
+        "201":
+          description: PR создан
+
+  /pull_requests/{id}/:
+    get:
+      tags:
+        - PullRequest
+      summary: Получить конкретный PR
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Один PR
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PullRequest"
+
+    patch:
+      tags:
+        - PullRequest
+      summary: Изменить статус PR (только админ)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required: [status, approver_id]
+              properties:
+                status:
+                  type: string
+                  enum: [approved, rejected]
+                approver_id:
+                  type: integer
+      responses:
+        "200":
+          description: PR обновлён
+
+    delete:
+      tags:
+        - PullRequest
+      summary: Отменить PR (пользователь или админ) 
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Успешно отменён
+
+  /pull_requests/{pr_id}/comments/:
+    get:
+      tags:
+        - PullRequest
+      summary: Получить комментарии к PR
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: pr_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Список комментариев
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PullRequestComment"
+
+    post:
+      tags:
+        - PullRequest
+      summary: Добавить комментарий к PR
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required: [text, user_id]
+              properties:
+                text:
+                  type: string
+                user_id:
+                  type: integer
+                parent_id:
+                  type: integer
+                  nullable: true
+      responses:
+        "201":
+          description: Комментарий создан
+
+  /comments/{id}/:
+    patch:
+      tags:
+        - Comments
+      summary: Обновить комментарий
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required: [text]
+              properties:
+                text:
+                  type: string
+      responses:
+        "200":
+          description: Комментарий обновлён
+
+    delete:
+      tags:
+        - Comments
+      summary: Удалить комментарий
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Комментарий удалён
+
+  /pull_requests/{pr_id}/comments/ws:
+    get:
+      tags:
+        - PullRequest
+      summary: WebSocket endpoint для комментариев к PR
+      parameters:
+        - name: pr_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "101":
+          description: Переключение протокола на WebSocket
 components:
   schemas:
     Map:
@@ -1717,6 +1936,98 @@ components:
         created_at:
           type: string
           format: date-time
+    PullRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+        lineup_id:
+          type: integer
+        creator_id:
+          type: integer
+        approver_id:
+          type: integer
+          nullable: true
+        status:
+          type: string
+          enum: [open, approved, rejected, cancelled]
+        created_at:
+          type: string
+          format: date-time
+        closed_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    Comment:
+      type: object
+      properties:
+        id:
+          type: integer
+        pr_id:
+          type: integer
+        user_id:
+          type: integer
+        text:
+          type: string
+        parent_id:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+
+    PullRequestCreator:
+      type: object
+      properties:
+        user_id:
+          type: integer
+        username:
+          type: string
+        first_name:
+          type: string
+          nullable: true
+        last_name:
+          type: string
+          nullable: true
+        avatar_url:
+          type: string
+          nullable: true
+
+    PullRequestApprover:
+      type: object
+      properties:
+        user_id:
+          type: integer
+        username:
+          type: string
+        first_name:
+          type: string
+          nullable: true
+        last_name:
+          type: string
+          nullable: true
+        avatar_url:
+          type: string
+          nullable: true
+        admin_type:
+          $ref: '#/components/schemas/AdminType'
+
+    PullRequestDetails:
+      allOf:
+        - $ref: '#/components/schemas/PullRequest'
+        - type: object
+          properties:
+            creator:
+              $ref: '#/components/schemas/PullRequestCreator'
+            approver:
+              $ref: '#/components/schemas/PullRequestApprover'
+            replies_at:
+              oneOf:
+                - $ref: '#/components/schemas/Comment'
+                - type: "null"
+            lineup:
+              $ref: '#/components/schemas/Lineup'
 
   securitySchemes:
     bearerAuth:
@@ -1726,3 +2037,4 @@ components:
     basicAuth:
       type: http
       scheme: basic
+
