@@ -2,9 +2,13 @@ import clsx from "clsx"
 import { useId } from "react"
 import classes from "./input.module.scss"
 
+const sprite = "/svg-sprite.svg"
+
 type InputProps = React.ComponentProps<"input"> & {
     withLabel?: boolean
     label?: string
+    whithIcon?: boolean
+    iconPosition?: "before"
     inputClassName?: string
     labelClassName?: string
 }
@@ -12,6 +16,8 @@ type InputProps = React.ComponentProps<"input"> & {
 export const Input = ({
     withLabel = false,
     label,
+    whithIcon = false,
+    iconPosition = "before",
     inputClassName,
     labelClassName,
     ...props
@@ -32,6 +38,19 @@ export const Input = ({
                 {inputElement}
             </div>
         )
+    }
+
+    if (whithIcon) {
+        if (iconPosition === "before") {
+            return (
+                <div className={classes.inputWrapper}>
+                    <svg className={classes.icon}>
+                        <use href={`${sprite}#search`} />
+                    </svg>
+                    {inputElement}
+                </div>
+            )
+        }
     }
 
     return inputElement
