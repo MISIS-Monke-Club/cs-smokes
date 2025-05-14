@@ -11,6 +11,8 @@ type ItemsListProps<T> = React.ComponentProps<"div"> & {
     loadingItemsLength?: number
     type?: "grid" | "column"
     gap?: "small" | "medium" | "large"
+    columnsMode?: "fixed-amount" | "custom"
+    customColumnsClassName?: string
     columnsAmount?: number
     displayedLoadingItem?: ReactNode
 }
@@ -23,12 +25,19 @@ export function ItemsList<T>({
     loadingItemsLength = 10,
     gap = "medium",
     className = "",
+    columnsMode = "fixed-amount",
+    customColumnsClassName = "",
     columnsAmount = 2,
     displayedLoadingItem = <Skeleton widthInPixels={200} heightInPixels={30} />,
+    style = {},
     ...rest
 }: ItemsListProps<T>) {
     const computedStyles: React.CSSProperties = useMemo(() => {
-        const draftStyle = { ...rest.style }
+        const draftStyle = { ...style }
+
+        if (columnsMode === "custom" || customColumnsClassName) {
+            return style
+        }
 
         if (columnsAmount > 10) {
             draftStyle.gridTemplateColumns = "repeat(10, 1fr)"
@@ -39,7 +48,7 @@ export function ItemsList<T>({
         }
 
         return draftStyle
-    }, [columnsAmount, rest.style])
+    }, [columnsAmount, columnsMode, customColumnsClassName, style])
 
     const combinedClassName: string = useMemo(() => {
         const classesArray: string[] = [classes.list]
@@ -54,11 +63,11 @@ export function ItemsList<T>({
 
         const gapClasses: Record<
             NonNullable<ItemsListProps<T>["gap"]>,
-            "string"
+            string
         > = {
-            large: classes.smGap,
+            large: classes.lgGap,
             medium: classes.mdGap,
-            small: classes.lgGap,
+            small: classes.smGap,
         }
 
         if (className) {
@@ -79,8 +88,19 @@ export function ItemsList<T>({
             classesArray.push(gapClasses[gap])
         }
 
+        if (columnsMode === "custom" || customColumnsClassName) {
+            classesArray.push(customColumnsClassName)
+        }
+
         return classesArray.join(" ")
-    }, [className, type, gap, elements?.length])
+    }, [
+        className,
+        type,
+        elements?.length,
+        gap,
+        columnsMode,
+        customColumnsClassName,
+    ])
 
     if (isLoading) {
         return (

@@ -1,0 +1,41 @@
+.cardComponent {
+    display: flex;
+    flex-direction: column;
+    gap: toRem(10);
+    align-items: start;
+
+    width: toRem(150);
+    height: fit-content;
+
+    .img {
+        width: 100%;
+        min-width: toRem(130);
+        height: unset;
+    }
+
+    .topSlot,
+    .bottomSlot {
+        align-self: flex-end;
+    }
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    gap: toRem(10);
+
+    padding: toRem(10);
+    border: var(--border-classic);
+    border-radius: var(--border-radius-large);
+
+    background-color: var(--color-background-alt);
+
+    &:active {
+        border: var(--border-accent);
+        transition-duration: var(--default-transition-duration);
+    }
+
+    &:only-child {
+        width: 100%;
+    }
+}
