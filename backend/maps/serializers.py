@@ -12,6 +12,7 @@ class MapSerializer(serializers.ModelSerializer):
 
 class MapDetailSerializer(serializers.ModelSerializer):
     map_lineups = serializers.SerializerMethodField()
+    image_link = serializers.SerializerMethodField()
 
     class Meta:
         model = Map
@@ -21,3 +22,9 @@ class MapDetailSerializer(serializers.ModelSerializer):
         lineups = Lineup.objects.filter(map_id=obj)
         serializer = LineupSerializer(lineups, many=True)
         return serializer.data
+
+    def get_image_link(self, obj):
+        request = self.context.get("request")
+        if request:
+            return request.build_absolute_uri(obj.image_link.url)
+        return obj.image_link.url

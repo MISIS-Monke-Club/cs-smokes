@@ -25,7 +25,7 @@ class MapsView(APIView):
             return Response(cached_data, status=status.HTTP_200_OK)
 
         maps = Map.objects.all()
-        serializer = MapSerializer(maps, many=True)
+        serializer = MapSerializer(maps, many=True, context={"request": request})
         cache.set(cache_key, serializer.data, timeout=60 * 15)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -78,7 +78,7 @@ class MapDetailRUDView(APIView):
             return Response(cached_data)
 
         map_obj = get_object_or_404(Map, pk=pk)
-        serializer = MapDetailSerializer(map_obj)
+        serializer = MapDetailSerializer(map_obj, context={"request": request})
         cache.set(cache_key, serializer.data, timeout=60 * 15)
         return Response(serializer.data)
 
