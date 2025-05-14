@@ -2,6 +2,7 @@ import { MutationOptions } from "@tanstack/react-query"
 import { LineupFormData, convertToApiLineup } from "./model"
 import { instance, client } from "@shared/api"
 import { grenadeApi } from "@entities/grenade"
+import { mapApi } from "@entities/map"
 
 type CreateLineupParams = {
     data: LineupFormData
@@ -24,12 +25,10 @@ export const api = {
             return payload
         },
         onSuccess: (_, variables) => {
-            client.invalidateQueries({ queryKey: ["lineups"] })
+            client.invalidateQueries({ queryKey: grenadeApi.baseKey })
             client.invalidateQueries({
-                queryKey: [
-                    "map",
-                    { type: "byId", mapId: variables.data.map_id },
-                ],
+                queryKey: mapApi.getMapByIdOptions(variables.data.map_id)
+                    .queryKey,
             })
         },
     }),
