@@ -30,7 +30,7 @@ DEBUG = os.getenv("DJANGO_DEBUG", "True") == "True"
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost").split(",")
 SECRET_KEY = os.getenv("SECRET_KEY", "key")
 BACKEND_SERVER = os.getenv("BACKEND_SERVER", "http://localhost:3000/api")
-FORCE_SCRIPT_NAME = os.getenv("BACKEND_PREFIX", "/")
+FORCE_SCRIPT_NAME = None
 
 
 INSTALLED_APPS = [
