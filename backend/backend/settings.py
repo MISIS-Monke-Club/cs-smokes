@@ -53,6 +53,8 @@ INSTALLED_APPS = [
     "grenade_class",
     "properties",
     "favorites",
+    "channels",
+    "pull_requests",
 ]
 
 REST_FRAMEWORK = {
