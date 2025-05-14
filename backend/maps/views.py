@@ -6,6 +6,7 @@ from .models import Map
 from .serializers import MapSerializer, MapDetailSerializer
 from drf_spectacular.utils import extend_schema, OpenApiExample
 from rest_framework.permissions import IsAuthenticated
+from django.core.cache import cache
 
 
 class MapsView(APIView):
@@ -16,8 +17,16 @@ class MapsView(APIView):
         responses={200: MapSerializer(many=True)},
     )
     def get(self, request):
+
+        cache_key = "maps_list"
+        cached_data = cache.get(cache_key)
+
+        if cached_data is not None:
+            return Response(cached_data, status=status.HTTP_200_OK)
+
         maps = Map.objects.all()
         serializer = MapSerializer(maps, many=True)
+        cache.set(cache_key, serializer.data, timeout=60 * 15)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @extend_schema(
@@ -45,6 +54,7 @@ class MapsView(APIView):
         serializer = MapSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+            cache.delete("maps_list")
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -60,8 +70,16 @@ class MapDetailRUDView(APIView):
         },
     )
     def get(self, request, pk):
+
+        cache_key = f"map_detail_{pk}"
+        cached_data = cache.get(cache_key)
+
+        if cached_data is not None:
+            return Response(cached_data)
+
         map_obj = get_object_or_404(Map, pk=pk)
         serializer = MapDetailSerializer(map_obj)
+        cache.set(cache_key, serializer.data, timeout=60 * 15)
         return Response(serializer.data)
 
     @extend_schema(
@@ -80,6 +98,8 @@ class MapDetailRUDView(APIView):
         serializer = MapSerializer(map_obj, data=request.data)
         if serializer.is_valid():
             serializer.save()
+            cache.delete(f"map_detail_{pk}")
+            cache.delete("maps_list")
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -99,6 +119,8 @@ class MapDetailRUDView(APIView):
         serializer = MapSerializer(map_obj, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
+            cache.delete(f"map_detail_{pk}")
+            cache.delete("maps_list")
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -114,4 +136,6 @@ class MapDetailRUDView(APIView):
     def delete(self, request, pk):
         map_obj = get_object_or_404(Map, pk=pk)
         map_obj.delete()
+        cache.delete(f"map_detail_{pk}")
+        cache.delete("maps_list")
         return Response(status=status.HTTP_204_NO_CONTENT)

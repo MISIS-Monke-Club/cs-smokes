@@ -16,4 +16,5 @@ RUN pip install --no-cache-dir -r production-requirements.txt
 RUN adduser --disabled-password service-user
 USER service-user
 
-CMD ["sh", "-c", "python manage.py runserver 0.0.0.0:8000 --noreload"]
+#CMD ["sh", "-c", "python manage.py runserver 0.0.0.0:8000 --noreload"]
+CMD ["sh", "-c","python uvicorn backend.asgi:application --host 0.0.0.0 --port 8000 --reload"]

@@ -46,6 +46,7 @@ services:
             - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
             - TOKEN=${TOKEN}
             - ALLOWED_ORIGINS=${ALLOWED_ORIGINS}
+            - REDIS_PASS=${REDIS_PASS}
         depends_on:
             - db
         command: sh ./run-server.sh
@@ -63,6 +64,21 @@ services:
             - 5433:5432
         healthcheck:
             test: ["CMD", "-f", "http://localhost:5433"]
+    redis:
+        container_name: redis_db
+        image: redis:alpine
+        restart: always
+        env_file: ./.env
+        environment:
+        - REDIS_PASSWORD=${REDIS_PASS}
+        ports:
+        - 6379:6379
+        command: redis-server --requirepass ${REDIS_PASS}
+        healthcheck:
+            test: ["CMD", "redis-cli", "-a", "${REDIS_PASS}", "ping"]
+            interval: 5s
+            timeout: 30s
+            retries: 3
 
     info-service:
         container_name: info-service
@@ -85,3 +101,4 @@ services:
             - TOKEN=${TOKEN}
             - WEB_APP_URL=${WEB_APP_URL}
         command: sh -c "python bot.py"
+    
