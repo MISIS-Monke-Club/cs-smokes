@@ -22,3 +22,24 @@
         color: var(--color-placeholder);
     }
 }
+
+.inputWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.inputWrapper input {
+    width: 100%;
+    padding-left: toRem(40);
+}
+
+.icon {
+    pointer-events: none;
+
+    position: absolute;
+    left: toRem(12);
+
+    width: 18px;
+    height: 18px;
+}
