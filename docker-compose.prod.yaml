@@ -22,6 +22,10 @@ services:
             - DB_HOST=${DB_HOST}
             - DB_PORT=${DB_PORT}
             - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
+            - REDIS_PASS=${REDIS_PASS}
+            - SUPER_USER_NAME={SUPER_USER_NAME}
+            - SUPER_USER_EMAIL={SUPER_USER_EMAIL}
+            - SUPER_USER_PASSWORD={SUPER_USER_PASSWORD}
         depends_on:
             - db
         command: sh ./run-server.prod.sh
