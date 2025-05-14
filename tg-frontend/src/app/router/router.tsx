@@ -12,6 +12,7 @@ import { FavoritesPage } from "@pages/favorites-page"
 import { AddLineupPage } from "@pages/add-lineup-page"
 import { loginThunk, setupAuthSlice, setupInterceptors } from "@features/auth"
 import { store } from "@shared/model"
+import { MyGrenadesList } from "@pages/my-grenades-page"
 import { GrenadesPage } from "@pages/grenades"
 import { MapInfoPage } from "@pages/map/map-info"
 import { selectAuthSession } from "@entities/session"
@@ -78,6 +79,10 @@ export const router = createBrowserRouter(
                         {
                             path: "/favorites",
                             element: <FavoritesPage />,
+                        },
+                        {
+                            path: "profile/myGrenades",
+                            element: <MyGrenadesList />,
                         },
                     ],
                 },

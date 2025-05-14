@@ -27,6 +27,11 @@ export function ProfileOverview({ isEditable }: ProfileOverviewProps) {
                     <Link to='/profile/edit'>Edit</Link>
                 </Button>
             )}
+            {isEditable && (
+                <Button size='lg' asChild className={classes.editButton}>
+                    <Link to='/profile/myGrenades'>My lineups</Link>
+                </Button>
+            )}
         </div>
     )
 }

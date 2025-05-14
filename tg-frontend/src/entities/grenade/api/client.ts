@@ -22,7 +22,16 @@ export const api = {
             queryFn: () => api.getGrenades(params),
         }),
 
-    getGrenades: (params?: Record<string, unknown>) =>
+    getMyGrenadesOptions: (creatorId: string) =>
+        queryOptions({
+            queryKey: [
+                ...api.baseKey,
+                { type: "myGrenades", creatorId },
+            ] as const,
+            queryFn: () => api.getMyGrenades(creatorId),
+        }),
+
+    getGrenades: () =>
         typedQuery({
             request: instance.get(api.baseApiUrl, {
                 params,
@@ -35,6 +44,19 @@ export const api = {
                 "Произошла ошибка при получении раскидок, проверьте консоль разработчика"
             )
 
+            throw err
+        }),
+
+    getMyGrenades: (creatorId: string) =>
+        typedQuery({
+            request: instance.get(`${api.baseApiUrl}/?creator_id=${creatorId}`),
+            dtoSchema: grenadeDTOschema.array(),
+            fromDTO: fromGrenadeArrayDTO,
+        }).catch((err) => {
+            console.error(err)
+            toast.error(
+                "Произошла ошибка при получении ваших раскидок, проверьте консоль разработчика"
+            )
             throw err
         }),
 

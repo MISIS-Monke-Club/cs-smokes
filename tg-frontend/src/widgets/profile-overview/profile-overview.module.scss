@@ -11,6 +11,8 @@
 .editButton {
     display: flex;
 
+    margin-bottom: toRem(5);
+
     font-size: toRem(16);
     font-weight: bold;
     color: var(--color-text-main);
