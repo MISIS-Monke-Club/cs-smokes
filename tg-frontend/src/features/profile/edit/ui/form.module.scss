@@ -2,6 +2,17 @@
     width: toReam(400);
 }
 
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: toRem(20);
+}
+
+.buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
 .title {
     margin-bottom: toRem(30);
     font-size: toRem(32);

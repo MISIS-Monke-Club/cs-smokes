@@ -1,0 +1,19 @@
+.label {
+    font-size: toRem(20);
+}
+
+.select {
+    padding: toRem(7);
+    border: 1px solid var(--color-border);
+    border-radius: 5px;
+
+    &::placeholder {
+        color: var(--muted-foreground);
+    }
+}
+
+.selectGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
