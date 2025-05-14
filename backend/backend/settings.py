@@ -74,6 +74,16 @@ CACHES = {
     }
 }
 
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [f"redis://:{os.getenv('REDIS_PASS')}@redis:6379/0"],
+        },
+    },
+}
+
 SIMPLE_JWT = {
     "SIGNING_KEY": SECRET_KEY,
     "USER_ID_FIELD": "user_id",
