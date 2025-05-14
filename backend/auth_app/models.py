@@ -22,8 +22,6 @@ class UserManager(BaseUserManager):
 
         user = self.create_user(username=username, email=email, password=password)
 
-        from .models import AdminType, Admins
-
         admin_type, _ = AdminType.objects.get_or_create(
             is_superuser=True,
             is_base_admin=True,

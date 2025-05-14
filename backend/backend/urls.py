@@ -22,6 +22,8 @@ from drf_spectacular.views import (
     SpectacularSwaggerView,
 )
 from django.http import JsonResponse
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     re_path(r"^$", lambda request: JsonResponse({"status": "ok"})),
@@ -41,3 +43,6 @@ urlpatterns = [
         name="swagger-ui",
     ),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
