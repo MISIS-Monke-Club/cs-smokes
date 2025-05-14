@@ -19,7 +19,9 @@ class PullRequest(models.Model):
 
 
 class PullRequestComment(models.Model):
-    pr_id = models.IntegerField()
+    pull_request_id = models.ForeignKey(
+        PullRequest, on_delete=models.CASCADE, related_name="comments"
+    )
     user_id = models.IntegerField()
     text = models.TextField()
     parent_id = models.IntegerField(null=True, blank=True)
