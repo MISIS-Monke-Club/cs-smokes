@@ -24,7 +24,7 @@ urlpatterns = [
         name="pullrequestcomment-list-create",
     ),
     path(
-        "comments/<int:id>/",
+        "comments/<int:pk>/",
         CommentRetrieveUpdateDeleteView.as_view(),
         name="pullrequestcomment-detail",
     ),
