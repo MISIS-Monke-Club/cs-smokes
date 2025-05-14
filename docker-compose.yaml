@@ -47,9 +47,9 @@ services:
             - TOKEN=${TOKEN}
             - ALLOWED_ORIGINS=${ALLOWED_ORIGINS}
             - REDIS_PASS=${REDIS_PASS}
-            - SUPER_USER_NAME={SUPER_USER_NAME}
-            - SUPER_USER_EMAIL={SUPER_USER_EMAIL}
-            - SUPER_USER_PASSWORD={SUPER_USER_PASSWORD}
+            - SUPER_USER_NAME=${SUPER_USER_NAME}
+            - SUPER_USER_EMAIL=${SUPER_USER_EMAIL}
+            - SUPER_USER_PASSWORD=${SUPER_USER_PASSWORD}
         depends_on:
             - db
         command: sh ./run-server.sh

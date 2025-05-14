@@ -154,9 +154,9 @@ def delete_mock_lineups(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("lineups", "0001_initial"),
+        ("lineups", "0001_alter_lineup_preview_image_link"),
         ("grenade_class", "0001_initial"),
-        ("maps", "0001_initial"),
+        ("maps", "0002_alter_map_image_link"),
         ("grenade_class", "0001_initial"),
         ("properties", "0001_initial"),
         ("user", "migrations"),
