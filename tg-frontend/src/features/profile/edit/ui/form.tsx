@@ -21,35 +21,35 @@ export function EditProfileForm() {
                     type='text'
                     name='username'
                     defaultValue={profileData?.username || undefined}
-                    placeholder='Your username...'
+                    placeholder='Enter your username...'
                 />
                 <Input
                     disabled={!isEditing}
                     type='text'
                     name='steamLink'
                     defaultValue={profileData?.steamLink || undefined}
-                    placeholder='Your steam link...'
+                    placeholder='Enter your steam link...'
                 />
                 <Input
                     disabled={!isEditing}
                     type='email'
                     name='email'
                     defaultValue={profileData?.email || undefined}
-                    placeholder='Your email...'
+                    placeholder='john@example.com'
                 />
                 <Input
                     disabled={!isEditing}
                     type='text'
                     name='firstName'
                     defaultValue={profileData?.firstName || undefined}
-                    placeholder='Your first name...'
+                    placeholder='Enter your first name...'
                 />
                 <Input
                     disabled={!isEditing}
                     type='text'
                     name='lastName'
                     defaultValue={profileData?.lastName || undefined}
-                    placeholder='Your first name...'
+                    placeholder='Enter your last name...'
                 />
                 <div className={classes.buttons}>
                     {!isEditing ? (

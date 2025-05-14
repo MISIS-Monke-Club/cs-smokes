@@ -1,56 +1,43 @@
-@use "./mixins" as *;
-
 :root {
     // COLOR
-    --color-background-alt: #191b1e;
-    --color-main-background: #111115;
-    --color-main-alt: #262730;
+    --color-background: #0d0714;
     --color-accent: #4130a9;
-    --color-text-main: #edefef;
-    --color-placeholder: #24282e;
-    --color-disabled: #aaa;
-    --color-danger: #a93030;
-    --color-success: #30a936;
+    --color-main: #0a0064;
+    --color-text-main: #fff;
+    --color-border: #777;
 
     // FONT SIZE
-    // IMPORTANT: cant use toRem in properties!!!
-    --text-large: calc(16 / 16 * 1rem);
-    --text-normal: calc(14 / 16 * 1rem);
-    --text-small: calc(12 / 16 * 1rem);
-    --h1-font-size: calc(24 / 16 * 1rem);
-    --h2-font-size: calc(20 / 16 * 1rem);
-    --h3-font-size: calc(18 / 16 * 1rem);
-    --h4-font-size: calc(16 / 16 * 1rem);
-    --ui-large: calc(18 / 16 * 1rem);
-    --ui-normal: var(--text-large);
-    --ui-small: var(--text-small);
-
-    // GAPS
-    --main-section-gap: 100%;
+    --h1-font-size: 70px;
+    --h2-font-size: 60px;
+    --h3-font-size: 50px;
+    --h4-font-size: 40px;
+    --h5-font-size: 30px;
+    --h6-font-size: 20px;
+    --p-font-size: 18px;
 
     // SIZES
-    --card-width: calc(150 / 16 * 1rem);
+    --main-width: 500px;
+    --button-width: 30px;
+
+    // GAPS
+    --main-section-gap: 60px;
 
     // PADDING / OFFSET
-    --site-padding-x: calc(5 / 16 * 1rem);
-    --site-padding-y: calc(15 / 16 * 1rem);
+    --site-padding-x: 100px;
 
     // FONT
-    --font-family-main: "Arial", sans-serif;
+    --font-family-main: "Space Grotesk", sans-serif;
     --font-style: normal;
     --line-height: 1;
     --font-size: 16px;
 
     // DECORATIONS
-    --border-classic: 1px solid var(--color-main-alt);
-    --border-accent: 1px solid var(--color-accent);
+    --border: 1px solid var(--color-main);
     --box-shadow: 1 1 var(--color-dark);
-    --border-radius: 8px;
-    --border-radius-large: 10px;
-    --border-radius-small: 6px;
+    --border-radius: 10px;
 
     // ANIMATIONS
-    --transition-duration: 0.15s;
+    --transition-duration: 0.2s;
 
     // MEDIA
     // @include tablet {  }

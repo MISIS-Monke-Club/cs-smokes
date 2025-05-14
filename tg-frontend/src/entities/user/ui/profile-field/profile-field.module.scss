@@ -1,0 +1,13 @@
+.field {
+    display: flex;
+    justify-content: space-between;
+}
+
+.label {
+    font-size: toRem(16);
+    font-weight: bold;
+}
+
+.value {
+    font-size: toRem(14);
+}
