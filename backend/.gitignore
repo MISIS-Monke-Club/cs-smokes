@@ -2,4 +2,3 @@ venv
 .venv
 **/__pycache__/
 static
-media
