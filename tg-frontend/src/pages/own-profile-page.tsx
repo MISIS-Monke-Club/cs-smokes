@@ -7,9 +7,6 @@ export function OwnProfilePage() {
 
     return (
         <>
-            <h1>
-                <b>YOUR</b> profile
-            </h1>
             <ProfileOverview userId={userId} isEditable />
         </>
     )

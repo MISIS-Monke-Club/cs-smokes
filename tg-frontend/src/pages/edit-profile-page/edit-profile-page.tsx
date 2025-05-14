@@ -5,8 +5,7 @@ import { EditProfileForm } from "@features/profile/edit"
 export function EditProfilePage() {
     return (
         <div className={classes.wrapper}>
-            <GoBack>Назад</GoBack>
-            <h1 className={classes.title}>Редактирование профиля</h1>
+            <GoBack className={classes.back}>Назад</GoBack>
             <EditProfileForm />
         </div>
     )

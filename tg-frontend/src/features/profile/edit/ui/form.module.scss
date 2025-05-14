@@ -18,3 +18,9 @@
     font-size: toRem(32);
     text-align: center;
 }
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: toRem(15);
+}
