@@ -1,11 +1,19 @@
 import { useQuery } from "@tanstack/react-query"
+import { Link } from "react-router-dom"
+import { Slash } from "lucide-react"
 import classes from "./map-overview.module.scss"
 import { GrenadesListComponent } from "@entities/grenade"
 import { mapApi, MapPageModel } from "@entities/map"
 import { PlaceholderBlock } from "@shared/ui/placeholder-block"
-import { ImageComponent } from "@shared/ui/image"
 import { ItemsList } from "@shared/ui/items-list"
 import { favoritesMaper } from "@features/favorites/get"
+import { Button } from "@shared/ui/button"
+import {
+    Breadcrumb,
+    BreadcrumbList,
+    BreadcrumbItem,
+    BreadcrumbSeparator,
+} from "@shared/ui/breadcrumb"
 
 export function MapOverview({ mapId }: { mapId: MapPageModel["mapId"] }) {
     const { data, isError, isLoading } = useQuery(
@@ -34,15 +42,31 @@ export function MapOverview({ mapId }: { mapId: MapPageModel["mapId"] }) {
 
     return (
         <>
-            <h1 className={classes.title}>{data?.name}</h1>
-            <ImageComponent
-                className={classes.mapImage}
-                src={data?.imageLink || ""}
-                alt='card image'
-                width='200'
-                height='200'
-                isLoading={isLoading}
-            />
+            <Breadcrumb>
+                <BreadcrumbList>
+                    <BreadcrumbItem>
+                        <Link to='/maps'>Maps</Link>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator>
+                        <Slash />
+                    </BreadcrumbSeparator>
+                    <BreadcrumbItem>
+                        <Link to={`/maps/${data.mapId}`}>{data.name}</Link>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator>
+                        <Slash />
+                    </BreadcrumbSeparator>
+                    <BreadcrumbItem>
+                        <Link to={`/maps/${data.mapId}/grenades`}>lineups</Link>
+                    </BreadcrumbItem>
+                </BreadcrumbList>
+            </Breadcrumb>
+            <div className={classes.heading}>
+                <h1>{data?.name} lineups</h1>
+                <Button asChild variant='link' className={classes.link}>
+                    <Link to={`/maps/${data.mapId}`}>view map information</Link>
+                </Button>
+            </div>
             <GrenadesListComponent
                 grenades={data.mapLineups}
                 mapFunction={favoritesMaper}

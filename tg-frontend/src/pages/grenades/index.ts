@@ -1,0 +1,1 @@
+export { GrenadesPage } from "./grenades"

@@ -1,0 +1,5 @@
+.button {
+    color: var(--color-text-main);
+
+    @include font-arial-rounded-mt;
+}

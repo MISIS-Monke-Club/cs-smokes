@@ -30,10 +30,22 @@ button {
 }
 
 // -- FONT SIZE --
-// h1 {
-//     font-size: var(--h1-font-size);
-// }
+h1 {
+    font-size: var(--h1-font-size);
+}
 
-// p {
-//     font-size: var(--p-font-size)
-// }
+h2 {
+    font-size: var(--h2-font-size);
+}
+
+h3 {
+    font-size: var(--h3-font-size);
+}
+
+h4 {
+    font-size: var(--h4-font-size);
+}
+
+p {
+    font-size: var(--text-normal);
+}

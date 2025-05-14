@@ -5,7 +5,7 @@ import { PlaceholderBlock } from "@shared/ui/placeholder-block"
 
 type GrenadesListProps = {
     grenades?: GrenadeModel[]
-    mapFunction?: GrenadesListMaper
+    mapFunction: GrenadesListMaper
     isError?: boolean
     isLoading?: boolean
 }

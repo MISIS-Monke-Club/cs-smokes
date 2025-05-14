@@ -15,7 +15,7 @@ const config: { path: string; icon: React.ReactNode; activeOn: string[] }[] = [
         activeOn: ["maps", "grenade"],
     },
     {
-        path: "/grenade",
+        path: "/grenades",
         icon: <Icons.GrenadeIcon />,
         activeOn: ["maps", "grenade"],
     },

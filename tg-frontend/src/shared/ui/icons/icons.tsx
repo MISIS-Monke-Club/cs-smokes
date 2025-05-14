@@ -44,9 +44,9 @@ export function ListIcon() {
             <path
                 d='M5.44444 1H17M5.44444 6H17M5.44444 11H17M1 1H1.00889M1 6H1.00889M1 11H1.00889'
                 stroke='white'
-                stroke-width='2'
-                stroke-linecap='round'
-                stroke-linejoin='round'
+                strokeWidth='2'
+                strokeLinecap='round'
+                strokeLinejoin='round'
             />
         </svg>
     )
@@ -66,32 +66,32 @@ export function GrenadeIcon() {
                 cy='9.32431'
                 r='5.67566'
                 stroke='white'
-                stroke-width='1.5'
+                strokeWidth='1.5'
             />
             <path
                 opacity='0.5'
                 d='M12.3513 3.64865L10.8378 5.16216'
                 stroke='white'
-                stroke-width='1.5'
-                stroke-linecap='round'
+                strokeWidth='1.5'
+                strokeLinecap='round'
             />
             <path
                 d='M14.2432 4.02701L15 4.40539'
                 stroke='white'
-                stroke-width='1.5'
-                stroke-linecap='round'
+                strokeWidth='1.5'
+                strokeLinecap='round'
             />
             <path
                 d='M11.5945 1L11.9729 1.75675'
                 stroke='white'
-                stroke-width='1.5'
-                stroke-linecap='round'
+                strokeWidth='1.5'
+                strokeLinecap='round'
             />
             <path
                 d='M13.8648 2.13511L14.6216 1.37836'
                 stroke='white'
-                stroke-width='1.5'
-                stroke-linecap='round'
+                strokeWidth='1.5'
+                strokeLinecap='round'
             />
         </svg>
     )
@@ -108,16 +108,16 @@ export function UserIcon() {
             <path
                 d='M0.675977 13.5562C0.901737 12.1631 1.6194 10.897 2.69876 9.98773C3.77811 9.07846 5.14765 8.58621 6.55889 8.60029C7.97013 8.61438 9.32957 9.13387 10.3906 10.0645C11.4515 10.9952 12.1438 12.2753 12.3417 13.6726'
                 stroke='white'
-                stroke-width='1.2'
-                stroke-linecap='round'
+                strokeWidth='1.2'
+                strokeLinecap='round'
             />
             <circle
                 cx='6.5'
                 cy='3.5'
                 r='2.9'
                 stroke='white'
-                stroke-width='1.2'
-                stroke-linecap='round'
+                strokeWidth='1.2'
+                strokeLinecap='round'
             />
         </svg>
     )
