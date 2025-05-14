@@ -1,4 +1,5 @@
 import { GrenadeModel, GrenadesListMaper } from "../../model/domain"
+import classes from "./grenades-list.module.scss"
 import { ItemsList } from "@shared/ui/items-list"
 import { PlaceholderBlock } from "@shared/ui/placeholder-block"
 
@@ -13,8 +14,8 @@ type GrenadesListProps = {
 export function GrenadesListComponent({
     grenades,
     isError,
-    isLoading,
     mapFunction,
+    ...rest
 }: GrenadesListProps) {
     if (isError) {
         return (
@@ -26,10 +27,13 @@ export function GrenadesListComponent({
 
     return (
         <ItemsList
+            type='grid'
             elements={grenades}
             mapFunction={mapFunction}
-            isLoading={isLoading}
             loadingItemsLength={5}
+            columnsMode='custom'
+            customColumnsClassName={classes.grenadesList}
+            {...rest}
         />
     )
 }

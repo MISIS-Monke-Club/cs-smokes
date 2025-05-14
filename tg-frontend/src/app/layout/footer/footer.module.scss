@@ -1,0 +1,17 @@
+.footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 15px 10px;
+    border-radius: 18px;
+
+    background-color: var(--color-background-alt);
+}
+
+.links {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
+}

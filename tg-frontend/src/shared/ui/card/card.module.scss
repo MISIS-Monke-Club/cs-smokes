@@ -6,16 +6,39 @@
 
     width: toRem(150);
     height: fit-content;
+    border-radius: 10px;
+
+    .content {
+        display: contents;
+    }
 
     .img {
         width: 100%;
         min-width: toRem(130);
         height: unset;
+        border-radius: 6px;
     }
 
     .topSlot,
     .bottomSlot {
         align-self: flex-end;
+    }
+
+    .textWrapper {
+        .heading,
+        .subheading {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .heading {
+            max-width: toRem(135);
+        }
+
+        .subheading {
+            max-width: toRem(120);
+        }
     }
 }
 
