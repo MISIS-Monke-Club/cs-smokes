@@ -1,10 +1,11 @@
 import { mapsMaper } from "../../lib/maper"
 import { MapModel } from "../../model/domain"
+import classes from "./maps-list.module.scss"
 import { PlaceholderBlock } from "@shared/ui/placeholder-block"
 import { ItemsList } from "@shared/ui/items-list"
 import { Maper } from "@shared/model"
 import { ComponentsRepeater } from "@shared/ui/components-repeater"
-import { Skeleton } from "@shared/ui/skeleton"
+import { CardComponent } from "@shared/ui/card"
 
 type MapsListProps = {
     maps?: MapModel[]
@@ -17,11 +18,17 @@ export function MapsList({
     mapFunction = mapsMaper,
     isLoading = false,
 }: MapsListProps) {
+    const customColumnsClassName = classes.columnsDisplay
+
     if (isLoading) {
         return (
-            <ItemsList type='grid' isLoading>
-                <ComponentsRepeater length={20}>
-                    <Skeleton />
+            <ItemsList
+                type='grid'
+                isLoading
+                customColumnsClassName={customColumnsClassName}
+            >
+                <ComponentsRepeater length={15}>
+                    <CardComponent isLoading />
                 </ComponentsRepeater>
             </ItemsList>
         )
@@ -35,5 +42,12 @@ export function MapsList({
         )
     }
 
-    return <ItemsList type='grid' elements={maps} mapFunction={mapFunction} />
+    return (
+        <ItemsList
+            type='grid'
+            elements={maps}
+            mapFunction={mapFunction}
+            customColumnsClassName={customColumnsClassName}
+        />
+    )
 }

@@ -28,6 +28,9 @@
     // GAPS
     --main-section-gap: 100%;
 
+    // SIZES
+    --card-width: calc(150 / 16 * 1rem);
+
     // PADDING / OFFSET
     --site-padding-x: calc(5 / 16 * 1rem);
     --site-padding-y: calc(15 / 16 * 1rem);
@@ -39,9 +42,12 @@
     --font-size: 16px;
 
     // DECORATIONS
-    --border: 1px solid var(--color-main);
+    --border-classic: 1px solid var(--color-main-alt);
+    --border-accent: 1px solid var(--color-accent);
     --box-shadow: 1 1 var(--color-dark);
     --border-radius: 8px;
+    --border-radius-large: 10px;
+    --border-radius-small: 6px;
 
     // ANIMATIONS
     --transition-duration: 0.15s;
