@@ -30,7 +30,7 @@ DEBUG = os.getenv("DJANGO_DEBUG", "True") == "True"
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost").split(",")
 SECRET_KEY = os.getenv("SECRET_KEY", "key")
 BACKEND_SERVER = os.getenv("BACKEND_SERVER", "http://localhost:3000/api")
-FORCE_SCRIPT_NAME = os.getenv("BACKEND_PREFIX", "/")
+FORCE_SCRIPT_NAME = None
 
 
 INSTALLED_APPS = [
@@ -60,6 +60,16 @@ REST_FRAMEWORK = {
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": f"redis://:{os.getenv('REDIS_PASS')}@redis:6379/0",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+    }
 }
 
 SIMPLE_JWT = {
@@ -152,7 +162,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "backend.wsgi.application"
+# WSGI_APPLICATION = "backend.wsgi.application"
+ASGI_APPLICATION = "backend.asgi.application"
 
 # Routing with/without slash. Работает только для ViewSets(мы использвуем почти всегда API-VIEW)
 APPEND_SLASH = False

@@ -21,9 +21,10 @@ from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularSwaggerView,
 )
-
+from django.http import JsonResponse
 
 urlpatterns = [
+    re_path(r"^$", lambda request: JsonResponse({"status": "ok"})),
     re_path("admin/", admin.site.urls),
     re_path("api/", include("auth_app.urls")),
     re_path("api/", include("lineups.urls")),

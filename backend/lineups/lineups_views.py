@@ -12,6 +12,7 @@ from grenade_class.models import GrenadeClass
 from .serializers import LineupSerializer
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
+from django.core.cache import cache
 
 
 class LineupViews(APIView):
@@ -38,6 +39,13 @@ class LineupViews(APIView):
         tags=["Lineup"],
     )
     def get(self, request):
+
+        cache_key = "grenade_list"
+        cached_data = cache.get(cache_key)
+
+        if cached_data is not None:
+            return Response(cached_data, status=status.HTTP_200_OK)
+
         lineups = Lineup.objects.all()
         is_approved = request.query_params.get("is_approved")
         if is_approved is not None:
@@ -60,6 +68,8 @@ class LineupViews(APIView):
                     ordering_field = "-" + ordering_field
                 lineups = lineups.order_by(ordering_field)
         serializer = LineupSerializer(lineups, many=True, context={"request": request})
+
+        cache.set(cache_key, serializer.data, timeout=60 * 15)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @extend_schema(
@@ -80,6 +90,7 @@ class LineupViews(APIView):
         serializer = LineupSerializer(data=request.data, context={"request": request})
         if serializer.is_valid():
             serializer.save()
+            cache.delete("grenade_list")
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -98,8 +109,14 @@ class LineupRUDViews(APIView):
         tags=["Lineup"],
     )
     def get(self, request, pk):
+        cache_key = f"grenade_detail_{pk}"
+        cached_data = cache.get(cache_key)
+
+        if cached_data is not None:
+            return Response(cached_data)
         obj = get_object_or_404(Lineup, pk=pk)
         serializer = LineupSerializer(obj, context={"request": request})
+        cache.set(cache_key, serializer.data, timeout=60 * 15)
         return Response(serializer.data)
 
     @extend_schema(
@@ -121,6 +138,8 @@ class LineupRUDViews(APIView):
         serializer = LineupSerializer(obj, data=request.data)
         if serializer.is_valid():
             serializer.save()
+            cache.delete(f"grenade_detail_{pk}")
+            cache.delete("grenade_list")
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -143,6 +162,8 @@ class LineupRUDViews(APIView):
         serializer = LineupSerializer(obj, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
+            cache.delete(f"grenade_detail_{pk}")
+            cache.delete("grenade_list")
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -159,6 +180,8 @@ class LineupRUDViews(APIView):
     def delete(self, request, pk):
         obj = get_object_or_404(Lineup, pk=pk)
         obj.delete()
+        cache.delete(f"grenade_detail_{pk}")
+        cache.delete("grenade_list")
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
@@ -200,6 +223,8 @@ class ChangeGrenadeClassView(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
         lineup.grenade_class_id = grenade_class
         lineup.save()
+        cache.delete(f"grenade_detail_{pk}")
+        cache.delete("grenade_list")
         return Response(status=status.HTTP_200_OK)
 
 
@@ -215,6 +240,13 @@ class LineupViewFilters(APIView):
         filters = {
             "is_approved": ["true", "false"],
         }
+
+        cache_key = f"lineup_filters_detail"
+        cached_data = cache.get(cache_key)
+
+        if cached_data is not None:
+            return Response(cached_data)
+        cache.set(cache_key, filters, timeout=60 * 60)
         return Response(filters, status=status.HTTP_200_OK)
 
 
@@ -227,6 +259,10 @@ class LineupViewSorts(APIView):
         tags=["Lineup"],
     )
     def get(self, request):
+        cache_key = f"lineup_sorts_detail"
+        cached_data = cache.get(cache_key)
+        if cached_data is not None:
+            return Response(cached_data)
         sorts = {
             "ordering": [
                 "date_of_creation",
@@ -235,4 +271,5 @@ class LineupViewSorts(APIView):
                 "-by_alphabet",
             ]
         }
+        cache.set(cache_key, sorts, timeout=60 * 60)
         return Response(sorts, status=status.HTTP_200_OK)
