@@ -1,4 +1,4 @@
-.columnsDisplay {
+.grenadesList {
     @include auto-columns(var(--card-width));
 
     gap: var(--grid-gap);

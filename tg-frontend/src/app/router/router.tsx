@@ -1,7 +1,6 @@
 import { createBrowserRouter } from "react-router-dom"
 import { Layout } from "../layout"
 import { LoginProvider } from "../providers/login-provider"
-import { Grenades } from "@pages/grenades"
 import { Homepage } from "@pages/home-page"
 import { GrenadePage } from "@pages/grenade-page"
 import { Maps } from "@pages/maps"
@@ -34,10 +33,6 @@ export const router = createBrowserRouter(
                     element: <LoginProvider />,
                     children: [
                         { path: "/", element: <Homepage /> },
-                        {
-                            path: "grenades",
-                            element: <Grenades />,
-                        },
                         {
                             path: "grenades/:grenadeId",
                             element: <GrenadePage />,

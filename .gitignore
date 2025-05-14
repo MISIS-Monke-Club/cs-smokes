@@ -8,6 +8,8 @@ postgres_data
 feature
 release
 hotfix
+develop
+main
 
 # IDEs
 .idea
