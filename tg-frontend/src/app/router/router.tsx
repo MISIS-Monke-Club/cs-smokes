@@ -13,6 +13,7 @@ import { FavoritesPage } from "@pages/favorites-page"
 import { AddLineupPage } from "@pages/add-lineup-page"
 import { loginThunk, setupAuthSlice, setupInterceptors } from "@features/auth"
 import { store } from "@shared/model"
+import { MyGrenadesList } from "@pages/my-grenades-page"
 
 export const router = createBrowserRouter(
     [
@@ -69,6 +70,10 @@ export const router = createBrowserRouter(
                         {
                             path: "/favorites",
                             element: <FavoritesPage />,
+                        },
+                        {
+                            path: "profile/myGrenades",
+                            element: <MyGrenadesList />,
                         },
                     ],
                 },
