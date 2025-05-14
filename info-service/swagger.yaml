@@ -1444,6 +1444,7 @@ paths:
     
   /pull_requests/:
     get:
+      deprecated: true
       tags:
         - PullRequest
       summary: Получить список всех PR
@@ -1469,9 +1470,10 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/PullRequest"
+                  $ref: "#/components/schemas/PullRequestDetails"
 
     post:
+      deprecated: true
       tags:
         - PullRequest
       summary: Создать PR
@@ -1492,6 +1494,7 @@ paths:
 
   /pull_requests/{id}/:
     get:
+      deprecated: true
       tags:
         - PullRequest
       summary: Получить конкретный PR
@@ -1509,9 +1512,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PullRequest"
+                $ref: "#/components/schemas/PullRequestDetails"
 
     patch:
+      deprecated: true
       tags:
         - PullRequest
       summary: Изменить статус PR (только админ)
@@ -1540,6 +1544,7 @@ paths:
           description: PR обновлён
 
     delete:
+      deprecated: true
       tags:
         - PullRequest
       summary: Отменить PR (пользователь или админ) 
@@ -1557,6 +1562,7 @@ paths:
 
   /pull_requests/{pr_id}/comments/:
     get:
+      deprecated: true
       tags:
         - PullRequest
       summary: Получить комментарии к PR
@@ -1576,9 +1582,10 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/PullRequestComment"
+                  $ref: "#/components/schemas/Comment"
 
     post:
+      deprecated: true
       tags:
         - PullRequest
       summary: Добавить комментарий к PR
@@ -1604,6 +1611,7 @@ paths:
 
   /comments/{id}/:
     patch:
+      deprecated: true
       tags:
         - Comments
       summary: Обновить комментарий
@@ -1627,8 +1635,38 @@ paths:
       responses:
         "200":
           description: Комментарий обновлён
+      
+    get:
+      deprecated: true
+      tags:
+        - Comments
+      summary: Получить комментарий по ID
+      description: Возвращает информацию о конкретном комментарии
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID комментария
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Успешный запрос. Возвращает данные комментария
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+        "404":
+          description: Комментарий не найден
+        "401":
+          description: Не авторизован
+
+
 
     delete:
+      deprecated: true
       tags:
         - Comments
       summary: Удалить комментарий
@@ -1646,6 +1684,7 @@ paths:
 
   /pull_requests/{pr_id}/comments/ws:
     get:
+      deprecated: true
       tags:
         - PullRequest
       summary: WebSocket endpoint для комментариев к PR
@@ -2022,10 +2061,6 @@ components:
               $ref: '#/components/schemas/PullRequestCreator'
             approver:
               $ref: '#/components/schemas/PullRequestApprover'
-            replies_at:
-              oneOf:
-                - $ref: '#/components/schemas/Comment'
-                - type: "null"
             lineup:
               $ref: '#/components/schemas/Lineup'
 
