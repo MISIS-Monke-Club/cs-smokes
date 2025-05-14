@@ -2,8 +2,11 @@ import { useMutation, useQuery } from "@tanstack/react-query"
 import { useSelector } from "react-redux"
 import { useNavigate } from "react-router-dom"
 import { toast } from "sonner"
-import { formSchema, PatchUserByIdParams } from "../model"
+
+import { useQueryClient } from "@tanstack/react-query"
+import { formSchema } from "../model"
 import { api } from "../api"
+import { mapToApiKeys } from "../model"
 import { selectUserId } from "@entities/session"
 import { userApi } from "@entities/user"
 import { patchChecker } from "@shared/lib/patch-checker"
@@ -12,6 +15,8 @@ import { handleAxiosError } from "@shared/lib/handle-axios-error"
 export function useEditProfile() {
     const navigate = useNavigate()
     const userId = useSelector(selectUserId)
+    const queryClient = useQueryClient()
+
     const { data: profileData } = useQuery({
         ...userApi.getUserById(userId!),
         enabled: Boolean(userId),
@@ -22,66 +27,56 @@ export function useEditProfile() {
         mutationKey: ["update-profile", "byId", userId],
     })
 
-    const updateUser = async (user: PatchUserByIdParams) => {
-        if (!userId) {
-            toast.error("cant update profile, looks like you are unauthorized")
-        } else {
-            await mutateAsync(user)
-
-            toast.success("Updated profile data!")
-        }
-    }
-
-    const handleUpdate = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
 
-        if (userId) {
-            const formData = new FormData(e.currentTarget)
-            const formValues = Object.fromEntries(formData)
+        if (!userId) {
+            toast.error("Please login before editing your profile.")
+            return
+        }
 
-            // Getting only changed fields
-            const { isChanged, modifiedData } = patchChecker({
-                originValue: profileData,
-                changedValue: formValues,
-                modifyData: true,
+        const formData = new FormData(e.currentTarget)
+        const formValues = Object.fromEntries(formData) as Record<
+            string,
+            string
+        >
+
+        const { isChanged, modifiedData } = patchChecker({
+            originValue: profileData,
+            changedValue: formValues,
+            modifyData: true,
+        })
+
+        if (!isChanged || !modifiedData) {
+            toast.error("You haven’t changed anything.")
+            return
+        }
+
+        const apiReadyData = mapToApiKeys(modifiedData)
+        const parsed = formSchema.safeParse(apiReadyData)
+
+        if (!parsed.success) {
+            console.error(parsed.error)
+            toast.error(`Ошибка валидации: ${parsed.error.message}`)
+            return
+        }
+
+        try {
+            await mutateAsync({
+                userId,
+                userData: apiReadyData,
             })
 
-            if (!isChanged) {
-                toast.error(
-                    "You haven`t changed anything, try to insert smt in text fields"
-                )
-            } else {
-                const parsedData = formSchema.safeParse({ ...modifiedData })
+            queryClient.invalidateQueries({
+                queryKey: userApi.getUserById(userId).queryKey,
+            })
 
-                if (parsedData.success) {
-                    // Updating user data on server only
-                    // if something had been changed
-                    updateUser({
-                        userId,
-                        // Using spread operator to include in request
-                        // ONLY changed fields
-                        userData: { ...modifiedData },
-                    })
-                        .then(() => {
-                            navigate("/profile")
-                        })
-                        .catch((err) => {
-                            const parsedError = handleAxiosError(err)
-                            console.error(parsedError)
-                            toast.error(parsedError.message)
-                        })
-                }
-                // Form validation gives error
-                else {
-                    toast.error(
-                        `Ошибка ввода, сообщение: ${parsedData.error.message}`
-                    )
-                    console.error(parsedData.error)
-                }
-            }
-        } else {
-            console.error("cant edit profile, because you are unauthorized")
-            toast.error("Please login before")
+            toast.success("Profile updated successfully!")
+            navigate("/profile")
+        } catch (err) {
+            const parsedError = handleAxiosError(err)
+            console.error(parsedError)
+            toast.error(parsedError.message)
         }
     }
 
