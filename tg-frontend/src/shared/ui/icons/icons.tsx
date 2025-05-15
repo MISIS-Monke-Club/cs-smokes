@@ -122,3 +122,44 @@ export function UserIcon() {
         </svg>
     )
 }
+
+export function SortIcon() {
+    return (
+        <svg
+            width='19'
+            height='12'
+            viewBox='0 0 19 12'
+            fill='none'
+            xmlns='http://www.w3.org/2000/svg'
+        >
+            <path
+                d='M2.12137 3.82855L4.9499 1.00001L7.77844 3.82855'
+                stroke='#DEDEDE'
+                strokeWidth='1.7'
+                strokeLinecap='round'
+                strokeLinejoin='round'
+            />
+            <path
+                d='M4.94996 1.00004L4.94996 10.8999'
+                stroke='#DEDEDE'
+                strokeWidth='1.7'
+                strokeLinecap='round'
+                strokeLinejoin='round'
+            />
+            <path
+                d='M16.6785 8.07132L13.8499 10.8999L11.0214 8.07132'
+                stroke='#DEDEDE'
+                strokeWidth='1.7'
+                strokeLinecap='round'
+                strokeLinejoin='round'
+            />
+            <path
+                d='M13.8499 1.00004L13.8499 10.8999'
+                stroke='#DEDEDE'
+                strokeWidth='1.7'
+                strokeLinecap='round'
+                strokeLinejoin='round'
+            />
+        </svg>
+    )
+}
