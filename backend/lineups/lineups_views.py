@@ -13,6 +13,10 @@ from .serializers import LineupSerializer
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from django.core.cache import cache
+from .filters import LineupFilter
+from django_filters.rest_framework import DjangoFilterBackend
+import hashlib
+from urllib.parse import urlencode
 
 
 class LineupViews(APIView):
@@ -39,34 +43,21 @@ class LineupViews(APIView):
         tags=["Lineup"],
     )
     def get(self, request):
+        query_string = urlencode(sorted(request.query_params.items()))
+        query_hash = hashlib.sha256(query_string.encode()).hexdigest()
+        cache_key = f"grenade_list_{query_hash}"
 
-        cache_key = "grenade_list"
         cached_data = cache.get(cache_key)
-
         if cached_data is not None:
             return Response(cached_data, status=status.HTTP_200_OK)
 
-        lineups = Lineup.objects.all()
-        is_approved = request.query_params.get("is_approved")
-        if is_approved is not None:
-            if is_approved.lower() == "true":
-                lineups = lineups.filter(is_approved=True)
-            elif is_approved.lower() == "false":
-                lineups = lineups.filter(is_approved=False)
+        queryset = Lineup.objects.all()
+        filterset = LineupFilter(request.GET, queryset=queryset)
 
-        ordering = request.query_params.get("ordering")
-        if ordering:
-            if ordering.lstrip("-") == "date_of_creation":
-                ordering_field = "created_at"
-            elif ordering.lstrip("-") == "by_alphabet":
-                ordering_field = "title"
-            else:
-                ordering_field = None
+        if not filterset.is_valid():
+            return Response(filterset.errors, status=status.HTTP_400_BAD_REQUEST)
 
-            if ordering_field:
-                if ordering.startswith("-"):
-                    ordering_field = "-" + ordering_field
-                lineups = lineups.order_by(ordering_field)
+        lineups = filterset.qs
         serializer = LineupSerializer(lineups, many=True, context={"request": request})
 
         cache.set(cache_key, serializer.data, timeout=60 * 15)
