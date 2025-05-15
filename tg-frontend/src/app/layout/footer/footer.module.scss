@@ -1,4 +1,7 @@
 .footer {
+    position: fixed;
+    bottom: var(--site-padding-y);
+
     display: flex;
     align-items: center;
     justify-content: center;

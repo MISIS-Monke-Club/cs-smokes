@@ -7,10 +7,7 @@ export function GrenadesList() {
         data: grenades,
         isLoading,
         isError,
-    } = useQuery({
-        queryKey: [...grenadeApi.baseKey, "list"],
-        queryFn: grenadeApi.getGrenades,
-    })
+    } = useQuery(grenadeApi.getGrenadesOptions())
 
     return (
         <GrenadesListComponent

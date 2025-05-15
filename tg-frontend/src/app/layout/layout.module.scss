@@ -35,6 +35,8 @@
 .content {
     display: flex;
     flex-direction: column;
+    gap: var(--main-section-gap);
     align-items: center;
+
     width: 100%;
 }
