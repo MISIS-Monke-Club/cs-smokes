@@ -14,10 +14,10 @@ import { instance } from "@shared/api"
 export const api = {
     baseKey: ["map"],
     baseApiUrl: "maps",
-    getMapsOptions: () =>
+    getMapsOptions: (params?: { query?: string }) =>
         queryOptions<MapModel[]>({
-            queryKey: [...api.baseKey, { type: "list" }],
-            queryFn: api.getMaps,
+            queryKey: [...api.baseKey, { type: "list" }, params],
+            queryFn: () => api.getMaps(params),
         }),
 
     getMapByIdOptions: (mapId: MapModel["mapId"]) =>
@@ -26,9 +26,11 @@ export const api = {
             queryFn: () => api.getMapsById(mapId),
         }),
 
-    getMaps: () =>
+    getMaps: (params?: { query?: string }) =>
         typedQuery({
-            request: instance.get(api.baseApiUrl),
+            request: instance.get(api.baseApiUrl, {
+                params,
+            }),
             dtoSchema: mapDTOschema.array(),
             fromDTO: fromMapArrayDTO,
         }).catch((err) => {

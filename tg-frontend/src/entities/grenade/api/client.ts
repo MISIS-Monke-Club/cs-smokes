@@ -15,15 +15,17 @@ export const api = {
             queryFn: () => api.getGrenadeById({ grenadeId }),
         }),
 
-    getGrenadesOptions: () =>
+    getGrenadesOptions: (params?: { query?: string }) =>
         queryOptions({
-            queryKey: [...api.baseKey, { type: "list" }],
-            queryFn: api.getGrenades,
+            queryKey: [...api.baseKey, { type: "list" }, params],
+            queryFn: () => api.getGrenades(params),
         }),
 
-    getGrenades: () =>
+    getGrenades: (params?: { query?: string }) =>
         typedQuery({
-            request: instance.get(api.baseApiUrl),
+            request: instance.get(api.baseApiUrl, {
+                params,
+            }),
             dtoSchema: grenadeDTOschema.array(),
             fromDTO: fromGrenadeArrayDTO,
         }).catch((err) => {
