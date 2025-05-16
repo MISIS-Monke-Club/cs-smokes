@@ -9,11 +9,13 @@ def create_mock_maps(apps, schema_editor):
             "name": "Mirage",
             "link": "https://example.com/mirage",
             "image_link": "/maps/Cs2mirage.webp",
+            "is_esports_pool": "True",
         },
         {
             "name": "Dust 2",
             "link": "https://example.com/dust2",
             "image_link": "/maps/Dust_II_CS-GO.jpg",
+            "is_esports_pool": "True",
         },
     ]
 
@@ -156,7 +158,7 @@ class Migration(migrations.Migration):
     dependencies = [
         ("lineups", "0001_alter_lineup_preview_image_link"),
         ("grenade_class", "0001_initial"),
-        ("maps", "0002_alter_map_image_link"),
+        ("maps", "0003_map_is_esports_pool"),
         ("grenade_class", "0001_initial"),
         ("properties", "0001_initial"),
         ("user", "migrations"),

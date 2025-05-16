@@ -165,6 +165,9 @@ paths:
                   image_link:
                     type: string
                     nullable: true
+                  is_esports_pool:
+                    type: boolean
+                    nullable: false
     post:
       tags:
         - Maps
@@ -186,6 +189,9 @@ paths:
                 image_link:
                   type: string
                   nullable: true
+                is_esports_pool:
+                    type: boolean
+                    nullable: false
       responses:
         "201":
           description: Карта успешно создана
@@ -239,6 +245,9 @@ paths:
                 image_link:
                   type: string
                   nullable: true
+                is_esports_pool:
+                    type: boolean
+                    nullable: false
       responses:
         "200":
           description: Карта успешно обновлена
@@ -271,6 +280,9 @@ paths:
                 image_link:
                   type: string
                   nullable: true
+                is_esports_pool:
+                    type: boolean
+                    nullable: false
       responses:
         "200":
           description: Карта частично обновлена
@@ -1712,6 +1724,9 @@ components:
         image_link:
           type: string
           nullable: true
+        is_esports_pool:
+          type: boolean
+          nullable: false
         map_lineups:
           type: array
           items:
@@ -1901,6 +1916,9 @@ components:
         image_link:
           type: string
           nullable: true
+        is_esports_pool:
+          type: boolean
+          nullable: false
 
     LineupUpdate:
       type: object
