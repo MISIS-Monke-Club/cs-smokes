@@ -11,10 +11,12 @@ from .filters import MapFilter
 from django_filters.rest_framework import DjangoFilterBackend
 import hashlib
 from urllib.parse import urlencode
+from rest_framework.parsers import MultiPartParser, FormParser
 
 
 class MapsView(APIView):
     permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
 
     @extend_schema(
         description="Получить список всех карт",
@@ -58,23 +60,31 @@ class MapsView(APIView):
 
     @extend_schema(
         description="Создать новую карту (только для администраторов)",
-        request=MapSerializer,
-        responses={
-            201: MapSerializer,
-            400: None,
-            401: None,
-            403: None,
+        request={
+            "multipart/form-data": {
+                "type": "object",
+                "properties": {
+                    "name": {"type": "string"},
+                    "link": {"type": "string"},
+                    "is_esports_pool": {"type": "boolean"},
+                    "image_link": {"type": "string", "format": "binary"},
+                },
+                "required": ["name", "is_esports_pool"],
+            }
         },
+        responses={201: MapSerializer},
         examples=[
             OpenApiExample(
                 "Пример запроса",
                 value={
-                    "name": "Новая карта",
-                    "link": "https://example.com/new_map",
-                    "image_link": "https://example.com/new_map_image.jpg",
+                    "name": "Dust II",
+                    "link": "https://example.com/dust2",
+                    "is_esports_pool": True,
+                    "image_link": "<binary>",
                 },
+                media_type="multipart/form-data",
                 request_only=True,
-            ),
+            )
         ],
     )
     def post(self, request):
@@ -88,6 +98,7 @@ class MapsView(APIView):
 
 class MapDetailRUDView(APIView):
     permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
 
     @extend_schema(
         description="Получить детальную информацию о карте",
@@ -120,6 +131,26 @@ class MapDetailRUDView(APIView):
             404: None,
         },
     )
+    @extend_schema(
+        request={
+            "multipart/form-data": {
+                "type": "object",
+                "properties": {
+                    "name": {"type": "string"},
+                    "link": {"type": "string"},
+                    "is_esports_pool": {"type": "boolean"},
+                    "image_link": {"type": "string", "format": "binary"},
+                },
+            }
+        },
+        examples=[
+            OpenApiExample(
+                "Пример обновления",
+                value={"name": "Обновленное название", "is_esports_pool": False},
+                media_type="multipart/form-data",
+            )
+        ],
+    )
     def put(self, request, pk):
         map_obj = get_object_or_404(Map, pk=pk)
         serializer = MapSerializer(map_obj, data=request.data)
@@ -140,6 +171,26 @@ class MapDetailRUDView(APIView):
             403: None,
             404: None,
         },
+    )
+    @extend_schema(
+        request={
+            "multipart/form-data": {
+                "type": "object",
+                "properties": {
+                    "name": {"type": "string"},
+                    "link": {"type": "string"},
+                    "is_esports_pool": {"type": "boolean"},
+                    "image_link": {"type": "string", "format": "binary"},
+                },
+            }
+        },
+        examples=[
+            OpenApiExample(
+                "Пример обновления",
+                value={"name": "Обновленное название", "is_esports_pool": False},
+                media_type="multipart/form-data",
+            )
+        ],
     )
     def patch(self, request, pk):
         map_obj = get_object_or_404(Map, pk=pk)

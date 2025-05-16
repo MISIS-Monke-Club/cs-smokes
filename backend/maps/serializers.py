@@ -5,6 +5,9 @@ from lineups.serializers import LineupSerializer
 
 
 class MapSerializer(serializers.ModelSerializer):
+
+    image_link = serializers.ImageField(use_url=True)
+
     class Meta:
         model = Map
         fields = "__all__"
