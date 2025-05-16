@@ -17,11 +17,13 @@ from .filters import LineupFilter
 from django_filters.rest_framework import DjangoFilterBackend
 import hashlib
 from urllib.parse import urlencode
+from rest_framework.parsers import MultiPartParser, FormParser
 
 
 class LineupViews(APIView):
 
     permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
 
     @extend_schema(
         summary="Получить список всех гранат (Lineup)",
