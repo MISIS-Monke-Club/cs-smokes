@@ -98,7 +98,6 @@ class MapsView(APIView):
 
 class MapDetailRUDView(APIView):
     permission_classes = [IsAuthenticated]
-    parser_classes = [MultiPartParser, FormParser]
 
     @extend_schema(
         description="Получить детальную информацию о карте",
@@ -131,26 +130,6 @@ class MapDetailRUDView(APIView):
             404: None,
         },
     )
-    @extend_schema(
-        request={
-            "multipart/form-data": {
-                "type": "object",
-                "properties": {
-                    "name": {"type": "string"},
-                    "link": {"type": "string"},
-                    "is_esports_pool": {"type": "boolean"},
-                    "image_link": {"type": "string", "format": "binary"},
-                },
-            }
-        },
-        examples=[
-            OpenApiExample(
-                "Пример обновления",
-                value={"name": "Обновленное название", "is_esports_pool": False},
-                media_type="multipart/form-data",
-            )
-        ],
-    )
     def put(self, request, pk):
         map_obj = get_object_or_404(Map, pk=pk)
         serializer = MapSerializer(map_obj, data=request.data)
@@ -171,26 +150,6 @@ class MapDetailRUDView(APIView):
             403: None,
             404: None,
         },
-    )
-    @extend_schema(
-        request={
-            "multipart/form-data": {
-                "type": "object",
-                "properties": {
-                    "name": {"type": "string"},
-                    "link": {"type": "string"},
-                    "is_esports_pool": {"type": "boolean"},
-                    "image_link": {"type": "string", "format": "binary"},
-                },
-            }
-        },
-        examples=[
-            OpenApiExample(
-                "Пример обновления",
-                value={"name": "Обновленное название", "is_esports_pool": False},
-                media_type="multipart/form-data",
-            )
-        ],
     )
     def patch(self, request, pk):
         map_obj = get_object_or_404(Map, pk=pk)
