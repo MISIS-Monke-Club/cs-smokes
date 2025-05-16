@@ -129,7 +129,7 @@ paths:
         - bearerAuth: []
       parameters:
       - in: query
-        name: esports_pool
+        name: is_esports_pool
         schema:
           type: boolean
         description: Фильтр по киберспортивному пулу (актуальные карты Faceit и Premier режима)
@@ -138,14 +138,13 @@ paths:
         name: ordering
         schema:
           type: string
-          enum: [popularity, -popularity, by_alphabet, -by_alphabet, lineups_count, -lineups_count]
+          enum: [by_alphabet, -by_alphabet, quantity, -quantity]
         description: |
           Поле для сортировки. 
           Префикс "-" для обратного порядка.
           Доступные значения:
-          - popularity (по популярности)
-          - name (по алфавиту)
-          - lineups_count (по количеству раскидок)
+          - by_alphabet (по алфавиту)
+          - quantity (по количеству раскидок)
         example: popularity
       responses:
         "200":
@@ -177,7 +176,7 @@ paths:
       requestBody:
         required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
               type: object
               properties:
@@ -186,12 +185,12 @@ paths:
                 link:
                   type: string
                   nullable: true
-                image_link:
-                  type: string
-                  nullable: true
                 is_esports_pool:
                     type: boolean
                     nullable: false
+                image_link:
+                      type: string
+                      format: binary
       responses:
         "201":
           description: Карта успешно создана
@@ -350,7 +349,7 @@ paths:
       requestBody:
         required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
               type: object
               properties:
@@ -372,6 +371,7 @@ paths:
                   type: integer
                 preview_image_link:
                   type: string
+                  format: binary
                   nullable: true
                 grenade_class_id:
                   type: integer

@@ -4,9 +4,13 @@ from rest_framework import status
 from django.shortcuts import get_object_or_404
 from .models import Map
 from .serializers import MapSerializer, MapDetailSerializer
-from drf_spectacular.utils import extend_schema, OpenApiExample
+from drf_spectacular.utils import extend_schema, OpenApiExample, OpenApiParameter
 from rest_framework.permissions import IsAuthenticated
 from django.core.cache import cache
+from .filters import MapFilter
+from django_filters.rest_framework import DjangoFilterBackend
+import hashlib
+from urllib.parse import urlencode
 
 
 class MapsView(APIView):
@@ -15,17 +19,40 @@ class MapsView(APIView):
     @extend_schema(
         description="Получить список всех карт",
         responses={200: MapSerializer(many=True)},
+        parameters=[
+            OpenApiParameter(
+                name="is_esports_pool",
+                type=bool,
+                description="Фильтр по наличию в пуле киберспортивных карт",
+                required=False,
+            ),
+            OpenApiParameter(
+                name="ordering",
+                type=str,
+                description="Сортировка результатов",
+                enum=["quantity", "-quantity", "by_alphabet", "-by_alphabet"],
+                required=False,
+            ),
+        ],
     )
     def get(self, request):
+        query_string = urlencode(sorted(request.query_params.items()))
+        query_hash = hashlib.sha256(query_string.encode()).hexdigest()
+        cache_key = f"map_list_{query_hash}"
 
-        cache_key = "maps_list"
         cached_data = cache.get(cache_key)
-
         if cached_data is not None:
             return Response(cached_data, status=status.HTTP_200_OK)
 
-        maps = Map.objects.all()
-        serializer = MapSerializer(maps, many=True, context={"request": request})
+        queryset = Map.objects.all()
+        filterset = MapFilter(request.GET, queryset=queryset)
+
+        if not filterset.is_valid():
+            return Response(filterset.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        lineups = filterset.qs
+        serializer = MapSerializer(lineups, many=True, context={"request": request})
+
         cache.set(cache_key, serializer.data, timeout=60 * 15)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
