@@ -29,6 +29,6 @@ except IntegrityError:
     print('Суперпользователь уже существует.')
 
 EOF
-
+echo "Инициализация закончена"
 echo "Запуск ASGI-сервера через uvicorn"
 uvicorn backend.asgi:application --host 0.0.0.0 --port 8000 --reload

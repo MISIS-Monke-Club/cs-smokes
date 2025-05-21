@@ -7,7 +7,7 @@ services:
         volumes:
             - ./backend:/backend
             - ./backend:/static
-            - ./backend:/media
+            - media:/backend/media
         expose:
             - 8000
         env_file: ./.env
@@ -116,3 +116,5 @@ volumes:
         name: cs-lineups-db
     cache-data:
         name: cs-lineups-redis
+    media: 
+        name: media
