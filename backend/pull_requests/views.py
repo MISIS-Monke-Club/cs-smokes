@@ -1,9 +1,7 @@
 from rest_framework import generics, permissions
 from rest_framework.exceptions import NotFound
-from rest_framework.views import APIView
 from user.mixins import IsAdminOrCreator, AdminOnlyForUpdate
 from pull_requests.models import PullRequest, Comment
-from django.http import JsonResponse
 from pull_requests.serializers import (
     PullRequestSerializer,
     PullRequestCreateSerializer,
@@ -70,11 +68,3 @@ class CommentRetrieveUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticated]
-
-
-class CommentWebsocketView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get(self, request, id):
-        websocket_url = f"ws://{request.get_host()}/ws/pull_requests/{id}/comments/"
-        return JsonResponse({"websocket_url": websocket_url})

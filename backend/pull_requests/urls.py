@@ -4,7 +4,6 @@ from .views import (
     PullRequestRetrieveUpdateDeleteView,
     CommentListCreateView,
     CommentRetrieveUpdateDeleteView,
-    CommentWebsocketView,
 )
 
 urlpatterns = [
@@ -27,10 +26,5 @@ urlpatterns = [
         "comments/<int:pk>/",
         CommentRetrieveUpdateDeleteView.as_view(),
         name="pullrequestcomment-detail",
-    ),
-    path(
-        "pull_requests/<int:id>/comments/ws/",
-        CommentWebsocketView.as_view(),
-        name="pullrequestcomment-ws",
     ),
 ]
