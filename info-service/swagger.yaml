@@ -12,6 +12,8 @@ servers:
     description: Сервер бекенда, запущенный локально (prod)
 
 tags:
+  - name: HealthCheck
+    description: Проверка работоспособности бекенда
   - name: AUTH
     description: Авторизация
   - name: Maps
@@ -33,6 +35,26 @@ tags:
   - name: Comments
     description: Комментарии к Pull Request
 paths:
+
+  /health/:
+    get:
+      tags: 
+        - HealthCheck
+      
+      requestBody:
+        required: false
+
+      responses:
+        "200":
+          description: Бекенд работает
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+
   /login/:
     post:
       tags:

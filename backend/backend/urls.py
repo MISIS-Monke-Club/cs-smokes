@@ -26,7 +26,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    re_path(r"health/?$", lambda request: JsonResponse({"status": "ok"})),
+    re_path(r"api/health/?$", lambda request: JsonResponse({"status": "ok"})),
     re_path("admin/", admin.site.urls),
     re_path("api/", include("auth_app.urls")),
     re_path("api/", include("lineups.urls")),
