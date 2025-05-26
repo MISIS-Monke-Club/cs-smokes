@@ -23,4 +23,4 @@ class PRCommentConsumer(AsyncWebsocketConsumer):
         )
 
     async def chat_message(self, event):
-        await self.send(text_data=json.dumps({"message": event["message"]}))
+        await self.send(text_data=json.dumps({"message": event["message"]}, ensure_ascii=False))

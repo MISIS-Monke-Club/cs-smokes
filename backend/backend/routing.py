@@ -3,6 +3,7 @@ from pull_requests.consumers import PRCommentConsumer
 
 websocket_urlpatterns = [
     re_path(
-        r"^api/pull_requests/(?P<pr_id>\d+)/comments/ws/$", PRCommentConsumer.as_asgi()
+        r"^ws/api/pull_requests/(?P<pr_id>\d+)/comments/$",
+        PRCommentConsumer.as_asgi(),
     ),
 ]
