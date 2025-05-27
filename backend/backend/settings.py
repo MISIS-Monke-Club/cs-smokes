@@ -34,6 +34,7 @@ FORCE_SCRIPT_NAME = None
 
 
 INSTALLED_APPS = [
+    "jazzmin",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -60,6 +61,7 @@ REST_FRAMEWORK = {
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
 }
 
 CACHES = {
@@ -136,6 +138,7 @@ CORS_ALLOW_HEADERS = [
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -219,11 +222,37 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = "static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+JAZZMIN_SETTINGS = {
+    "site_title": "cs-lineups Admin",
+    "site_header": "cs-lineups Website Admin",
+    "site_brand": "cs-lineups",
+    "welcome_sign": "Добро пожаловать!",
+    "copyright": "cs-lineups Development Team",
+    "search_model": ["auth_app.User"],
+    # Темы
+    "theme": "cyborg",
+    # Sidebar
+    "show_sidebar": True,
+    "navigation_expanded": True,
+    "icons": {
+        "auth.User": "fas fa-user",
+        "auth.Group": "fas fa-users",
+    },
+}
 
 # path to setting.py
 # settings_module = os.getenv("DJANGO_SETTINGS_MODULE", ""),

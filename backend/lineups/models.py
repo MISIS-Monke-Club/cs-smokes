@@ -14,7 +14,9 @@ class Lineup(models.Model):
     description = models.TextField(null=True)
     is_approved = models.BooleanField(default=False)
     views = models.IntegerField(default=0)
-    preview_image_link = models.CharField(max_length=255, null=True)
+    preview_image_link = models.ImageField(
+        upload_to="lineups/", verbose_name="Фото", null=True
+    )
     grenade_class_id = models.ForeignKey(GrenadeClass, on_delete=models.CASCADE)
 
     def __str__(self):
