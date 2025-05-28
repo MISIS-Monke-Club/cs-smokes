@@ -4,7 +4,13 @@
     gap: toRem(15);
 }
 
+.skeleton {
+    display: flex;
+    margin: 0 auto;
+}
+
 .avatar {
+    width: 100%;
     min-width: 310px;
     min-height: 310px;
     margin: 0 auto;
@@ -24,4 +30,5 @@ h2 {
 
 .mainTitle {
     margin: 0 0 toRem(2);
+    font-size: var(--h2-font-size);
 }

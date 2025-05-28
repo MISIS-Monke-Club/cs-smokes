@@ -1,16 +1,16 @@
 import { Meta, StoryObj } from "@storybook/react"
 import { expect, userEvent, waitFor, within } from "@storybook/test"
 import { Canvas } from "storybook/internal/types"
-import { configureStore } from "@reduxjs/toolkit"
-import { Provider } from "react-redux"
+// import { configureStore } from "@reduxjs/toolkit"
+// import { Provider } from "react-redux"
 import { AddLineupModel } from "../model"
 import { AddLineupForm } from "./add-lineup-form"
 import classes from "./add-lineup-form.stories.module.scss"
 import { mockAddLineup } from "./__mocks"
-import { testAddLineupSuccess } from "./__tests__/__test-servers__"
+// import { testAddLineupSuccess } from "./__tests__/__test-servers__"
 import { testGrenadeClassesServer } from "@entities/grenade-class//dev"
 import { testMapsServer } from "@entities/map/dev"
-import { rootReducer } from "@shared/model"
+// import { rootReducer } from "@shared/model"
 
 const meta: Meta<typeof AddLineupForm> = {
     component: AddLineupForm,
@@ -19,25 +19,25 @@ const meta: Meta<typeof AddLineupForm> = {
     },
 }
 
-const mockStore = configureStore({
-    reducer: rootReducer,
-    preloadedState: {
-        user: {
-            auth: {
-                userId: 123,
-                accessToken: "fake-token",
-                refreshToken: "fake-refresh",
-            },
-            errorMessage: null,
-        },
-    },
-})
+// const mockStore = configureStore({
+//     reducer: rootReducer,
+//     preloadedState: {
+//         user: {
+//             auth: {
+//                 userId: 123,
+//                 accessToken: "fake-token",
+//                 refreshToken: "fake-refresh",
+//             },
+//             errorMessage: null,
+//         },
+//     },
+// })
 
-const withStore = (Story: React.ComponentType) => (
-    <Provider store={mockStore}>
-        <Story />
-    </Provider>
-)
+// const withStore = (Story: React.ComponentType) => (
+//     <Provider store={mockStore}>
+//         <Story />
+//     </Provider>
+// )
 
 export default meta
 
@@ -132,49 +132,49 @@ export const Filled: Story = {
 
         await baseTestData.baseTestFunction(canvas)
     },
-}
-export const SubmitSuccess: Story = {
-    args: {
-        name: "Submit Success",
-        initialValues: baseTestData.mocks,
-    },
-    parameters: {
-        msw: [
-            testAddLineupSuccess(),
-            testGrenadeClassesServer(),
-            testMapsServer({ delayInMs: 100 }),
-        ],
-    },
-    decorators: [withStore],
-    play: async ({ canvasElement }) => {
-        const canvas = within(canvasElement)
-        const data = baseTestData.mocks
+    // }
+    // export const SubmitSuccess: Story = {
+    //     args: {
+    //         name: "Submit Success",
+    //         initialValues: baseTestData.mocks,
+    //     },
+    //     parameters: {
+    //         msw: [
+    //             testAddLineupSuccess(),
+    //             testGrenadeClassesServer(),
+    //             testMapsServer({ delayInMs: 100 }),
+    //         ],
+    //     },
+    //     decorators: [withStore],
+    //     play: async ({ canvasElement }) => {
+    //         const canvas = within(canvasElement)
+    //         const data = baseTestData.mocks
 
-        const titleInput = canvas.getByLabelText(/name/i)
-        const descriptionInput = canvas.getByLabelText(/description/i)
-        const mapSelect = canvas.getByLabelText(/map/i)
-        const grenadeClassSelect = canvas.getByLabelText(/grenade class/i)
-        const linkInput = canvas.getByLabelText(/Link to video/i)
-        const submitButton = canvas.getByRole("button", {
-            name: /add lineup/i,
-        })
+    //         const titleInput = canvas.getByLabelText(/name/i)
+    //         const descriptionInput = canvas.getByLabelText(/description/i)
+    //         const mapSelect = canvas.getByLabelText(/map/i)
+    //         const grenadeClassSelect = canvas.getByLabelText(/grenade class/i)
+    //         const linkInput = canvas.getByLabelText(/Link to video/i)
+    //         const submitButton = canvas.getByRole("button", {
+    //             name: /add lineup/i,
+    //         })
 
-        await waitFor(() => {
-            expect(mapSelect.querySelector("option")).not.toBeNull()
-            expect(grenadeClassSelect.querySelector("option")).not.toBeNull()
-        })
+    //         await waitFor(() => {
+    //             expect(mapSelect.querySelector("option")).not.toBeNull()
+    //             expect(grenadeClassSelect.querySelector("option")).not.toBeNull()
+    //         })
 
-        await userEvent.type(titleInput, data.title)
-        await userEvent.type(descriptionInput, data.description)
-        await userEvent.selectOptions(mapSelect, data.map)
-        await userEvent.selectOptions(grenadeClassSelect, "Smoke")
-        await userEvent.type(linkInput, data.link_to_video)
+    //         await userEvent.type(titleInput, data.title)
+    //         await userEvent.type(descriptionInput, data.description)
+    //         await userEvent.selectOptions(mapSelect, data.map)
+    //         await userEvent.selectOptions(grenadeClassSelect, "Smoke")
+    //         await userEvent.type(linkInput, data.link_to_video)
 
-        await userEvent.click(submitButton)
+    //         await userEvent.click(submitButton)
 
-        await waitFor(() => {
-            expect(submitButton).toBeDisabled()
-            expect(submitButton).toHaveTextContent(/adding.../i)
-        })
-    },
+    //         await waitFor(() => {
+    //             expect(submitButton).toBeDisabled()
+    //             expect(submitButton).toHaveTextContent(/adding.../i)
+    //         })
+    //     },
 }

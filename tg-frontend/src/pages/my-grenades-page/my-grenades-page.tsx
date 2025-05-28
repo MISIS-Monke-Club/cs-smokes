@@ -23,7 +23,15 @@ export const MyGrenadesList = () => {
                         <div className={classes.info}>
                             <h3 className={classes.name}>{grenade.title}</h3>
                             <p className={classes.date}>
-                                created {grenade.createdAt}
+                                Created{" "}
+                                {new Date(grenade.createdAt).toLocaleDateString(
+                                    "en-US",
+                                    {
+                                        year: "numeric",
+                                        month: "long",
+                                        day: "numeric",
+                                    }
+                                )}
                             </p>
                         </div>
                         <div

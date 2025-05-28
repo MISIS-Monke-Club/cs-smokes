@@ -6,7 +6,7 @@
 }
 
 .title {
-    margin-bottom: toRem(15);
+    margin-bottom: var(--h1-font-size);
     font-size: toRem(24);
     font-weight: bold;
     color: var(--color-text-main);
@@ -27,32 +27,40 @@
     border-radius: toRem(8);
 
     background-color: var(--color-background-alt);
-
-    transition: background-color 0.2s ease;
 }
 
 .info {
+    display: flex;
     flex: 1;
+    flex-direction: column;
+    justify-content: center;
+
+    min-width: 0;
 }
 
 .name {
+    overflow: hidden;
+
     margin: 0;
-    font-size: toRem(16);
+
+    font-size: var(--h4-font-size);
     font-weight: bold;
     color: var(--color-text-main);
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .date {
     margin: toRem(4) 0 0;
-    font-size: toRem(14);
-    color: var(--color-placeholder);
+    font-size: var(--text-normal);
+    color: var(--color-disabled);
 }
 
 .status {
     margin-left: toRem(16);
     padding: toRem(6) toRem(12);
     border-radius: toRem(8);
-    font-size: toRem(14);
+    font-size: var(--text-normal);
 }
 
 .approved {

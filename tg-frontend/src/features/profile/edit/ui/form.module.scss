@@ -6,7 +6,7 @@
 }
 
 .label {
-    font-size: toRem(16);
+    font-size: var(--ui-normal);
     font-weight: bold;
 }
 
@@ -27,7 +27,7 @@
     display: flex;
     flex: 1;
 
-    font-size: toRem(16);
+    font-size: var(--ui-normal);
     font-weight: bold;
     color: var(--color-text-main);
 

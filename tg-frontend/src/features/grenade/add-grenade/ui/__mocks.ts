@@ -5,6 +5,6 @@ export const mockAddLineup: AddLineupModel = {
     description: "Небольшой смоук на A plant с длины",
     map: "Mirage",
     link_to_video: "https://www.youtube.com/watch?v=example",
-    preview_image_link: "https://placehold.co/600x400",
     grenade_class_id: "1",
+    preview_image_link: null,
 }

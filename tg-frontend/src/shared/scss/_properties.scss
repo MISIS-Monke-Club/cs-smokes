@@ -1,15 +1,16 @@
 :root {
     // COLOR
-    --color-background: #0d0714;
     --color-background-alt: #191b1e;
+    --color-main-background: #111115;
+    --color-main-alt: #262730;
     --color-accent: #4130a9;
-    --color-main: #0a0064;
-    --color-text-main: #fff;
-    --color-border: #777;
-    --color-placeholder: #aaa;
+    --color-text-main: #edefef;
+    --color-placeholder: #24282e;
+    --color-disabled: #aaa;
+    --color-danger: #a93030;
+    --color-success: #30a936;
 
     // FONT SIZE
-    // IMPORTANT: cant use toRem in properties!!!
     --text-large: calc(16 / 16 * 1rem);
     --text-normal: calc(14 / 16 * 1rem);
     --text-small: calc(12 / 16 * 1rem);
@@ -22,28 +23,33 @@
     --ui-small: var(--text-small);
 
     // GAPS
-    --main-section-gap: 15px;
+    --main-section-gap: 10px;
 
     // SIZES
     --card-width: calc(150 / 16 * 1rem);
     --max-content-size: 800px;
 
     // PADDING / OFFSET
-    --site-padding-x: 100px;
+    --site-padding-x: calc(5 / 16 * 1rem);
+    --site-padding-y: calc(15 / 16 * 1rem);
+    --grid-gap: calc(10 / 16 * 1rem);
 
     // FONT
-    --font-family-main: "Space Grotesk", sans-serif;
+    --font-family-main: "Arial", sans-serif;
     --font-style: normal;
     --line-height: 1;
     --font-size: 16px;
 
     // DECORATIONS
-    --border: 1px solid var(--color-main);
+    --border-classic: 1px solid var(--color-main-alt);
+    --border-accent: 1px solid var(--color-accent);
     --box-shadow: 1 1 var(--color-dark);
-    --border-radius: 10px;
+    --border-radius: 8px;
+    --border-radius-large: 10px;
+    --border-radius-small: 6px;
 
     // ANIMATIONS
-    --transition-duration: 0.2s;
+    --transition-duration: 0.15s;
 
     // MEDIA
     // @include tablet {  }

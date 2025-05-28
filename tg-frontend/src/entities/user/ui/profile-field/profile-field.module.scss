@@ -4,10 +4,10 @@
 }
 
 .label {
-    font-size: toRem(16);
+    font-size: var(--ui-normal);
     font-weight: bold;
 }
 
 .value {
-    font-size: toRem(14);
+    font-size: var(--text-normal);
 }

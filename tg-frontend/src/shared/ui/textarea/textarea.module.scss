@@ -10,12 +10,15 @@
 
 .textarea {
     padding: toRem(7);
-    border: 1px solid var(--color-border);
+    border: 1px solid var(--color-main-alt);
     border-radius: 5px;
+
+    font-size: var(--ui-normal);
+    font-weight: bold;
 
     &::placeholder {
         font-size: toRem(16);
         font-weight: bold;
-        color: var(--color-placeholder);
+        color: var(--color-disabled);
     }
 }

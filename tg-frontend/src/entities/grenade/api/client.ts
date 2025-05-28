@@ -31,7 +31,7 @@ export const api = {
             queryFn: () => api.getMyGrenades(creatorId),
         }),
 
-    getGrenades: () =>
+    getGrenades: (params?: Record<string, unknown>) =>
         typedQuery({
             request: instance.get(api.baseApiUrl, {
                 params,

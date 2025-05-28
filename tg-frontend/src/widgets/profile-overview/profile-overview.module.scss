@@ -1,6 +1,6 @@
 .title {
     margin-bottom: toRem(15);
-    font-size: toRem(24);
+    font-size: var(--h1-font-size);
     font-weight: bold;
 }
 
@@ -13,7 +13,7 @@
 
     margin-bottom: toRem(5);
 
-    font-size: toRem(16);
+    font-size: var(--ui-normal);
     font-weight: bold;
     color: var(--color-text-main);
 
