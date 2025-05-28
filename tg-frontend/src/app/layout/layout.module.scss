@@ -25,7 +25,7 @@
 
     width: 100%;
     // Не позволяет растягиваться контенту по всему экрану огромного монитора
-    max-width: calc(#{$desktop-min}px - 2 * var(--site-padding-x));
+    max-width: calc(var(--max-content-size) - 2 * var(--site-padding-x));
     height: 100%;
     padding-top: var(--site-padding-y);
     padding-bottom: var(--site-padding-y);

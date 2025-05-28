@@ -1,1 +1,1 @@
-export { Maps } from "./maps"
+export { Maps } from "./ui/maps/maps"

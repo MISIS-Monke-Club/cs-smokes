@@ -4,6 +4,7 @@ import { grenadeDTOschema, GrenadeModel } from "../model/domain"
 import { fromGrenadeArrayDTO, fromGrenadeDTO } from "../lib/dto-transformer"
 import { typedQuery } from "@shared/lib/precooked-methods"
 import { instance } from "@shared/api/instance"
+import { QueryParamsModel } from "@shared/model"
 
 export const api = {
     baseKey: ["grenade"],
@@ -15,11 +16,7 @@ export const api = {
             queryFn: () => api.getGrenadeById({ grenadeId }),
         }),
 
-    getGrenadesOptions: (params?: {
-        query?: string
-        ordering?: string
-        is_approved?: boolean
-    }) =>
+    getGrenadesOptions: (params?: QueryParamsModel.GrenadeFiltersDB) =>
         queryOptions({
             queryKey: [...api.baseKey, { type: "list" }, params],
             queryFn: () => api.getGrenades(params),

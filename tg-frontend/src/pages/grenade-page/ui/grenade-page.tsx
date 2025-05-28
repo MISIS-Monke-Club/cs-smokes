@@ -1,9 +1,12 @@
 import { useMemo } from "react"
-import { useParams } from "react-router-dom"
+import { Link, useParams } from "react-router-dom"
+import { useQuery } from "@tanstack/react-query"
 import { grenadePageParamsSchema } from "../domain"
 import classes from "./grenade-page.module.scss"
 import { GoBack } from "@features/go-back"
-import { GetGrenadeById } from "@features/grenade/get-by-id"
+import { grenadeApi, GrenadeOverview } from "@entities/grenade"
+import { Button } from "@shared/ui/button"
+import { ToggleFavorites } from "@features/favorites/toggle"
 // import { useParams } from "react-router-dom"
 
 export function GrenadePage() {
@@ -21,10 +24,36 @@ export function GrenadePage() {
         return draftId
     }, [params])
 
+    const {
+        data: grenade,
+        isLoading,
+        isError,
+    } = useQuery(grenadeApi.getGrenadesByIdOptions({ grenadeId }))
+
     return (
         <>
             <GoBack className={classes.goBack} />
-            <GetGrenadeById grenadeId={grenadeId} />
+            <GrenadeOverview
+                grenade={grenade}
+                isError={isError}
+                isLoading={isLoading}
+                actions={
+                    <>
+                        <div className={classes.actionsWrapper}>
+                            <Button className={classes.viewLineup} asChild>
+                                <Link to={grenade?.linkToVideo || ""}>
+                                    View lineup
+                                </Link>
+                            </Button>
+                            {grenade && (
+                                <ToggleFavorites
+                                    grenadeId={grenade?.grenadeId}
+                                />
+                            )}
+                        </div>
+                    </>
+                }
+            />
         </>
     )
 }

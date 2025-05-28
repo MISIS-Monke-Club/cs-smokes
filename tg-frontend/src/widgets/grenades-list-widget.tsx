@@ -14,6 +14,7 @@ export function GrenadesListWidget() {
         grenadeApi.getGrenadesOptions({
             query: params.get("search")?.toString(),
             ordering: params.get("ordering")?.toString(),
+            is_approved: params.get("is_favorites")?.toString(),
         })
     )
 
