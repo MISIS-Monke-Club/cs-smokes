@@ -169,7 +169,7 @@ paths:
           - quantity (по количеству раскидок)
         example: popularity
       - in: query
-        name: search
+        name: query
         schema:
           type: string
         description: Поиск карты
@@ -360,7 +360,7 @@ paths:
             - by_alphabet (по алфавиту)
           example: date_of_creation
         - in: query
-          name: search
+          name: query
           schema:
             type: string
           description: Поиск по названию и описанию гранаты (title, description)
