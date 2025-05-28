@@ -6,6 +6,7 @@ from pull_requests.serializers import CommentSerializer
 from asgiref.sync import sync_to_async
 from auth_app.models import User
 
+
 class PRCommentConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.pr_id = self.scope["url_route"]["kwargs"]["pr_id"]
@@ -28,12 +29,13 @@ class PRCommentConsumer(AsyncWebsocketConsumer):
     def create_comment(self, user_id, message):
         pull_request = PullRequest.objects.get(id=self.pr_id)
         author = User.objects.get(user_id=user_id)
-        return Comment.objects.create(pull_request=pull_request, author=author, text=message)
+        return Comment.objects.create(
+            pull_request=pull_request, author=author, text=message
+        )
 
     @sync_to_async
     def delete_comment(self, id):
         Comment.objects.filter(id=id, pull_request_id=self.pr_id).delete()
-
 
     async def chat_message(self, event):
         data = event["data"]
@@ -45,7 +47,11 @@ class PRCommentConsumer(AsyncWebsocketConsumer):
             message_id = data["message_id"]
             await self.delete_comment(message_id)
         comments = await sync_to_async(
-            lambda: list(Comment.objects.filter(pull_request_id=self.pr_id).order_by("created_at"))
+            lambda: list(
+                Comment.objects.filter(pull_request_id=self.pr_id).order_by(
+                    "created_at"
+                )
+            )
         )()
         serializer = CommentSerializer(comments, many=True)
         await self.send(text_data=json.dumps(serializer.data, ensure_ascii=False))
