@@ -11,7 +11,7 @@ class MapFilter(django_filters.FilterSet):
             ("name", "by_alphabet"),
         )
     )
-    search = django_filters.CharFilter(method="filter_by_search", label="Поиск")
+    query = django_filters.CharFilter(method="filter_by_search", label="Поиск")
 
     def filter_by_search(self, queryset, name, value):
         return queryset.filter(Q(name__icontains=value))
