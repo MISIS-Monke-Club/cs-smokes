@@ -1,5 +1,6 @@
 import { useDebouncedCallback } from "use-debounce"
-import { GrenadesSortings } from "../sortings"
+import { GrenadesSortings } from "../sortings/sortings"
+import { GrenadesFilters } from "../filters/filters"
 import classes from "./grenades.module.scss"
 import { Input } from "@shared/ui/input"
 import { useQueryPrams } from "@shared/lib/params-parser"
@@ -19,8 +20,11 @@ export function GrenadesPage() {
 
     return (
         <>
+            <div className={classes.actions}>
+                <GrenadesSortings />
+                <GrenadesFilters />
+            </div>
             <h1 className={classes.title}>Grenades list</h1>
-            <GrenadesSortings />
             <Input
                 placeholder='Find your grenade...'
                 onChange={(e) => handleInputChange(e.target.value)}

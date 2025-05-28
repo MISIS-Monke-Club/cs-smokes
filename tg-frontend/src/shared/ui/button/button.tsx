@@ -63,8 +63,8 @@ export function Button({
 }: ButtonProps) {
     const combinedButtonClass: string = useMemo(() => {
         const draftClass: string = cn(
-            buttonVariants({ variant, size, className }),
-            classes.button
+            classes.button,
+            buttonVariants({ variant, size, className })
         )
 
         return draftClass

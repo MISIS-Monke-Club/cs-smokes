@@ -26,10 +26,11 @@
     --ui-small: var(--text-small);
 
     // GAPS
-    --main-section-gap: 10px;
+    --main-section-gap: 15px;
 
     // SIZES
     --card-width: calc(150 / 16 * 1rem);
+    --max-content-size: 800px;
 
     // PADDING / OFFSET
     --site-padding-x: calc(5 / 16 * 1rem);
