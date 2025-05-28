@@ -41,7 +41,7 @@ class MapsView(APIView):
                 required=False,
             ),
             OpenApiParameter(
-                name="search",
+                name="query",
                 type=OpenApiTypes.STR,
                 location=OpenApiParameter.QUERY,
                 description="Поиск по названию и описанию карты (name, description)",

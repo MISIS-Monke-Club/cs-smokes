@@ -42,7 +42,7 @@ class LineupViews(APIView, IsFavoriteMixin):
                 description='Поле для сортировки. "date_of_creation" или "by_alphabet", "-" для обратного порядка',
             ),
             OpenApiParameter(
-                name="search",
+                name="query",
                 type=OpenApiTypes.STR,
                 location=OpenApiParameter.QUERY,
                 description="Поиск по названию и описанию гранаты (title, description)",
