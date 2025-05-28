@@ -99,13 +99,9 @@ class PullRequestUpdateStatusSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    parent = serializers.PrimaryKeyRelatedField(
-        queryset=Comment.objects.all(), required=False, allow_null=True
-    )
-
     class Meta:
         model = Comment
-        fields = ["id", "text", "author", "parent", "created_at"]
+        fields = ["id", "text", "author", "created_at"]
         read_only_fields = ["author", "created_at"]
 
     def create(self, validated_data):
