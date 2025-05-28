@@ -1,6 +1,5 @@
 import classes from "./sortings.module.scss"
 import { useQueryPrams } from "@shared/lib/params-parser"
-import { Button } from "@shared/ui/button"
 import {
     Select,
     SelectContent,
@@ -18,32 +17,32 @@ import {
     SheetDescription,
     Sheet,
 } from "@shared/ui/sheet"
-import { queryParamsConfig } from "@shared/config/query-params"
+import { Icons } from "@shared/ui/icons"
 
-export function GrenadesSortings() {
-    const { byAlphabet, byLineupsCount, byPopularity } =
-        queryParamsConfig.maps.sortings
+export function MapsSortings() {
     const { params, addParams } = useQueryPrams()
 
-    function handleSoringsChange(val: string) {
+    function handleSortingsChange(val: string) {
         addParams("ordering", val)
     }
 
     return (
         <Sheet>
             <SheetTrigger asChild>
-                <Button>Click me</Button>
+                <div className={classes.trigger}>
+                    <Icons.SortIcon />
+                </div>
             </SheetTrigger>
             <SheetContent>
                 <SheetHeader>
-                    <SheetTitle>Grenades options</SheetTitle>
+                    <SheetTitle>Maps options</SheetTitle>
                     <SheetDescription>
-                        Here you can shape representation of grenades
+                        You can sort maps by name or number of lineups
                     </SheetDescription>
                 </SheetHeader>
                 <div className={classes.content}>
                     <Select
-                        onValueChange={handleSoringsChange}
+                        onValueChange={handleSortingsChange}
                         defaultValue={params.get("ordering")?.toString()}
                     >
                         <SelectTrigger className='w-[200px]'>
@@ -52,26 +51,20 @@ export function GrenadesSortings() {
                         <SelectContent className='w-[220px]'>
                             <SelectGroup>
                                 <SelectLabel>Upwards sorting</SelectLabel>
-                                <SelectItem value={byPopularity.asc}>
-                                    By popularity
-                                </SelectItem>
-                                <SelectItem value={byLineupsCount.asc}>
-                                    By lineups count
-                                </SelectItem>
-                                <SelectItem value={byAlphabet.asc}>
+                                <SelectItem value='by_alphabet'>
                                     By alphabet
+                                </SelectItem>
+                                <SelectItem value='quantity'>
+                                    By quantity
                                 </SelectItem>
                             </SelectGroup>
                             <SelectGroup>
                                 <SelectLabel>Downwards sorting</SelectLabel>
-                                <SelectItem value={byPopularity.desc}>
-                                    By popularity
-                                </SelectItem>
-                                <SelectItem value={byLineupsCount.desc}>
-                                    By lineups count
-                                </SelectItem>
-                                <SelectItem value={byAlphabet.desc}>
+                                <SelectItem value='-by_alphabet'>
                                     By alphabet
+                                </SelectItem>
+                                <SelectItem value='-quantity'>
+                                    By quantity
                                 </SelectItem>
                             </SelectGroup>
                         </SelectContent>
