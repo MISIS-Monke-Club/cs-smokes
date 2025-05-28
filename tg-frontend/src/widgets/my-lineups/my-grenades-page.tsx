@@ -3,7 +3,6 @@ import { useSelector } from "react-redux"
 import classes from "./my-grenades-page.module.scss"
 import { grenadeApi } from "@entities/grenade"
 import { selectUserId } from "@entities/session"
-import { GoBack } from "@features/go-back"
 
 export const MyGrenadesList = () => {
     const userId = useSelector(selectUserId)
@@ -14,7 +13,6 @@ export const MyGrenadesList = () => {
 
     return (
         <div className={classes.container}>
-            <GoBack />
             <h1 className={classes.title}>Your lineups</h1>
 
             <div className={classes.list}>

@@ -3,8 +3,8 @@ import { useQuery } from "@tanstack/react-query"
 import { useParams } from "react-router-dom"
 import { toast } from "sonner"
 import { guestPageParamSchema } from "./domain"
-import { userApi } from "@entities/user"
 import { ProfileOverview } from "@widgets/profile-overview/profile-overview"
+import { userApi } from "@entities/user"
 
 export const ProfilePage = () => {
     const params = useParams()
