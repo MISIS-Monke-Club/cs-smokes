@@ -7,6 +7,9 @@ from asgiref.sync import sync_to_async
 from auth_app.models import User
 
 
+
+
+
 class PRCommentConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.pr_id = self.scope["url_route"]["kwargs"]["pr_id"]
@@ -38,6 +41,7 @@ class PRCommentConsumer(AsyncWebsocketConsumer):
         Comment.objects.filter(id=id, pull_request_id=self.pr_id).delete()
 
     async def chat_message(self, event):
+
         data = event["data"]
         if data["action"] == "create":
             message = data["message"]
