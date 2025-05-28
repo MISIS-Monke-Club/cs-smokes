@@ -47,6 +47,12 @@ class LineupViews(APIView, IsFavoriteMixin):
                 location=OpenApiParameter.QUERY,
                 description="Поиск по названию и описанию гранаты (title, description)",
             ),
+            OpenApiParameter(
+                name="by_user_name",
+                type=OpenApiTypes.STR,
+                location=OpenApiParameter.QUERY,
+                description="По имени пользователя",
+            ),
         ],
         responses={200: LineupSerializer(many=True)},
         tags=["Lineup"],
