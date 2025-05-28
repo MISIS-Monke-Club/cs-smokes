@@ -15,6 +15,7 @@ class LineupSerializer(serializers.ModelSerializer):
     grenade_class = GrenadeClassSerializer(source="grenade_class_id", read_only=True)
 
     property_list = serializers.SerializerMethodField()
+    preview_image_link = serializers.ImageField(required=False)
 
     class Meta:
         model = Lineup

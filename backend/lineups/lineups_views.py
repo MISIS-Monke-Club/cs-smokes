@@ -71,15 +71,50 @@ class LineupViews(APIView, IsFavoriteMixin):
 
     @extend_schema(
         summary="Создать новую гранату (Lineup)",
-        request=LineupSerializer,
+        request={
+            "multipart/form-data": {
+                "type": "object",
+                "properties": {
+                    "map_id": {"type": "integer", "example": 1},
+                    "link_to_video": {
+                        "type": "string",
+                        "example": "https://example.com/video",
+                    },
+                    "user_id": {"type": "integer", "example": 12},
+                    "title": {"type": "string", "example": "Smoke на A"},
+                    "description": {
+                        "type": "string",
+                        "example": "Точная раскидка на плент A",
+                    },
+                    "is_approved": {"type": "boolean", "example": False},
+                    "views": {"type": "integer", "example": 0},
+                    "preview_image_link": {
+                        "type": "string",
+                        "format": "binary",
+                    },
+                    "grenade_class_id": {"type": "integer", "example": 2},
+                },
+                "required": ["map_id", "title", "grenade_class_id", "user_id"],
+            }
+        },
         responses={201: LineupSerializer, 400: LineupSerializer},
         examples=[
             OpenApiExample(
-                "Ошибка валидации",
-                value={"title": ["Это поле обязательно."]},
-                response_only=True,
-                status_codes=["400"],
-            )
+                "Пример запроса",
+                value={
+                    "map_id": 1,
+                    "link_to_video": "https://example.com/video",
+                    "user_id": 12,
+                    "title": "Smoke на A",
+                    "description": "Точная раскидка на плент A",
+                    "is_approved": False,
+                    "views": 0,
+                    "preview_image_link": "<binary>",
+                    "grenade_class_id": 2,
+                },
+                media_type="multipart/form-data",
+                request_only=True,
+            ),
         ],
         tags=["Lineup"],
     )
