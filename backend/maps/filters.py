@@ -1,6 +1,6 @@
 import django_filters
 from .models import Map
-from django.db.models import Count
+from django.db.models import Count, Q
 
 
 class MapFilter(django_filters.FilterSet):
@@ -11,6 +11,10 @@ class MapFilter(django_filters.FilterSet):
             ("name", "by_alphabet"),
         )
     )
+    search = django_filters.CharFilter(method="filter_by_search", label="Поиск")
+
+    def filter_by_search(self, queryset, name, value):
+        return queryset.filter(Q(name__icontains=value))
 
     class Meta:
         model = Map

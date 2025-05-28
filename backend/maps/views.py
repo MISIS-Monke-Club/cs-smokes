@@ -4,7 +4,12 @@ from rest_framework import status
 from django.shortcuts import get_object_or_404
 from .models import Map
 from .serializers import MapSerializer, MapDetailSerializer
-from drf_spectacular.utils import extend_schema, OpenApiExample, OpenApiParameter
+from drf_spectacular.utils import (
+    extend_schema,
+    OpenApiExample,
+    OpenApiParameter,
+    OpenApiTypes,
+)
 from rest_framework.permissions import IsAuthenticated
 from django.core.cache import cache
 from .filters import MapFilter
@@ -34,6 +39,12 @@ class MapsView(APIView):
                 description="Сортировка результатов",
                 enum=["quantity", "-quantity", "by_alphabet", "-by_alphabet"],
                 required=False,
+            ),
+            OpenApiParameter(
+                name="search",
+                type=OpenApiTypes.STR,
+                location=OpenApiParameter.QUERY,
+                description="Поиск по названию и описанию карты (name, description)",
             ),
         ],
     )

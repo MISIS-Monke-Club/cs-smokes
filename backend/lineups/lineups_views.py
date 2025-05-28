@@ -18,9 +18,10 @@ from django_filters.rest_framework import DjangoFilterBackend
 import hashlib
 from urllib.parse import urlencode
 from rest_framework.parsers import MultiPartParser, FormParser
+from .mixins import IsFavoriteMixin
 
 
-class LineupViews(APIView):
+class LineupViews(APIView, IsFavoriteMixin):
 
     permission_classes = [IsAuthenticated]
     parser_classes = [MultiPartParser, FormParser]
@@ -40,6 +41,12 @@ class LineupViews(APIView):
                 location=OpenApiParameter.QUERY,
                 description='Поле для сортировки. "date_of_creation" или "by_alphabet", "-" для обратного порядка',
             ),
+            OpenApiParameter(
+                name="search",
+                type=OpenApiTypes.STR,
+                location=OpenApiParameter.QUERY,
+                description="Поиск по названию и описанию гранаты (title, description)",
+            ),
         ],
         responses={200: LineupSerializer(many=True)},
         tags=["Lineup"],
@@ -51,7 +58,8 @@ class LineupViews(APIView):
 
         cached_data = cache.get(cache_key)
         if cached_data is not None:
-            return Response(cached_data, status=status.HTTP_200_OK)
+            annotated_data = self.annotate_is_favorite(cached_data, request.user)
+            return Response(annotated_data, status=status.HTTP_200_OK)
 
         queryset = Lineup.objects.all()
         filterset = LineupFilter(request.GET, queryset=queryset)
@@ -63,19 +71,56 @@ class LineupViews(APIView):
         serializer = LineupSerializer(lineups, many=True, context={"request": request})
 
         cache.set(cache_key, serializer.data, timeout=60 * 15)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+
+        annotated_data = self.annotate_is_favorite(serializer.data, request.user)
+        return Response(annotated_data, status=status.HTTP_200_OK)
 
     @extend_schema(
         summary="Создать новую гранату (Lineup)",
-        request=LineupSerializer,
+        request={
+            "multipart/form-data": {
+                "type": "object",
+                "properties": {
+                    "map_id": {"type": "integer", "example": 1},
+                    "link_to_video": {
+                        "type": "string",
+                        "example": "https://example.com/video",
+                    },
+                    "user_id": {"type": "integer", "example": 12},
+                    "title": {"type": "string", "example": "Smoke на A"},
+                    "description": {
+                        "type": "string",
+                        "example": "Точная раскидка на плент A",
+                    },
+                    "is_approved": {"type": "boolean", "example": False},
+                    "views": {"type": "integer", "example": 0},
+                    "preview_image_link": {
+                        "type": "string",
+                        "format": "binary",
+                    },
+                    "grenade_class_id": {"type": "integer", "example": 2},
+                },
+                "required": ["map_id", "title", "grenade_class_id", "user_id"],
+            }
+        },
         responses={201: LineupSerializer, 400: LineupSerializer},
         examples=[
             OpenApiExample(
-                "Ошибка валидации",
-                value={"title": ["Это поле обязательно."]},
-                response_only=True,
-                status_codes=["400"],
-            )
+                "Пример запроса",
+                value={
+                    "map_id": 1,
+                    "link_to_video": "https://example.com/video",
+                    "user_id": 12,
+                    "title": "Smoke на A",
+                    "description": "Точная раскидка на плент A",
+                    "is_approved": False,
+                    "views": 0,
+                    "preview_image_link": "<binary>",
+                    "grenade_class_id": 2,
+                },
+                media_type="multipart/form-data",
+                request_only=True,
+            ),
         ],
         tags=["Lineup"],
     )
@@ -88,7 +133,7 @@ class LineupViews(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class LineupRUDViews(APIView):
+class LineupRUDViews(APIView, IsFavoriteMixin):
 
     permission_classes = [IsAuthenticated]
 
@@ -106,11 +151,13 @@ class LineupRUDViews(APIView):
         cached_data = cache.get(cache_key)
 
         if cached_data is not None:
-            return Response(cached_data)
+            annotated_data = self.annotate_is_favorite(cached_data, request.user)
+            return Response(annotated_data)
         obj = get_object_or_404(Lineup, pk=pk)
         serializer = LineupSerializer(obj, context={"request": request})
         cache.set(cache_key, serializer.data, timeout=60 * 15)
-        return Response(serializer.data)
+        annotated_data = self.annotate_is_favorite(serializer.data, request.user)
+        return Response(annotated_data, status=status.HTTP_200_OK)
 
     @extend_schema(
         summary="Обновить Lineup (полностью)",
