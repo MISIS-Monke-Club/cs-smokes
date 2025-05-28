@@ -168,6 +168,12 @@ paths:
           - by_alphabet (по алфавиту)
           - quantity (по количеству раскидок)
         example: popularity
+      - in: query
+        name: search
+        schema:
+          type: string
+        description: Поиск карты
+        example: mirage
       responses:
         "200":
           description: Список всех карт
@@ -353,6 +359,12 @@ paths:
             - date_of_creation (по дате создания)
             - by_alphabet (по алфавиту)
           example: date_of_creation
+        - in: query
+          name: search
+          schema:
+            type: string
+          description: Поиск по названию и описанию гранаты (title, description)
+          example: смок
       responses:
         "200":
           description: Список всех раскидок
