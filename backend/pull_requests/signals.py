@@ -5,6 +5,7 @@ from auth_app.models import User
 from lineups.models import Lineup
 from pull_requests.models import PullRequest, Comment
 
+
 @receiver(post_migrate)
 def create_mock_pull_request_and_comment(sender, **kwargs):
     if PullRequest.objects.exists():
@@ -12,15 +13,12 @@ def create_mock_pull_request_and_comment(sender, **kwargs):
     user = User.objects.first()
     lineup = Lineup.objects.first()
     pr = PullRequest.objects.create(
-        lineup=lineup,
-        creator=user,
-        status="OPEN",
-        created_at=now()
+        lineup=lineup, creator=user, status="OPEN", created_at=now()
     )
 
     Comment.objects.create(
         pull_request=pr,
         author=user,
         text="Это тестовый комментарий к Pull Request.",
-        created_at=now()
+        created_at=now(),
     )

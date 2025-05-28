@@ -7,9 +7,6 @@ from asgiref.sync import sync_to_async
 from auth_app.models import User
 
 
-
-
-
 class PRCommentConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.pr_id = self.scope["url_route"]["kwargs"]["pr_id"]
