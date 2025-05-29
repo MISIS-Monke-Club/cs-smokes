@@ -5,13 +5,14 @@ import { PullRequest } from "../domain/client"
 import { UserBadge } from "./user-badge"
 import { Button } from "@shared/ui/button"
 import { PlaceholderBlock } from "@shared/ui/placeholder-block"
+import { Badge } from "@shared/ui/badge"
 
 export function RequestOverview({ id }: Pick<PullRequest, "id">) {
     const {
         data: request,
         isLoading,
         isError,
-    } = useQuery(requestApi.getByIdOptions(id, {}))
+    } = useQuery(requestApi.getByIdOptions(id))
 
     if (isLoading) {
         return <div>Loading...</div>
@@ -42,6 +43,11 @@ export function RequestOverview({ id }: Pick<PullRequest, "id">) {
                     <UserBadge user={request.approver} />
                 </div>
             )}
+            {request.status === "Open" ? (
+                <Button className='w-[calc(100dvw - 10px)]'>Сlose request</Button>
+            ) : request.status === "Approved" ? (
+                <Badge color='success'>approved</Badge>
+            ) : null}
         </>
     )
 }

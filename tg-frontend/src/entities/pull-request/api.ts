@@ -1,8 +1,9 @@
 import { queryOptions } from "@tanstack/react-query"
 import { PullRequest } from "./domain/client"
-import { PullRequestParams } from "./domain/query-params"
 import {
+    fromMessagesDTOtoMessageModel,
     fromRequestDTOtoRequestModel,
+    message_schema,
     pull_request_details_schema,
 } from "./domain/server"
 import { instance } from "@shared/api"
@@ -13,25 +14,41 @@ export const api = {
     baseKey: ["pull_request"],
 
     // React query
-    getByIdOptions: (id: PullRequest["id"], params: PullRequestParams) =>
+    getByIdOptions: (id: PullRequest["id"]) =>
         queryOptions({
-            queryKey: [...api.baseKey, { type: "byId" }],
-            queryFn: () => api.getById({ params, pullRequestId: id }),
+            queryKey: [...api.baseKey, { type: "byId", id }],
+            queryFn: () => api.getById({ pullRequestId: id }),
+        }),
+    getMessagesByRequestOptions: (id: PullRequest["id"]) =>
+        queryOptions({
+            queryKey: [...api.baseKey, { type: "byId", id }, "messages"],
+            queryFn: () =>
+                api.getMessagesByRequest({
+                    pullRequestId: id,
+                }),
         }),
 
     // Api
-    getById: ({
-        params,
+    closeById: ({ pullRequestId }: { pullRequestId: PullRequest["id"] }) =>
+        typedQuery({
+            request: instance.get(`${api.baseUrl}/${pullRequestId}`),
+            dtoSchema: pull_request_details_schema,
+            fromDTO: fromRequestDTOtoRequestModel,
+        }),
+    getById: ({ pullRequestId }: { pullRequestId: PullRequest["id"] }) =>
+        typedQuery({
+            request: instance.get(`${api.baseUrl}/${pullRequestId}`),
+            dtoSchema: pull_request_details_schema,
+            fromDTO: fromRequestDTOtoRequestModel,
+        }),
+    getMessagesByRequest: ({
         pullRequestId,
     }: {
-        params: unknown
         pullRequestId: PullRequest["id"]
     }) =>
         typedQuery({
-            request: instance.get(`${api.baseUrl}/${pullRequestId}`, {
-                params,
-            }),
-            dtoSchema: pull_request_details_schema,
-            fromDTO: fromRequestDTOtoRequestModel,
+            request: instance.get(`${api.baseUrl}/${pullRequestId}`),
+            dtoSchema: message_schema.array(),
+            fromDTO: fromMessagesDTOtoMessageModel,
         }),
 }

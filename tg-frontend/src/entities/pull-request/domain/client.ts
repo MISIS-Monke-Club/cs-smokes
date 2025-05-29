@@ -7,7 +7,7 @@ export type PullRequest = {
     lineupId: number
     creatorId: number
     approverId?: number | null
-    status: "open" | "closed" | "pending" | "rejected" // based on Enum: [4]
+    status: "Open" | "Approved" | "Merged" | "Closed"
     createdAt: string
     closedAt?: string | null
     creator: Creator
@@ -19,6 +19,16 @@ export type Creator = RequestUser
 export type Approver = RequestUser & {
     adminType?: AdminType | null
 }
+
+export type MessageModel = {
+    id: number
+    prId: number
+    userId: number
+    text: string
+    parentId: number | null
+    createdAt: string
+}
+
 export type RequestUser = {
     userId: number
     username: string
@@ -26,7 +36,6 @@ export type RequestUser = {
     lastName?: string | null
     avatarUrl?: string | null
 }
-
 export type AdminType = {
     adminTypeId: number
     isSuperuser: boolean

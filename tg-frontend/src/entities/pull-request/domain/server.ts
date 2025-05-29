@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { PullRequest } from "./client"
+import { MessageModel, PullRequest } from "./client"
 // eslint-disable-next-line @conarti/feature-sliced/layers-slices
 import { fromGrenadeDTO, grenadeDTOschema } from "@entities/grenade"
 
@@ -41,6 +41,15 @@ export const pull_request_details_schema = z.object({
     lineup: grenadeDTOschema,
 })
 
+export const message_schema = z.object({
+    id: z.number(),
+    pr_id: z.number(),
+    user_id: z.number(),
+    text: z.string(),
+    parent_id: z.number().nullable(),
+    created_at: z.string().datetime(),
+})
+
 export const fromRequestDTOtoRequestModel = (
     request: z.infer<typeof pull_request_details_schema>
 ): PullRequest => ({
@@ -77,3 +86,18 @@ export const fromRequestDTOtoRequestModel = (
         : null,
     lineup: fromGrenadeDTO(request.lineup),
 })
+
+export const fromMessageDTOtoMessageModel = (
+    message: z.infer<typeof message_schema>
+): MessageModel => ({
+    id: message.id,
+    prId: message.pr_id,
+    userId: message.user_id,
+    text: message.text,
+    parentId: message.parent_id,
+    createdAt: message.created_at,
+})
+
+export const fromMessagesDTOtoMessageModel = (
+    messages: z.infer<ReturnType<typeof message_schema.array>>
+): MessageModel[] => messages.map(fromMessageDTOtoMessageModel)

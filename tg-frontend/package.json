@@ -22,7 +22,7 @@
         "build-storybook": "VITE_BACKEND_URL=http://localhost:3000/api VITE_TG_INIT_DATA=123 VITE_IN_TG_ENVIRONMENT=false storybook build"
     },
     "dependencies": {
-        "@radix-ui/react-dialog": "^1.1.13",
+        "@radix-ui/react-dialog": "^1.1.14",
         "@radix-ui/react-label": "^2.1.6",
         "@radix-ui/react-select": "^2.2.4",
         "@radix-ui/react-slot": "^1.2.2",
