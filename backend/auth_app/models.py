@@ -1,5 +1,9 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import (
+    AbstractBaseUser,
+    BaseUserManager,
+    PermissionsMixin,
+)
 
 
 class UserManager(BaseUserManager):
@@ -11,8 +15,24 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
+    def create_superuser(self, username, email=None, password=None):
 
-class User(AbstractBaseUser):
+        if email is None:
+            email = "adminemail1@email.ru"
+
+        user = self.create_user(username=username, email=email, password=password)
+
+        admin_type, _ = AdminType.objects.get_or_create(
+            is_superuser=True,
+            is_base_admin=True,
+            is_editor=True,
+        )
+        Admins.objects.get_or_create(user_id=user, admin_type_id=admin_type)
+
+        return user
+
+
+class User(AbstractBaseUser, PermissionsMixin):
     user_id = models.AutoField(primary_key=True)
     username = models.CharField(max_length=255, unique=True)
     email = models.EmailField(max_length=255, unique=True, null=True, blank=True)
@@ -22,11 +42,29 @@ class User(AbstractBaseUser):
     steam_link = models.CharField(max_length=255, null=True, blank=True)
     tg_id = models.IntegerField(null=True, blank=True)
     is_banned = models.BooleanField(default=False)
+
     objects = UserManager()
+
     USERNAME_FIELD = "username"
 
     def __str__(self):
         return self.username
+
+    @property
+    def is_staff(self):
+        return Admins.objects.filter(user_id=self).exists()
+
+    @property
+    def is_superuser(self):
+        return Admins.objects.filter(
+            user_id=self, admin_type_id__is_superuser=True
+        ).exists()
+
+    def has_perm(self, perm, obj=None):
+        return self.is_superuser
+
+    def has_module_perms(self, app_label):
+        return self.is_superuser
 
 
 class AdminType(models.Model):

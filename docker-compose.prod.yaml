@@ -6,6 +6,8 @@ services:
             dockerfile: dockerfile.prod
         volumes:
             - ./backend:/backend
+            - ./backend:/static
+            - media:/backend/media
         expose:
             - 8000
         env_file: ./.env
@@ -20,6 +22,10 @@ services:
             - DB_HOST=${DB_HOST}
             - DB_PORT=${DB_PORT}
             - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
+            - REDIS_PASS=${REDIS_PASS}
+            - SUPER_USER_NAME=${SUPER_USER_NAME}
+            - SUPER_USER_EMAIL=${SUPER_USER_EMAIL}
+            - SUPER_USER_PASSWORD=${SUPER_USER_PASSWORD}
         depends_on:
             - db
         command: sh ./run-server.prod.sh
@@ -110,3 +116,5 @@ volumes:
         name: cs-lineups-db
     cache-data:
         name: cs-lineups-redis
+    media: 
+        name: media

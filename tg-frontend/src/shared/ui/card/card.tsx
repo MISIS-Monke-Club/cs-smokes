@@ -4,6 +4,7 @@ import classes from "./card.module.scss"
 
 type CardComponentProps = React.ComponentProps<"div"> & {
     isLoading?: boolean
+    isError?: boolean
     subheading?: string
     heading?: string
     bottomSlot?: React.ReactNode
@@ -14,6 +15,7 @@ type CardComponentProps = React.ComponentProps<"div"> & {
 
 export function CardComponent({
     isLoading = false,
+    isError = false,
     subheading,
     heading,
     bottomSlot,
@@ -24,7 +26,11 @@ export function CardComponent({
     ...rest
 }: CardComponentProps) {
     if (isLoading) {
-        return <div></div>
+        return <div>...</div>
+    }
+
+    if (isError) {
+        return <div>...</div>
     }
 
     return (
@@ -32,7 +38,7 @@ export function CardComponent({
             {topSlot && (
                 <CardHeader className={classes.topSlot}>{topSlot}</CardHeader>
             )}
-            <CardContent>
+            <CardContent className={classes.content}>
                 <img
                     className={classes.img}
                     src={imgUrl}
@@ -42,7 +48,7 @@ export function CardComponent({
                     loading='lazy'
                 />
                 <div className={classes.textWrapper}>
-                    <h4>{heading}</h4>
+                    <h4 className={classes.heading}>{heading}</h4>
                     {subheading && (
                         <p className={classes.subheading}>{subheading}</p>
                     )}

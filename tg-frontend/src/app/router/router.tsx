@@ -1,11 +1,10 @@
 import { createBrowserRouter } from "react-router-dom"
 import { Layout } from "../layout"
 import { LoginProvider } from "../providers/login-provider"
-import { Grenades } from "@pages/grenades"
 import { Homepage } from "@pages/home-page"
 import { GrenadePage } from "@pages/grenade-page"
-import { Maps } from "@pages/maps"
-import { MapPage } from "@pages/map-page"
+import { Maps } from "@pages/map/maps"
+import { MapPage } from "@pages/map/map-page"
 import { GuestProfilePage } from "@pages/guest-profile-page"
 import { EditProfilePage } from "@pages/edit-profile-page"
 import { OwnProfilePage } from "@pages/own-profile-page"
@@ -13,6 +12,9 @@ import { FavoritesPage } from "@pages/favorites-page"
 import { AddLineupPage } from "@pages/add-lineup-page"
 import { loginThunk, setupAuthSlice, setupInterceptors } from "@features/auth"
 import { store } from "@shared/model"
+import { GrenadesPage } from "@pages/grenades"
+import { MapInfoPage } from "@pages/map/map-info"
+import { selectAuthSession } from "@entities/session"
 
 export const router = createBrowserRouter(
     [
@@ -20,9 +22,12 @@ export const router = createBrowserRouter(
             path: "/",
             element: <Layout />,
             loader: () => {
+                localStorage.clear()
                 setupAuthSlice(store)
                 setupInterceptors(store)
-                store.dispatch(loginThunk())
+                if (!selectAuthSession(store.getState()).accessToken) {
+                    store.dispatch(loginThunk())
+                }
 
                 return null
             },
@@ -36,7 +41,7 @@ export const router = createBrowserRouter(
                         { path: "/", element: <Homepage /> },
                         {
                             path: "grenades",
-                            element: <Grenades />,
+                            element: <GrenadesPage />,
                         },
                         {
                             path: "grenades/:grenadeId",
@@ -52,6 +57,10 @@ export const router = createBrowserRouter(
                         },
                         {
                             path: "maps/:mapId",
+                            element: <MapInfoPage />,
+                        },
+                        {
+                            path: "maps/:mapId/grenades",
                             element: <MapPage />,
                         },
                         {

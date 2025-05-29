@@ -8,12 +8,14 @@ def create_mock_maps(apps, schema_editor):
         {
             "name": "Mirage",
             "link": "https://example.com/mirage",
-            "image_link": "https://example.com/images/mirage.jpg",
+            "image_link": "/maps/Cs2mirage.webp",
+            "is_esports_pool": "True",
         },
         {
             "name": "Dust 2",
             "link": "https://example.com/dust2",
-            "image_link": "https://example.com/images/dust2.jpg",
+            "image_link": "/maps/Dust_II_CS-GO.jpg",
+            "is_esports_pool": "True",
         },
     ]
 
@@ -32,7 +34,7 @@ def create_mock_greande_class(apps, schema_editor):
     grenade_classes = [
         {
             "name": "Световая граната",
-            "description": "слепит врага",
+            "description": "Cлепит врага",
             "price": 200,
         },
         {
@@ -111,7 +113,7 @@ def create_mock_lineups(apps, schema_editor):
     User = apps.get_model("auth_app", "User")
 
     grenade1 = GrenadeClass.objects.get(pk=1)
-    grenade2 = GrenadeClass.objects.get(pk=2)
+    grenade2 = GrenadeClass.objects.get(pk=3)
     map1 = Map.objects.get(pk=1)
     map2 = Map.objects.get(pk=2)
     user1 = User.objects.get(pk=1)
@@ -126,7 +128,7 @@ def create_mock_lineups(apps, schema_editor):
             "description": "Описание гранаты 1",
             "is_approved": True,
             "views": 123,
-            "preview_image_link": "https://example.com/preview1.jpg",
+            "preview_image_link": "/lineups/fleshka.webp",
             "grenade_class_id": grenade1,
         },
         {
@@ -137,7 +139,7 @@ def create_mock_lineups(apps, schema_editor):
             "description": "Описание гранаты 2",
             "is_approved": False,
             "views": 456,
-            "preview_image_link": "https://example.com/preview2.jpg",
+            "preview_image_link": "/lineups/smok.jpeg",
             "grenade_class_id": grenade2,
         },
     ]
@@ -154,13 +156,12 @@ def delete_mock_lineups(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("lineups", "0001_initial"),
         ("grenade_class", "0001_initial"),
-        ("maps", "0001_initial"),
-        ("grenade_class", "0001_initial"),
+        ("maps", "0003_map_is_esports_pool"),
         ("properties", "0001_initial"),
         ("user", "migrations"),
         ("auth_app", "0001_initial"),
+        ("lineups", "0001_alter_lineup_preview_image_link"),
     ]
 
     operations = [

@@ -26,14 +26,16 @@
     --ui-small: var(--text-small);
 
     // GAPS
-    --main-section-gap: 100%;
+    --main-section-gap: 15px;
 
     // SIZES
     --card-width: calc(150 / 16 * 1rem);
+    --max-content-size: 800px;
 
     // PADDING / OFFSET
     --site-padding-x: calc(5 / 16 * 1rem);
     --site-padding-y: calc(15 / 16 * 1rem);
+    --grid-gap: calc(10 / 16 * 1rem);
 
     // FONT
     --font-family-main: "Arial", sans-serif;

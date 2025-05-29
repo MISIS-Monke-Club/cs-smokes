@@ -4,50 +4,98 @@ from rest_framework import status
 from django.shortcuts import get_object_or_404
 from .models import Map
 from .serializers import MapSerializer, MapDetailSerializer
-from drf_spectacular.utils import extend_schema, OpenApiExample
+from drf_spectacular.utils import (
+    extend_schema,
+    OpenApiExample,
+    OpenApiParameter,
+    OpenApiTypes,
+)
 from rest_framework.permissions import IsAuthenticated
 from django.core.cache import cache
+from .filters import MapFilter
+from django_filters.rest_framework import DjangoFilterBackend
+import hashlib
+from urllib.parse import urlencode
+from rest_framework.parsers import MultiPartParser, FormParser
 
 
 class MapsView(APIView):
     permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
 
     @extend_schema(
         description="Получить список всех карт",
         responses={200: MapSerializer(many=True)},
+        parameters=[
+            OpenApiParameter(
+                name="is_esports_pool",
+                type=bool,
+                description="Фильтр по наличию в пуле киберспортивных карт",
+                required=False,
+            ),
+            OpenApiParameter(
+                name="ordering",
+                type=str,
+                description="Сортировка результатов",
+                enum=["quantity", "-quantity", "by_alphabet", "-by_alphabet"],
+                required=False,
+            ),
+            OpenApiParameter(
+                name="query",
+                type=OpenApiTypes.STR,
+                location=OpenApiParameter.QUERY,
+                description="Поиск по названию и описанию карты (name, description)",
+            ),
+        ],
     )
     def get(self, request):
+        query_string = urlencode(sorted(request.query_params.items()))
+        query_hash = hashlib.sha256(query_string.encode()).hexdigest()
+        cache_key = f"map_list_{query_hash}"
 
-        cache_key = "maps_list"
         cached_data = cache.get(cache_key)
-
         if cached_data is not None:
             return Response(cached_data, status=status.HTTP_200_OK)
 
-        maps = Map.objects.all()
-        serializer = MapSerializer(maps, many=True)
+        queryset = Map.objects.all()
+        filterset = MapFilter(request.GET, queryset=queryset)
+
+        if not filterset.is_valid():
+            return Response(filterset.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        lineups = filterset.qs
+        serializer = MapSerializer(lineups, many=True, context={"request": request})
+
         cache.set(cache_key, serializer.data, timeout=60 * 15)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @extend_schema(
         description="Создать новую карту (только для администраторов)",
-        request=MapSerializer,
-        responses={
-            201: MapSerializer,
-            400: None,
-            401: None,
-            403: None,
+        request={
+            "multipart/form-data": {
+                "type": "object",
+                "properties": {
+                    "name": {"type": "string"},
+                    "link": {"type": "string"},
+                    "is_esports_pool": {"type": "boolean"},
+                    "image_link": {"type": "string", "format": "binary"},
+                },
+                "required": ["name", "is_esports_pool"],
+            }
         },
+        responses={201: MapSerializer},
         examples=[
             OpenApiExample(
                 "Пример запроса",
                 value={
-                    "name": "Новая карта",
-                    "link": "https://example.com/new_map",
-                    "image_link": "https://example.com/new_map_image.jpg",
+                    "name": "Dust II",
+                    "link": "https://example.com/dust2",
+                    "is_esports_pool": True,
+                    "image_link": "<binary>",
                 },
+                media_type="multipart/form-data",
                 request_only=True,
-            ),
+            )
         ],
     )
     def post(self, request):
@@ -78,7 +126,7 @@ class MapDetailRUDView(APIView):
             return Response(cached_data)
 
         map_obj = get_object_or_404(Map, pk=pk)
-        serializer = MapDetailSerializer(map_obj)
+        serializer = MapDetailSerializer(map_obj, context={"request": request})
         cache.set(cache_key, serializer.data, timeout=60 * 15)
         return Response(serializer.data)
 

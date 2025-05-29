@@ -1,4 +1,5 @@
 .columnsDisplay {
-    grid-template-columns: repeat(auto-fill, minmax(var(--card-width), 1fr));
-    gap: toRem(10);
+    @include auto-columns(var(--card-width));
+
+    gap: var(--grid-gap);
 }

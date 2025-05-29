@@ -1,1 +1,1 @@
-export { Grenades } from "./ui/grenades"
+export { GrenadesPage } from "./ui/grenades/grenades"

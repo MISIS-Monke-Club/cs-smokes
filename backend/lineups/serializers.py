@@ -6,6 +6,13 @@ from grenade_class.serializers import GrenadeClassSerializer
 from properties.models import PropertyList
 from properties.serializers import PropertyInlineSerializer
 from drf_spectacular.utils import extend_schema_field
+from auth_app.models import User
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["user_id", "username", "avatar_url", "first_name", "last_name"]
 
 
 class LineupSerializer(serializers.ModelSerializer):
@@ -13,9 +20,9 @@ class LineupSerializer(serializers.ModelSerializer):
         queryset=GrenadeClass.objects.all(), write_only=True
     )
     grenade_class = GrenadeClassSerializer(source="grenade_class_id", read_only=True)
-
+    creator = UserProfileSerializer(source="user_id", read_only=True)
     property_list = serializers.SerializerMethodField()
-    is_favorite = serializers.SerializerMethodField(read_only=True)
+    preview_image_link = serializers.ImageField(required=False)
 
     class Meta:
         model = Lineup
@@ -23,12 +30,11 @@ class LineupSerializer(serializers.ModelSerializer):
             "grenade_id",
             "map_id",
             "link_to_video",
-            "user_id",
+            "creator",
             "created_at",
             "title",
             "description",
             "is_approved",
-            "is_favorite",
             "views",
             "preview_image_link",
             "grenade_class_id",
@@ -38,16 +44,6 @@ class LineupSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         return Lineup.objects.create(**validated_data)
-
-    @extend_schema_field(serializers.BooleanField())
-    def get_is_favorite(self, obj):
-        request = self.context.get("request")
-        if not request or not hasattr(request, "user"):
-            return False
-        user = request.user
-        if user.is_authenticated:
-            return Favorites.objects.filter(user_id=user, grenade_id=obj).exists()
-        return False
 
     @extend_schema_field(PropertyInlineSerializer(many=True))
     def get_property_list(self, obj):

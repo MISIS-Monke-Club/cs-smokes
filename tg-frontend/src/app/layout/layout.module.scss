@@ -2,7 +2,9 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+
     width: 100%;
+    height: 100dvh;
 }
 
 .background {
@@ -19,19 +21,22 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: start;
+    justify-content: space-between;
 
     width: 100%;
     // Не позволяет растягиваться контенту по всему экрану огромного монитора
-    max-width: calc(#{$desktop-min}px - 2 * var(--site-padding-x));
+    max-width: calc(var(--max-content-size) - 2 * var(--site-padding-x));
+    height: 100%;
+    padding-top: var(--site-padding-y);
+    padding-bottom: var(--site-padding-y);
     padding-inline: var(--site-padding-x);
 }
 
 .content {
     display: flex;
     flex-direction: column;
+    gap: var(--main-section-gap);
     align-items: center;
 
     width: 100%;
-    padding-top: 150px;
 }

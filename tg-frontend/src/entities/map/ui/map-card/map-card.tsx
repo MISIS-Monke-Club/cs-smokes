@@ -7,22 +7,9 @@ export function MapCard({ map }: { map: MapModel }) {
     const navigate = useNavigate()
 
     function clickHandler() {
-        navigate(`/maps/${map.mapId}`)
+        navigate(`/maps/${map.mapId}/grenades`)
     }
 
-    // return (
-    //     <Card
-    //         className={classes.mapCard}
-    //         onClick={clickHandler}
-    //         aria-label='map-card'
-    //     >
-    //         <CardHeader>{map.name}</CardHeader>
-    //         <CardContent>
-    //             <ImageComponent url={map.imageLink} />
-    //         </CardContent>
-    //         <CardFooter>{map.mapId}</CardFooter>
-    //     </Card>
-    // )
     return (
         <CardComponent
             className={classes.mapCard}

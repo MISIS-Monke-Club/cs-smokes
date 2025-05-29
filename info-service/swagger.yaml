@@ -12,6 +12,8 @@ servers:
     description: Сервер бекенда, запущенный локально (prod)
 
 tags:
+  - name: HealthCheck
+    description: Проверка работоспособности бекенда
   - name: AUTH
     description: Авторизация
   - name: Maps
@@ -33,6 +35,26 @@ tags:
   - name: Comments
     description: Комментарии к Pull Request
 paths:
+
+  /health/:
+    get:
+      tags: 
+        - HealthCheck
+      
+      requestBody:
+        required: false
+
+      responses:
+        "200":
+          description: Бекенд работает
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+
   /login/:
     post:
       tags:
@@ -129,7 +151,7 @@ paths:
         - bearerAuth: []
       parameters:
       - in: query
-        name: esports_pool
+        name: is_esports_pool
         schema:
           type: boolean
         description: Фильтр по киберспортивному пулу (актуальные карты Faceit и Premier режима)
@@ -138,15 +160,20 @@ paths:
         name: ordering
         schema:
           type: string
-          enum: [popularity, -popularity, by_alphabet, -by_alphabet, lineups_count, -lineups_count]
+          enum: [by_alphabet, -by_alphabet, quantity, -quantity]
         description: |
           Поле для сортировки. 
           Префикс "-" для обратного порядка.
           Доступные значения:
-          - popularity (по популярности)
-          - name (по алфавиту)
-          - lineups_count (по количеству раскидок)
+          - by_alphabet (по алфавиту)
+          - quantity (по количеству раскидок)
         example: popularity
+      - in: query
+        name: query
+        schema:
+          type: string
+        description: Поиск карты
+        example: mirage
       responses:
         "200":
           description: Список всех карт
@@ -165,6 +192,9 @@ paths:
                   image_link:
                     type: string
                     nullable: true
+                  is_esports_pool:
+                    type: boolean
+                    nullable: false
     post:
       tags:
         - Maps
@@ -174,7 +204,7 @@ paths:
       requestBody:
         required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
               type: object
               properties:
@@ -183,9 +213,12 @@ paths:
                 link:
                   type: string
                   nullable: true
+                is_esports_pool:
+                    type: boolean
+                    nullable: false
                 image_link:
-                  type: string
-                  nullable: true
+                      type: string
+                      format: binary
       responses:
         "201":
           description: Карта успешно создана
@@ -239,6 +272,9 @@ paths:
                 image_link:
                   type: string
                   nullable: true
+                is_esports_pool:
+                    type: boolean
+                    nullable: false
       responses:
         "200":
           description: Карта успешно обновлена
@@ -271,6 +307,9 @@ paths:
                 image_link:
                   type: string
                   nullable: true
+                is_esports_pool:
+                    type: boolean
+                    nullable: false
       responses:
         "200":
           description: Карта частично обновлена
@@ -320,6 +359,18 @@ paths:
             - date_of_creation (по дате создания)
             - by_alphabet (по алфавиту)
           example: date_of_creation
+        - in: query
+          name: query
+          schema:
+            type: string
+          description: Поиск по названию и описанию гранаты (title, description)
+          example: смок
+        - in: query
+          name: by_user_name
+          schema:
+            type: string
+          description: По username пользователя
+          example: loshara
       responses:
         "200":
           description: Список всех раскидок
@@ -338,7 +389,7 @@ paths:
       requestBody:
         required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
               type: object
               properties:
@@ -360,6 +411,7 @@ paths:
                   type: integer
                 preview_image_link:
                   type: string
+                  format: binary
                   nullable: true
                 grenade_class_id:
                   type: integer
@@ -1774,6 +1826,9 @@ components:
         image_link:
           type: string
           nullable: true
+        is_esports_pool:
+          type: boolean
+          nullable: false
         map_lineups:
           type: array
           items:
@@ -1789,8 +1844,19 @@ components:
         link_to_video:
           type: string
           nullable: true
-        user_id:
-          type: integer
+        creator: 
+          type: object
+          properties:
+            user_id:
+              type: integer
+            username:
+              type: string
+            avatar_url:
+              type: string
+            first_name:
+              type: string
+            last_name:
+              type: string  
         created_at:
           type: string
           format: date-time
@@ -1819,6 +1885,7 @@ components:
                 type: string
         grenade_class:
           $ref: "#/components/schemas/GrenadeClass"
+        
 
     Property:
       type: object
@@ -1963,6 +2030,9 @@ components:
         image_link:
           type: string
           nullable: true
+        is_esports_pool:
+          type: boolean
+          nullable: false
 
     LineupUpdate:
       type: object

@@ -97,3 +97,8 @@
     font-weight: $weight;
     font-style: $style;
 }
+
+@mixin auto-columns($width: 100px) {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax($width, 1fr));
+}

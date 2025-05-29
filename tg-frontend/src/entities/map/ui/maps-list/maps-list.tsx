@@ -4,33 +4,26 @@ import classes from "./maps-list.module.scss"
 import { PlaceholderBlock } from "@shared/ui/placeholder-block"
 import { ItemsList } from "@shared/ui/items-list"
 import { Maper } from "@shared/model"
-import { ComponentsRepeater } from "@shared/ui/components-repeater"
 import { CardComponent } from "@shared/ui/card"
 
 type MapsListProps = {
     maps?: MapModel[]
     mapFunction?: Maper<MapModel>
     isLoading?: boolean
+    isError?: boolean
 }
 
 export function MapsList({
     maps = [],
     mapFunction = mapsMaper,
-    isLoading = false,
+    isError = false,
+    ...rest
 }: MapsListProps) {
-    const customColumnsClassName = classes.columnsDisplay
-
-    if (isLoading) {
+    if (isError) {
         return (
-            <ItemsList
-                type='grid'
-                isLoading
-                customColumnsClassName={customColumnsClassName}
-            >
-                <ComponentsRepeater length={15}>
-                    <CardComponent isLoading />
-                </ComponentsRepeater>
-            </ItemsList>
+            <PlaceholderBlock>
+                Error acquired while getting maps list
+            </PlaceholderBlock>
         )
     }
 
@@ -47,7 +40,9 @@ export function MapsList({
             type='grid'
             elements={maps}
             mapFunction={mapFunction}
-            customColumnsClassName={customColumnsClassName}
+            customColumnsClassName={classes.columnsDisplay}
+            displayedLoadingItem={<CardComponent isLoading heading='text' />}
+            {...rest}
         />
     )
 }
