@@ -2,6 +2,8 @@ from rest_framework import generics, permissions
 from rest_framework.exceptions import NotFound
 from user.mixins import IsAdminOrCreator, AdminOnlyForUpdate
 from pull_requests.models import PullRequest, Comment
+from rest_framework.response import Response
+from rest_framework import status
 from pull_requests.serializers import (
     PullRequestSerializer,
     PullRequestCreateSerializer,
@@ -38,8 +40,14 @@ class PullRequestRetrieveUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView)
     ]
     lookup_field = "id"
 
+    def put(self, request, *args, **kwargs):
+        return Response(
+            {"detail": "PUT метод не поддерживается. Используйте PATCH."},
+            status=status.HTTP_405_METHOD_NOT_ALLOWED,
+        )
+
     def get_serializer_class(self):
-        if self.request.method in ["PATCH", "PUT"]:
+        if self.request.method == "PATCH":
             return PullRequestUpdateStatusSerializer
         return PullRequestSerializer
 
@@ -68,3 +76,9 @@ class CommentRetrieveUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def put(self, request, *args, **kwargs):
+        return Response(
+            {"detail": "PUT метод не поддерживается. Используйте PATCH."},
+            status=status.HTTP_405_METHOD_NOT_ALLOWED,
+        )
