@@ -14,7 +14,7 @@ import { instance } from "@shared/api"
 export const api = {
     baseKey: ["map"],
     baseApiUrl: "maps",
-    getMapsOptions: (params?: { query?: string }) =>
+    getMapsOptions: (params?: Record<string, string>) =>
         queryOptions<MapModel[]>({
             queryKey: [...api.baseKey, { type: "list" }, params],
             queryFn: () => api.getMaps(params),
@@ -26,17 +26,14 @@ export const api = {
             queryFn: () => api.getMapsById(mapId),
         }),
 
-    getMaps: (params?: { query?: string }) =>
+    getMaps: (params?: Record<string, unknown>) =>
         typedQuery({
-            request: instance.get(api.baseApiUrl, {
-                params,
-            }),
+            request: instance.get(api.baseApiUrl, { params }),
             dtoSchema: mapDTOschema.array(),
             fromDTO: fromMapArrayDTO,
         }).catch((err) => {
             toast.error("Error acquired while getting maps from server")
             console.error(err)
-
             throw err
         }),
 

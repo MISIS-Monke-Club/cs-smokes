@@ -10,10 +10,9 @@ import { useQueryPrams } from "@shared/lib/params-parser"
 
 export function Maps() {
     const { addParams, deleteParams, params } = useQueryPrams()
+
     const { data: maps, isLoading } = useQuery(
-        mapApi.getMapsOptions({
-            query: params.get("search")?.toString(),
-        })
+        mapApi.getMapsOptions(Object.fromEntries(params.entries()))
     )
 
     // Will hold execution for 300ms

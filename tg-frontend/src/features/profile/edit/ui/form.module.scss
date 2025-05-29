@@ -2,7 +2,7 @@
     display: flex;
     flex-direction: column;
     gap: toRem(15);
-    padding: 0 0 toRem(15);
+    padding: 0 0 calc(2 * var(--site-padding-y) + 2 * 66px);
 }
 
 .label {
@@ -20,7 +20,7 @@
     gap: toRem(10);
 
     width: 100%;
-    padding: 0 toRem(5);
+    padding: 0 toRem(5) calc(2 * var(--site-padding-y) + 66px);
 }
 
 .btn {
