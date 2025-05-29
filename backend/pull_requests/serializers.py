@@ -98,11 +98,19 @@ class PullRequestUpdateStatusSerializer(serializers.ModelSerializer):
         return instance
 
 
+class CreaterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["user_id", "username", "avatar_url", "first_name", "last_name"]
+
+
 class CommentSerializer(serializers.ModelSerializer):
+    creator = CreaterSerializer(source="author")
+
     class Meta:
         model = Comment
-        fields = ["id", "text", "author", "created_at"]
-        read_only_fields = ["author", "created_at"]
+        fields = ["id", "text", "creator", "created_at"]
+        read_only_fields = ["created_at"]
 
     def create(self, validated_data):
         validated_data["author"] = self.context["request"].user
