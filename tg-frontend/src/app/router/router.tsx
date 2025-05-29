@@ -52,6 +52,10 @@ export const router = createBrowserRouter(
                             element: <AddLineupPage />,
                         },
                         {
+                            path: "/requests/:requestId",
+                            element: <AddLineupPage />,
+                        },
+                        {
                             path: "maps",
                             element: <Maps />,
                         },
