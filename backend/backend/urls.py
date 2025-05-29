@@ -36,6 +36,7 @@ urlpatterns = [
     re_path("api/", include("maps.urls")),
     re_path("api/", include("properties.urls")),
     re_path("api/", include("grenade_class.urls")),
+    re_path("api/", include("pull_requests.urls")),
     # Swagger UI
     re_path(
         r"api/docs/?$",
