@@ -12,11 +12,18 @@ class LineupFilter(django_filters.FilterSet):
     )
     query = django_filters.CharFilter(method="filter_by_search", label="Поиск")
 
+    by_user_name = django_filters.CharFilter(
+        method="filter_by_user_name", label="По имени пользователя"
+    )
+
     def filter_by_search(self, queryset, name, value):
         return queryset.filter(
             django_filters.filters.Q(title__icontains=value)
             | django_filters.filters.Q(description__icontains=value)
         )
+
+    def filter_by_user_name(self, queryset, name, value):
+        return queryset.filter(user_id__username__iexact=value)
 
     class Meta:
         model = Lineup

@@ -6,6 +6,13 @@ from grenade_class.serializers import GrenadeClassSerializer
 from properties.models import PropertyList
 from properties.serializers import PropertyInlineSerializer
 from drf_spectacular.utils import extend_schema_field
+from auth_app.models import User
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["user_id", "username", "avatar_url", "first_name", "last_name"]
 
 
 class LineupSerializer(serializers.ModelSerializer):
@@ -13,7 +20,7 @@ class LineupSerializer(serializers.ModelSerializer):
         queryset=GrenadeClass.objects.all(), write_only=True
     )
     grenade_class = GrenadeClassSerializer(source="grenade_class_id", read_only=True)
-
+    creator = UserProfileSerializer(source="user_id", read_only=True)
     property_list = serializers.SerializerMethodField()
     preview_image_link = serializers.ImageField(required=False)
 
@@ -23,7 +30,7 @@ class LineupSerializer(serializers.ModelSerializer):
             "grenade_id",
             "map_id",
             "link_to_video",
-            "user_id",
+            "creator",
             "created_at",
             "title",
             "description",
