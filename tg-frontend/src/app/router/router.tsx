@@ -15,6 +15,7 @@ import { store } from "@shared/model"
 import { GrenadesPage } from "@pages/grenades"
 import { MapInfoPage } from "@pages/map/map-info"
 import { selectAuthSession } from "@entities/session"
+import { PullRequestPage } from "@pages/pull-request-page"
 
 export const router = createBrowserRouter(
     [
@@ -53,7 +54,7 @@ export const router = createBrowserRouter(
                         },
                         {
                             path: "/requests/:requestId",
-                            element: <AddLineupPage />,
+                            element: <PullRequestPage />,
                         },
                         {
                             path: "maps",

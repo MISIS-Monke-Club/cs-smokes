@@ -1,3 +1,6 @@
+import { useSelector } from "react-redux"
+import { useEffect, useRef, useState } from "react"
+import { useQuery } from "@tanstack/react-query"
 import { Message, PullRequest, pullRequestApi } from "@entities/pull-request"
 import { selectAuthSession } from "@entities/session"
 import { client } from "@shared/api"
@@ -12,9 +15,6 @@ import {
     DialogTrigger,
 } from "@shared/ui/dialog"
 import { PlaceholderBlock } from "@shared/ui/placeholder-block"
-import { useQuery } from "@tanstack/react-query"
-import { useEffect, useRef, useState } from "react"
-import { useSelector } from "react-redux"
 
 export function RequestFeed({ requestId }: { requestId: PullRequest["id"] }) {
     const socketRef = useRef<WebSocket | null>(null)
@@ -26,9 +26,9 @@ export function RequestFeed({ requestId }: { requestId: PullRequest["id"] }) {
     const { userId } = useSelector(selectAuthSession)
     const [newMessageText, setNewMessageText] = useState("")
 
-    useEffect(() => {
+    useEffect(() => {пш
         const socket = new WebSocket(
-            `wss://your-backend/ws/requests/${requestId}/`
+            `ws://localhost:3000/ws/api/pull_requests/1/comments/`
         )
 
         socket.onmessage = (event) => {

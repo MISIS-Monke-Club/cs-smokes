@@ -31,13 +31,13 @@ export const api = {
     // Api
     closeById: ({ pullRequestId }: { pullRequestId: PullRequest["id"] }) =>
         typedQuery({
-            request: instance.get(`${api.baseUrl}/${pullRequestId}`),
+            request: instance.get(`${api.baseUrl}/${pullRequestId}/`),
             dtoSchema: pull_request_details_schema,
             fromDTO: fromRequestDTOtoRequestModel,
         }),
     getById: ({ pullRequestId }: { pullRequestId: PullRequest["id"] }) =>
         typedQuery({
-            request: instance.get(`${api.baseUrl}/${pullRequestId}`),
+            request: instance.get(`${api.baseUrl}/${pullRequestId}/`),
             dtoSchema: pull_request_details_schema,
             fromDTO: fromRequestDTOtoRequestModel,
         }),
@@ -47,7 +47,7 @@ export const api = {
         pullRequestId: PullRequest["id"]
     }) =>
         typedQuery({
-            request: instance.get(`${api.baseUrl}/${pullRequestId}`),
+            request: instance.get(`${api.baseUrl}/${pullRequestId}/`),
             dtoSchema: message_schema.array(),
             fromDTO: fromMessagesDTOtoMessageModel,
         }),
