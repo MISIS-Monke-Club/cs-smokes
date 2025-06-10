@@ -365,6 +365,12 @@ paths:
             type: string
           description: Поиск по названию и описанию гранаты (title, description)
           example: смок
+        - in: query
+          name: by_user_name
+          schema:
+            type: string
+          description: По username пользователя
+          example: loshara
       responses:
         "200":
           description: Список всех раскидок
@@ -1490,7 +1496,6 @@ paths:
     
   /pull_requests/:
     get:
-      deprecated: true
       tags:
         - PullRequest
       summary: Получить список всех PR
@@ -1519,7 +1524,6 @@ paths:
                   $ref: "#/components/schemas/PullRequestDetails"
 
     post:
-      deprecated: true
       tags:
         - PullRequest
       summary: Создать PR
@@ -1540,7 +1544,6 @@ paths:
 
   /pull_requests/{id}/:
     get:
-      deprecated: true
       tags:
         - PullRequest
       summary: Получить конкретный PR
@@ -1561,7 +1564,6 @@ paths:
                 $ref: "#/components/schemas/PullRequestDetails"
 
     patch:
-      deprecated: true
       tags:
         - PullRequest
       summary: Изменить статус PR (только админ)
@@ -1590,7 +1592,6 @@ paths:
           description: PR обновлён
 
     delete:
-      deprecated: true
       tags:
         - PullRequest
       summary: Отменить PR (пользователь или админ) 
@@ -1608,7 +1609,6 @@ paths:
 
   /pull_requests/{pr_id}/comments/:
     get:
-      deprecated: true
       tags:
         - PullRequest
       summary: Получить комментарии к PR
@@ -1631,7 +1631,6 @@ paths:
                   $ref: "#/components/schemas/Comment"
 
     post:
-      deprecated: true
       tags:
         - PullRequest
       summary: Добавить комментарий к PR
@@ -1657,7 +1656,6 @@ paths:
 
   /comments/{id}/:
     patch:
-      deprecated: true
       tags:
         - Comments
       summary: Обновить комментарий
@@ -1683,7 +1681,6 @@ paths:
           description: Комментарий обновлён
       
     get:
-      deprecated: true
       tags:
         - Comments
       summary: Получить комментарий по ID
@@ -1712,7 +1709,6 @@ paths:
 
 
     delete:
-      deprecated: true
       tags:
         - Comments
       summary: Удалить комментарий
@@ -1730,10 +1726,82 @@ paths:
 
   /pull_requests/{pr_id}/comments/ws:
     get:
-      deprecated: true
       tags:
         - PullRequest
-      summary: WebSocket endpoint для комментариев к PR
+      summary: WebSocket API для комментариев в реальном времени
+      description: |
+        Подключение по WebSocket для отправки и получения комментариев к Pull Request в реальном времени.
+
+        URL подключения:
+        ```
+        ws://<host>/ws/pull_requests/{pr_id}/comments/
+        ```
+
+        Входящие сообщения (Client → Server)
+
+        1. Создание комментария
+        ```json
+        {
+          "action": "create",
+          "text": "Новый комментарий",
+          "user_id": 5,
+          "parent_id": null
+        }
+        ```
+
+        2. Обновление комментария
+        ```json
+        {
+          "action": "update",
+          "comment_id": 12,
+          "text": "Обновлённый текст"
+        }
+        ```
+
+        3. Удаление комментария
+        ```json
+        {
+          "action": "delete",
+          "comment_id": 12
+        }
+        ```
+
+        ---
+
+        Исходящие сообщения (Server → Clients)
+
+        Комментарий создан
+        ```json
+        {
+          "type": "comment_created",
+          "comment": {
+            "id": 13,
+            "user_id": 5,
+            "text": "Комментарий",
+            "parent_id": null,
+            "created_at": "2025-05-10T10:00:00Z"
+          }
+        }
+        ```
+
+        Комментарий обновлён
+        ```json
+        {
+          "type": "comment_updated",
+          "comment_id": 12,
+          "text": "Обновлённый текст"
+        }
+        ```
+
+        Комментарий удалён
+        ```json
+        {
+          "type": "comment_deleted",
+          "comment_id": 12
+        }
+        ```
+
+        ---
       parameters:
         - name: pr_id
           in: path
@@ -1742,7 +1810,7 @@ paths:
             type: integer
       responses:
         "101":
-          description: Переключение протокола на WebSocket
+          description: Протокол переключается на WebSocket
 components:
   schemas:
     Map:
@@ -1776,8 +1844,19 @@ components:
         link_to_video:
           type: string
           nullable: true
-        user_id:
-          type: integer
+        creator: 
+          type: object
+          properties:
+            user_id:
+              type: integer
+            username:
+              type: string
+            avatar_url:
+              type: string
+            first_name:
+              type: string
+            last_name:
+              type: string  
         created_at:
           type: string
           format: date-time
@@ -1806,6 +1885,7 @@ components:
                 type: string
         grenade_class:
           $ref: "#/components/schemas/GrenadeClass"
+        
 
     Property:
       type: object

@@ -54,6 +54,8 @@ INSTALLED_APPS = [
     "grenade_class",
     "properties",
     "favorites",
+    "channels",
+    "pull_requests",
 ]
 
 REST_FRAMEWORK = {
@@ -72,6 +74,16 @@ CACHES = {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         },
     }
+}
+
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [f"redis://:{os.getenv('REDIS_PASS')}@redis:6379/0"],
+        },
+    },
 }
 
 SIMPLE_JWT = {
