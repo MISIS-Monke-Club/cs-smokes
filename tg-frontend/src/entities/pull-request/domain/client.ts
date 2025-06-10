@@ -27,6 +27,7 @@ export type MessageModel = {
     text: string
     parentId: number | null
     createdAt: string
+    creator: RequestUser
 }
 
 export type RequestUser = {

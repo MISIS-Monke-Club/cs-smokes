@@ -5,6 +5,7 @@ export const grenadeModelMock: GrenadeModel = {
     grenadeId: 1,
     mapId: 1,
     grenadeClass: {
+        grenadeClassId: 1,
         name: "Smoke",
         description: "Blocks vision temporarily",
         price: 300,
@@ -17,7 +18,13 @@ export const grenadeModelMock: GrenadeModel = {
         },
     ],
     linkToVideo: "https://example.com/video1",
-    userId: 101,
+    creator: {
+        userId: 101,
+        username: "smokeMaster",
+        avatarUrl: null,
+        firstName: null,
+        lastName: null,
+    },
     createdAt: "2025-04-01T10:00:00Z",
     title: "Mid Control Smoke",
     description: "Useful for taking mid safely.",
@@ -32,6 +39,7 @@ export const grenadesModelMocks: GrenadeModel[] = [
         grenadeId: 1,
         mapId: 101,
         grenadeClass: {
+            grenadeClassId: 1,
             name: "Flashbang",
             description: "A grenade that blinds enemies.",
             price: 200,
@@ -44,7 +52,13 @@ export const grenadesModelMocks: GrenadeModel[] = [
             },
         ],
         linkToVideo: "https://example.com/flashbang-guide",
-        userId: 42,
+        creator: {
+            userId: 42,
+            username: "flashPro",
+            avatarUrl: null,
+            firstName: "Ivan",
+            lastName: "Ivanov",
+        },
         createdAt: "2024-03-22T12:00:00Z",
         title: "Perfect Flash for Mid Push",
         description:
@@ -58,6 +72,7 @@ export const grenadesModelMocks: GrenadeModel[] = [
         grenadeId: 2,
         mapId: 102,
         grenadeClass: {
+            grenadeClassId: 2,
             name: "Smoke Grenade",
             description:
                 "A grenade that creates a vision-blocking smoke screen.",
@@ -71,7 +86,13 @@ export const grenadesModelMocks: GrenadeModel[] = [
             },
         ],
         linkToVideo: "https://example.com/smoke-setup",
-        userId: 67,
+        creator: {
+            userId: 67,
+            username: "smoker",
+            avatarUrl: null,
+            firstName: null,
+            lastName: null,
+        },
         createdAt: "2024-03-20T15:30:00Z",
         title: "One-Way Smoke on Mirage",
         description: "A powerful one-way smoke for jungle control.",
@@ -86,6 +107,7 @@ export const grenadeDTOmock: z.infer<typeof grenadeDTOschema> = {
     grenade_id: 1,
     map_id: 1,
     grenade_class: {
+        grenade_class_id: 1,
         name: "Smoke",
         description: "Blocks vision temporarily",
         price: 300,
@@ -98,7 +120,13 @@ export const grenadeDTOmock: z.infer<typeof grenadeDTOschema> = {
         },
     ],
     link_to_video: "https://example.com/video1",
-    user_id: 101,
+    creator: {
+        user_id: 101,
+        username: "smokeMaster",
+        avatar_url: null,
+        first_name: null,
+        last_name: null,
+    },
     created_at: "2025-04-01T10:00:00Z",
     title: "Mid Control Smoke",
     description: "Useful for taking mid safely.",
@@ -107,15 +135,13 @@ export const grenadeDTOmock: z.infer<typeof grenadeDTOschema> = {
     views: 230,
     preview_image_link: "https://example.com/image1.jpg",
 }
-
-export const grenadesDTOmock: z.infer<
-    ReturnType<typeof grenadeDTOschema.array>
-> = [
+export const grenadesDTOmock: z.infer<typeof grenadeDTOschema>[] = [
     { ...grenadeDTOmock },
     {
         grenade_id: 2,
         map_id: 102,
         grenade_class: {
+            grenade_class_id: 2,
             name: "Smoke Grenade",
             description:
                 "A grenade that creates a vision-blocking smoke screen.",
@@ -129,7 +155,13 @@ export const grenadesDTOmock: z.infer<
             },
         ],
         link_to_video: "https://example.com/smoke-setup",
-        user_id: 67,
+        creator: {
+            user_id: 67,
+            username: "smoker",
+            avatar_url: null,
+            first_name: null,
+            last_name: null,
+        },
         created_at: "2024-03-20T15:30:00Z",
         title: "One-Way Smoke on Mirage",
         description: "A powerful one-way smoke for jungle control.",

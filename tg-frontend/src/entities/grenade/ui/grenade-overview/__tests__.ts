@@ -16,7 +16,7 @@ export const baseTestFunction = async (canvas: Canvas) => {
     await expect(createdBy).toBeInTheDocument()
     await expect(createdBy).toBeVisible()
     await expect(createdBy).toHaveTextContent(
-        grenadeModelMock.userId.toString()
+        grenadeModelMock.creator.userId.toString()
     )
 
     await expect(previewImage).toBeInTheDocument()

@@ -26,7 +26,7 @@ export function RequestFeed({ requestId }: { requestId: PullRequest["id"] }) {
     const { userId } = useSelector(selectAuthSession)
     const [newMessageText, setNewMessageText] = useState("")
 
-    useEffect(() => {пш
+    useEffect(() => {
         const socket = new WebSocket(
             `ws://localhost:3000/ws/api/pull_requests/1/comments/`
         )
