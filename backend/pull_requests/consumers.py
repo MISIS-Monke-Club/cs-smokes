@@ -58,17 +58,21 @@ class PRCommentConsumer(AsyncWebsocketConsumer):
 
         await self.channel_layer.group_send(
             self.room_group_name,
-            {"type": "chat_message", "data": data},
+            {"type": "chat_message", "data": data, "sender": self.channel_name},
         )
 
     async def chat_message(self, event):
         payload = event.get("data", {})
         action = payload.get("action")
 
-        if action == "create":
-            await self.create_comment(int(payload["user_id"]), payload["message"])
-        elif action == "delete":
-            await self.delete_comment(payload["message_id"])
+        if event["sender"] != self.channel_name:
+            pass
+        else:
+            # это сообщение, которое мы сами инициировали
+            if action == "create":
+                await self.create_comment(int(payload["user_id"]), payload["message"])
+            elif action == "delete":
+                await self.delete_comment(payload["message_id"])
 
         # отдаём клиентам обновлённый список комментариев
         comments_data = await self.get_comments_serialized()
