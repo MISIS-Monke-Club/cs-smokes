@@ -6,6 +6,9 @@ python manage.py migrate
 echo "Сбор статики"
 python manage.py collectstatic --noinput
 
+echo "Создание seed данных"
+python manage.py seed_data
+
 echo "Создание суперпользователя"
 python manage.py shell <<EOF
 import os
