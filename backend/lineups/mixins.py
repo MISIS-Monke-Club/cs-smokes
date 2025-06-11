@@ -1,4 +1,5 @@
 from favorites.models import Favorites
+from pull_requests.models import PullRequest
 
 
 class IsFavoriteMixin:
@@ -22,5 +23,24 @@ class IsFavoriteMixin:
 
         for item in data:
             item["is_favorite"] = item["grenade_id"] in favorite_ids
+
+        return data[0] if is_single else data
+
+
+class LineupStatusMixin:
+    def check_status(self, data):
+        is_single = False
+        if isinstance(data, dict):
+            data = [data]
+            is_single = True
+
+        grenade_ids = [item["grenade_id"] for item in data]
+        grenades_status = PullRequest.objects.filter(
+            lineup_id__in=grenade_ids
+        ).values_list("lineup_id", "status")
+        status_dict = {grenade_id: status for grenade_id, status in grenades_status}
+        for item in data:
+            grenade_id = item["grenade_id"]
+            item["status"] = status_dict.get(grenade_id, "UNKNOWN")
 
         return data[0] if is_single else data
