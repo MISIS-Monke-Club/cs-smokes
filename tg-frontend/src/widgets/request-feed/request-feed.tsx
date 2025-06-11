@@ -1,6 +1,7 @@
 import { useSelector } from "react-redux"
 import { useEffect, useRef, useState } from "react"
 import { useQuery } from "@tanstack/react-query"
+import { Plus } from "lucide-react"
 import { Message, PullRequest, pullRequestApi } from "@entities/pull-request"
 import { selectAuthSession } from "@entities/session"
 import { client } from "@shared/api"
@@ -84,40 +85,37 @@ export function RequestFeed({ requestId }: { requestId: PullRequest["id"] }) {
                 {feedMessages.map((el) => (
                     <Message key={el.id} message={el} />
                 ))}
-            </div>
-            <Dialog>
-                <DialogTrigger asChild>
-                    <Button className='w-full text-[var(--color-accent)]'>
-                        добавить сообщение
-                    </Button>
-                </DialogTrigger>
+                <Dialog>
+                    <DialogTrigger asChild>
+                        <Button className='w-full text-[var(--color-accent)]'>
+                            <Plus /> добавить сообщение
+                        </Button>
+                    </DialogTrigger>
 
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Новое сообщение</DialogTitle>
-                    </DialogHeader>
-                    <textarea
-                        value={newMessageText}
-                        onChange={(e) => setNewMessageText(e.target.value)}
-                        placeholder='Введите сообщение...'
-                        className='w-full border rounded p-2'
-                        rows={4}
-                    />
-                    <DialogFooter>
-                        <DialogClose asChild>
-                            <Button
-                                onClick={handleSendMessage}
-                                disabled={!newMessageText.trim()}
-                            >
-                                Отправить
-                            </Button>
-                        </DialogClose>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
-            <Button className='w-full text-[var(--color-accent)]'>
-                добавить сообщение
-            </Button>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Новое сообщение</DialogTitle>
+                        </DialogHeader>
+                        <textarea
+                            value={newMessageText}
+                            onChange={(e) => setNewMessageText(e.target.value)}
+                            placeholder='Введите сообщение...'
+                            className='w-full border rounded p-2'
+                            rows={4}
+                        />
+                        <DialogFooter>
+                            <DialogClose asChild>
+                                <Button
+                                    onClick={handleSendMessage}
+                                    disabled={!newMessageText.trim()}
+                                >
+                                    Отправить
+                                </Button>
+                            </DialogClose>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+            </div>
         </div>
     )
 }

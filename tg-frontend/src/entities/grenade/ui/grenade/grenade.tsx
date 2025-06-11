@@ -26,6 +26,8 @@ export function Grenade({ grenade, ...rest }: GrenadeProps) {
             heading={grenade.title}
             subheading={grenade.grenadeClass.name}
             onClick={clickHandler}
+            imgUrl={grenade.previewImageLink || ""}
+            imgAlt={`"${grenade.title}" preview`}
             topSlot={
                 grenade.isApproved ? (
                     <Badge color='success'>approved</Badge>
