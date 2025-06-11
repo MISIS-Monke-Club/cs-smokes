@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import re_path
 from .views import (
     PullRequestListCreateView,
     PullRequestRetrieveUpdateDeleteView,
@@ -6,24 +6,26 @@ from .views import (
     CommentRetrieveUpdateDeleteView,
 )
 
+from django.urls import re_path
+
 urlpatterns = [
-    path(
-        "pull_requests/",
+    re_path(
+        r"^pull_requests/?$",
         PullRequestListCreateView.as_view(),
         name="pullrequest-list-create",
     ),
-    path(
-        "pull_requests/<int:id>/",
+    re_path(
+        r"^pull_requests/(?P<id>\d+)/?$",
         PullRequestRetrieveUpdateDeleteView.as_view(),
         name="pullrequest-detail",
     ),
-    path(
-        "pull_requests/<int:id>/comments/",
+    re_path(
+        r"^pull_requests/(?P<id>\d+)/comments/?$",
         CommentListCreateView.as_view(),
         name="pullrequestcomment-list-create",
     ),
-    path(
-        "comments/<int:pk>/",
+    re_path(
+        r"^comments/(?P<pk>\d+)/?$",
         CommentRetrieveUpdateDeleteView.as_view(),
         name="pullrequestcomment-detail",
     ),
