@@ -1,8 +1,7 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 import json
 
-from asgiref.sync import sync_to_async
-from channels.db import database_sync_to_async  # пригодится для читаемости
+from channels.db import database_sync_to_async
 
 from pull_requests.models import Comment, PullRequest
 from pull_requests.serializers import CommentSerializer
@@ -11,10 +10,10 @@ from auth_app.models import User
 
 class PRCommentConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
-    def create_comment(self, user_id: int, message: str):
+    def create_comment(self, user_id: int, text: str):
         pr = PullRequest.objects.get(id=self.pr_id)
-        author = User.objects.get(user_id=user_id)  # ← исправлено id→user_id
-        Comment.objects.create(pull_request=pr, author=author, text=message)
+        author = User.objects.get(user_id=user_id)
+        Comment.objects.create(pull_request=pr, author=author, text=text)
 
     @database_sync_to_async
     def delete_comment(self, comment_id: int):
@@ -24,7 +23,7 @@ class PRCommentConsumer(AsyncWebsocketConsumer):
     def get_comments_serialized(self):
         qs = (
             Comment.objects.filter(pull_request_id=self.pr_id)
-            .select_related("author")  # избегаем ленивых запросов
+            .select_related("author")
             .order_by("created_at")
         )
         return CommentSerializer(qs, many=True).data
@@ -34,46 +33,38 @@ class PRCommentConsumer(AsyncWebsocketConsumer):
         self.room_group_name = f"pr_{self.pr_id}"
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         await self.accept()
-        comments_data = await self.get_comments_serialized()
-        await self.send(text_data=json.dumps(comments_data, ensure_ascii=False))
+
+        await self._send_comments()
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 
     async def receive(self, text_data):
         """
-        Клиент шлёт JSON вроде:
-        {"action": "create", "user_id": "1", "message": "hello"}
-        или
-        {"action": "delete", "message_id": 42}
+        {"action":"create","user_id":"1","message":"hi"}
+        {"action":"delete","message_id":42}
         """
+
         try:
             data = json.loads(text_data)
         except ValueError:
             return
 
         action = data.get("action")
-        if action not in ("create", "delete"):
+        if action == "create":
+            await self.create_comment(int(data["user_id"]), data["message"])
+        elif action == "delete":
+            await self.delete_comment(data["message_id"])
+        else:
             return
 
         await self.channel_layer.group_send(
-            self.room_group_name,
-            {"type": "chat_message", "data": data, "sender": self.channel_name},
+            self.room_group_name, {"type": "chat_message"}
         )
 
     async def chat_message(self, event):
-        payload = event.get("data", {})
-        action = payload.get("action")
+        await self._send_comments()
 
-        if event["sender"] != self.channel_name:
-            pass
-        else:
-            # это сообщение, которое мы сами инициировали
-            if action == "create":
-                await self.create_comment(int(payload["user_id"]), payload["message"])
-            elif action == "delete":
-                await self.delete_comment(payload["message_id"])
-
-        # отдаём клиентам обновлённый список комментариев
-        comments_data = await self.get_comments_serialized()
-        await self.send(text_data=json.dumps(comments_data, ensure_ascii=False))
+    async def _send_comments(self):
+        comments = await self.get_comments_serialized()
+        await self.send(text_data=json.dumps(comments, ensure_ascii=False))
