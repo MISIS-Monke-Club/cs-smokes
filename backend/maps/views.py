@@ -17,6 +17,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 import hashlib
 from urllib.parse import urlencode
 from rest_framework.parsers import MultiPartParser, FormParser
+from .mixixns import LineupStatusFavoriteMixin
+from lineups.mixins import LineupStatusMixin, IsFavoriteMixin
 
 
 class MapsView(APIView):
@@ -107,7 +109,9 @@ class MapsView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class MapDetailRUDView(APIView):
+class MapDetailRUDView(
+    APIView, LineupStatusFavoriteMixin, LineupStatusMixin, IsFavoriteMixin
+):
     permission_classes = [IsAuthenticated]
 
     @extend_schema(
@@ -123,10 +127,18 @@ class MapDetailRUDView(APIView):
         cached_data = cache.get(cache_key)
 
         if cached_data is not None:
-            return Response(cached_data)
+            if cached_data is not None:
+                cached_data["map_lineups"] = self.add_status_and_favorite(
+                    cached_data.get("map_lineups", []), request
+                )
+                return Response(cached_data)
 
         map_obj = get_object_or_404(Map, pk=pk)
         serializer = MapDetailSerializer(map_obj, context={"request": request})
+        if "map_lineups" in serializer.data:
+            serializer.data["map_lineups"] = self.add_status_and_favorite(
+                serializer.data["map_lineups"], request
+            )
         cache.set(cache_key, serializer.data, timeout=60 * 15)
         return Response(serializer.data)
 

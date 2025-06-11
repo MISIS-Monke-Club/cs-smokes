@@ -41,6 +41,6 @@ class LineupStatusMixin:
         status_dict = {grenade_id: status for grenade_id, status in grenades_status}
         for item in data:
             grenade_id = item["grenade_id"]
-            item["status"] = status_dict.get(grenade_id, "UNKNOWN")
+            item["status"] = status_dict.get(grenade_id, "WAITING FOR CREATION")
 
         return data[0] if is_single else data
