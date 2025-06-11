@@ -7,6 +7,8 @@ from .serializers import FavoritesCreateSerializer
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExample
 from drf_spectacular.types import OpenApiTypes
 from lineups.serializers import LineupSerializer
+from maps.mixixns import LineupStatusFavoriteMixin
+from lineups.mixins import IsFavoriteMixin, LineupStatusMixin
 
 
 class FavoritesAddView(APIView):
@@ -45,7 +47,9 @@ class FavoritesAddView(APIView):
         return Response(serializer.errors, status=400)
 
 
-class FavoritesView(APIView):
+class FavoritesView(
+    APIView, IsFavoriteMixin, LineupStatusFavoriteMixin, LineupStatusMixin
+):
     permission_classes = [IsAuthenticated]
 
     @extend_schema(
@@ -106,6 +110,7 @@ class FavoritesView(APIView):
                         "property_list": [
                             {"name": "Откуда кидать", "value": "Угол стены"}
                         ],
+                        "status": "WAITING FOR CREATION",
                     }
                 ],
                 response_only=True,
@@ -122,6 +127,6 @@ class FavoritesView(APIView):
             return Response([], status=200)
 
         lineups = [fav.grenade_id for fav in favorites]
-
         serializer = LineupSerializer(lineups, many=True, context={"request": request})
-        return Response(serializer.data, status=200)
+        enriched_data = self.add_status_and_favorite(serializer.data, request)
+        return Response(enriched_data, status=200)
