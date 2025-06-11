@@ -27,6 +27,7 @@ class LineupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lineup
         fields = [
+            "user_id",
             "grenade_id",
             "map_id",
             "link_to_video",
