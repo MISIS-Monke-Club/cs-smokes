@@ -48,6 +48,6 @@ export const addToFavoritesMutation = (
     },
     onSettled: () => {
         // Mutation updated server data, so data need to be re-fetched
-        client.invalidateQueries({ queryKey: [grenadeApi.baseKey] })
+        client.invalidateQueries({ queryKey: grenadeApi.baseKey })
     },
 })
