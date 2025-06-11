@@ -21,7 +21,7 @@ class MapDetailSerializer(serializers.ModelSerializer):
 
     def get_map_lineups(self, obj):
         lineups = Lineup.objects.filter(map_id=obj)
-        serializer = LineupSerializer(lineups, many=True)
+        serializer = LineupSerializer(lineups, many=True, context=self.context)
         return serializer.data
 
     def get_image_link(self, obj):

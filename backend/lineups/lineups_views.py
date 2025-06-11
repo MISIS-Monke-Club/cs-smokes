@@ -18,10 +18,10 @@ from django_filters.rest_framework import DjangoFilterBackend
 import hashlib
 from urllib.parse import urlencode
 from rest_framework.parsers import MultiPartParser, FormParser
-from .mixins import IsFavoriteMixin
+from .mixins import IsFavoriteMixin, LineupStatusMixin
 
 
-class LineupViews(APIView, IsFavoriteMixin):
+class LineupViews(APIView, IsFavoriteMixin, LineupStatusMixin):
 
     permission_classes = [IsAuthenticated]
     parser_classes = [MultiPartParser, FormParser]
@@ -65,7 +65,8 @@ class LineupViews(APIView, IsFavoriteMixin):
         cached_data = cache.get(cache_key)
         if cached_data is not None:
             annotated_data = self.annotate_is_favorite(cached_data, request.user)
-            return Response(annotated_data, status=status.HTTP_200_OK)
+            data_with_status = self.check_status(annotated_data)
+            return Response(data_with_status, status=status.HTTP_200_OK)
 
         queryset = Lineup.objects.all()
         filterset = LineupFilter(request.GET, queryset=queryset)
@@ -79,7 +80,8 @@ class LineupViews(APIView, IsFavoriteMixin):
         cache.set(cache_key, serializer.data, timeout=60 * 15)
 
         annotated_data = self.annotate_is_favorite(serializer.data, request.user)
-        return Response(annotated_data, status=status.HTTP_200_OK)
+        data_with_status = self.check_status(annotated_data)
+        return Response(data_with_status, status=status.HTTP_200_OK)
 
     @extend_schema(
         summary="Создать новую гранату (Lineup)",
@@ -139,7 +141,7 @@ class LineupViews(APIView, IsFavoriteMixin):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class LineupRUDViews(APIView, IsFavoriteMixin):
+class LineupRUDViews(APIView, IsFavoriteMixin, LineupStatusMixin):
 
     permission_classes = [IsAuthenticated]
 
@@ -158,12 +160,14 @@ class LineupRUDViews(APIView, IsFavoriteMixin):
 
         if cached_data is not None:
             annotated_data = self.annotate_is_favorite(cached_data, request.user)
-            return Response(annotated_data)
+            data_with_status = self.check_status(annotated_data)
+            return Response(data_with_status)
         obj = get_object_or_404(Lineup, pk=pk)
         serializer = LineupSerializer(obj, context={"request": request})
         cache.set(cache_key, serializer.data, timeout=60 * 15)
         annotated_data = self.annotate_is_favorite(serializer.data, request.user)
-        return Response(annotated_data, status=status.HTTP_200_OK)
+        data_with_status = self.check_status(annotated_data)
+        return Response(data_with_status, status=status.HTTP_200_OK)
 
     @extend_schema(
         summary="Обновить Lineup (полностью)",
