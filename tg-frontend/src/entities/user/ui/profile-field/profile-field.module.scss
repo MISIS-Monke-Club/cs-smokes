@@ -1,0 +1,13 @@
+.field {
+    display: flex;
+    justify-content: space-between;
+}
+
+.label {
+    font-size: var(--ui-normal);
+    font-weight: bold;
+}
+
+.value {
+    font-size: var(--text-normal);
+}

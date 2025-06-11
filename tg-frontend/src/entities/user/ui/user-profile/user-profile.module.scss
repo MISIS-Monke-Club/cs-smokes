@@ -1,9 +1,34 @@
 .profile {
     display: flex;
     flex-direction: column;
-    gap: toRem(25);
+    gap: toRem(15);
+}
 
-    padding: toRem(30);
-    border: toRem(1) solid var(--color-border);
-    border-radius: toRem(5);
+.skeleton {
+    display: flex;
+    margin: 0 auto;
+}
+
+.avatar {
+    width: 100%;
+    min-width: 310px;
+    min-height: 310px;
+    margin: 0 auto;
+    border-radius: toRem(8);
+}
+
+h2 {
+    font-size: toRem(20);
+    font-weight: bold;
+}
+
+.main {
+    display: flex;
+    flex-direction: column;
+    gap: toRem(8);
+}
+
+.mainTitle {
+    margin: 0 0 toRem(2);
+    font-size: var(--h2-font-size);
 }

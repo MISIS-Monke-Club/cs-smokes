@@ -1,4 +1,3 @@
-import { useState } from "react"
 import { Link } from "react-router-dom"
 import { useEditProfile } from "../lib/use-edit-profile"
 import classes from "./form.module.scss"
@@ -7,62 +6,73 @@ import { Input } from "@shared/ui/input"
 
 export function EditProfileForm() {
     const { handleUpdate, profileData } = useEditProfile()
-    const [isEditing, setIsEditing] = useState<boolean>(false)
-
-    const handleEditClick = () => {
-        setIsEditing(true)
-    }
 
     return (
         <div>
-            <form onSubmit={handleUpdate} className={classes.form}>
+            <form
+                onSubmit={(e) => void handleUpdate(e)}
+                className={classes.form}
+            >
                 <Input
-                    disabled={!isEditing}
+                    withLabel
+                    label='Username'
+                    labelClassName={classes.label}
                     type='text'
                     name='username'
                     defaultValue={profileData?.username || undefined}
-                    placeholder='Your username...'
+                    placeholder='Enter your username...'
                 />
                 <Input
-                    disabled={!isEditing}
+                    withLabel
+                    label='Steam link'
+                    labelClassName={classes.label}
                     type='text'
                     name='steamLink'
                     defaultValue={profileData?.steamLink || undefined}
-                    placeholder='Your steam link...'
+                    placeholder='Enter your steam link...'
                 />
                 <Input
-                    disabled={!isEditing}
+                    withLabel
+                    label='Email'
+                    labelClassName={classes.label}
                     type='email'
                     name='email'
                     defaultValue={profileData?.email || undefined}
-                    placeholder='Your email...'
+                    placeholder='john@example.com'
                 />
                 <Input
-                    disabled={!isEditing}
+                    withLabel
+                    label='First name'
+                    labelClassName={classes.label}
                     type='text'
                     name='firstName'
                     defaultValue={profileData?.firstName || undefined}
-                    placeholder='Your first name...'
+                    placeholder='Enter your first name...'
                 />
                 <Input
-                    disabled={!isEditing}
+                    withLabel
+                    label='Last name'
+                    labelClassName={classes.label}
                     type='text'
                     name='lastName'
                     defaultValue={profileData?.lastName || undefined}
-                    placeholder='Your first name...'
+                    placeholder='Enter your last name...'
                 />
                 <div className={classes.buttons}>
-                    {!isEditing ? (
-                        <Button size='lg' onClick={handleEditClick}>
-                            Начать редактировать
-                        </Button>
-                    ) : (
-                        <Button type='reset' size='lg' asChild>
-                            <Link to='/profile'>Отмена</Link>
-                        </Button>
-                    )}
-                    <Button type='submit' size='lg' disabled={!isEditing}>
-                        Сохранить
+                    <Button
+                        type='reset'
+                        size='lg'
+                        asChild
+                        className={classes.btn}
+                    >
+                        <Link to='/profile'>Cancel</Link>
+                    </Button>
+                    <Button
+                        type='submit'
+                        size='lg'
+                        className={`${classes.btn} ${classes.accent}`}
+                    >
+                        Save
                     </Button>
                 </div>
             </form>

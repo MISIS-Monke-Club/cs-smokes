@@ -1,5 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
 import { useDebouncedCallback } from "use-debounce"
+import { MapsSortings } from "../sortings/sortings"
+import { MapsFilters } from "../filters/filters"
 import classes from "./maps.module.scss"
 import { mapApi, MapsList } from "@entities/map"
 import { mapsMaper } from "@entities/map"
@@ -8,10 +10,9 @@ import { useQueryPrams } from "@shared/lib/params-parser"
 
 export function Maps() {
     const { addParams, deleteParams, params } = useQueryPrams()
+
     const { data: maps, isLoading } = useQuery(
-        mapApi.getMapsOptions({
-            query: params.get("search")?.toString(),
-        })
+        mapApi.getMapsOptions(Object.fromEntries(params.entries()))
     )
 
     // Will hold execution for 300ms
@@ -25,6 +26,10 @@ export function Maps() {
 
     return (
         <>
+            <div className={classes.actions}>
+                <MapsSortings />
+                <MapsFilters />
+            </div>
             <h1 className={classes.title}>Select map</h1>
             <Input
                 placeholder='Find your map...'

@@ -48,7 +48,28 @@ export const message_schema = z.object({
     text: z.string(),
     parent_id: z.number().nullable(),
     created_at: z.string().datetime(),
+    creator: z.object({
+        user_id: z.number(),
+        username: z.string(),
+        first_name: z.string().nullable(),
+        last_name: z.string().nullable(),
+        avatar_url: z.string().nullable(),
+    }),
 })
+
+const mapStatus = (
+    status: "open" | "closed" | "pending" | "rejected"
+): PullRequest["status"] => {
+    switch (status) {
+        case "open":
+        case "pending":
+            return "Open"
+        case "closed":
+            return "Closed"
+        case "rejected":
+            return "Closed"
+    }
+}
 
 export const fromRequestDTOtoRequestModel = (
     request: z.infer<typeof pull_request_details_schema>
@@ -57,7 +78,7 @@ export const fromRequestDTOtoRequestModel = (
     lineupId: request.lineup_id,
     creatorId: request.creator_id,
     approverId: request.approver_id,
-    status: request.status,
+    status: mapStatus(request.status),
     createdAt: request.created_at,
     closedAt: request.closed_at,
     creator: {
@@ -96,6 +117,13 @@ export const fromMessageDTOtoMessageModel = (
     text: message.text,
     parentId: message.parent_id,
     createdAt: message.created_at,
+    creator: {
+        userId: message.creator.user_id,
+        username: message.creator.username,
+        firstName: message.creator.first_name,
+        lastName: message.creator.last_name,
+        avatarUrl: message.creator.avatar_url,
+    },
 })
 
 export const fromMessagesDTOtoMessageModel = (

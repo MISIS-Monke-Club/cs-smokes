@@ -37,8 +37,16 @@ export function AddLineupForm({ className }: AddLineupFormProps) {
             const formData = new FormData(e.currentTarget)
             const parsed = lineupSchema.parse(Object.fromEntries(formData))
 
+            const previewImage = formData.get("preview_image_link")
+
+            if (!(previewImage instanceof File) || previewImage.size === 0) {
+                toast.error("Добавьте изображение превью.")
+                return
+            }
+
             addLineup({
                 ...parsed,
+                preview_image_link: previewImage,
             })
         } catch (err) {
             console.error(err)
@@ -54,24 +62,24 @@ export function AddLineupForm({ className }: AddLineupFormProps) {
         >
             <Input
                 withLabel
-                label='Название лайнапа'
+                label='Name'
                 type='text'
-                placeholder='Название лайнапа'
+                placeholder='Enter lineup name'
                 required
                 name='title'
             />
 
             <Textarea
                 withLabel
-                label='Описание'
-                placeholder='Описание лайнапа'
+                label='Description'
+                placeholder='Enter lineup description'
                 required
                 name='description'
             />
 
             <Select
                 withLabel
-                label='Карта'
+                label='Map'
                 name='map_id'
                 required
                 disabled={isMapsLoading || isError}
@@ -85,7 +93,7 @@ export function AddLineupForm({ className }: AddLineupFormProps) {
 
             <Select
                 withLabel
-                label='Тип гранаты'
+                label='Grenade class'
                 name='grenade_class_id'
                 required
                 disabled={isGrenadeClassLoading || isGrenadeClassError}
@@ -99,11 +107,19 @@ export function AddLineupForm({ className }: AddLineupFormProps) {
 
             <Input
                 withLabel
-                label='Ссылка на видео (YouTube / Rutube)'
+                label='Link to video (Rutube / YouTube)'
                 type='text'
                 placeholder='https://www.youtube.com/watch?v=...'
                 required
                 name='link_to_video'
+            />
+
+            <Input
+                withLabel
+                label='Preview Image'
+                type='file'
+                required
+                name='preview_image_link'
             />
 
             <Button
@@ -111,7 +127,7 @@ export function AddLineupForm({ className }: AddLineupFormProps) {
                 type='submit'
                 disabled={isLoading}
             >
-                {isLoading ? "Добавление..." : "Добавить лайнап"}
+                {isLoading ? "Adding..." : "Add lineup"}
             </Button>
         </form>
     )

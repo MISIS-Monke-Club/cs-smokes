@@ -1,9 +1,6 @@
 .wrapper {
-    width: toReam(400);
-}
-
-.title {
-    margin-bottom: toRem(30);
-    font-size: toRem(32);
-    text-align: center;
+    width: 100%;
+    min-width: toRem(320);
+    max-width: 100%;
+    padding: 0 toRem(5);
 }

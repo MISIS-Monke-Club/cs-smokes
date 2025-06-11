@@ -27,13 +27,11 @@ export const lineupSchema = z.object({
                 message: "Ссылка должна вести на YouTube или Rutube",
             }
         ),
-    preview_image_link: z
-        .string()
-        .url("Введите корректную ссылку на превью")
-        .optional(),
 })
 
-export type LineupFormData = z.infer<typeof lineupSchema>
+export type LineupFormData = z.infer<typeof lineupSchema> & {
+    preview_image_link: File
+}
 
 export type AddLineupModel = {
     title: string
@@ -41,15 +39,20 @@ export type AddLineupModel = {
     map: string
     grenade_class_id: string
     link_to_video: string
-    preview_image_link: string | null
+    preview_image_link: File | null
 }
 
-export const convertToApiLineup = (data: LineupFormData, userId: number) => ({
-    title: data.title,
-    description: data.description,
-    map_id: data.map_id,
-    grenade_class_id: data.grenade_class_id,
-    link_to_video: data.link_to_video,
-    preview_image_link: data.preview_image_link,
-    user_id: userId,
-})
+export const convertToApiLineup = (
+    data: LineupFormData,
+    userId: number
+): FormData => {
+    const formData = new FormData()
+    formData.append("title", data.title)
+    formData.append("description", data.description)
+    formData.append("map_id", String(data.map_id))
+    formData.append("grenade_class_id", data.grenade_class_id)
+    formData.append("link_to_video", data.link_to_video)
+    formData.append("preview_image_link", data.preview_image_link)
+    formData.append("user_id", String(userId))
+    return formData
+}

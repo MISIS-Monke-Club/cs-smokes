@@ -1,26 +1,52 @@
 import React from "react"
 import { UserModel } from "../../model/domain"
-import { ProfileField } from "../profile-field"
+import { ProfileField } from "../profile-field/profile-field"
 import classes from "./user-profile.module.scss"
+import { ImageComponent } from "@shared/ui/image"
 
 type UserProfileProps = {
     user: UserModel
+    isLoading: boolean
 }
 
-export const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
+export const UserProfile: React.FC<UserProfileProps> = ({
+    user,
+    isLoading,
+}) => {
     return (
         <div className={classes.profile}>
-            <ProfileField label='ID' value={user.userId} />
-            <ProfileField label='Nickname' value={user.username} />
-            <ProfileField label='Name' value={user.firstName} />
-            <ProfileField label='Last Name' value={user.lastName} />
-            <ProfileField label='Email' value={user.email} />
-            <ProfileField label='Steam' value={user.steamLink} />
-            <ProfileField label='Telegram' value={user.tgId} />
-            <ProfileField
-                label='Is Banned'
-                value={user.isBanned ? "Yes" : "No"}
+            <ImageComponent
+                url={
+                    user?.avatarUrl ? user.avatarUrl : "/defaultProfileImg.png"
+                }
+                className={classes.avatar}
+                skeletonClasses={classes.skeleton}
+                isLoading={isLoading}
+                width={310}
+                height={310}
             />
+            <div className={classes.main}>
+                <h2 className={classes.mainTitle}>Main information</h2>
+                <ProfileField
+                    label='name'
+                    value={user?.firstName ? user.firstName : "no firstName"}
+                />
+                <ProfileField
+                    label='email'
+                    value={user?.email ? user.email : "no email"}
+                />
+            </div>
+            <div className={classes.connections}>
+                <h2 className={classes.connectionsTitle}>Connections</h2>
+                <ProfileField
+                    label='steam link'
+                    value={user?.steamLink ? user.steamLink : "no steam link"}
+                />
+                <ProfileField
+                    label='tg id'
+                    value={user?.tgId ? user.tgId : "no tg id"}
+                />
+            </div>
         </div>
     )
 }

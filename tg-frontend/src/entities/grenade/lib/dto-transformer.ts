@@ -9,6 +9,7 @@ export const fromGrenadeDTO = (
         grenadeId: dto.grenade_id,
         mapId: dto.map_id,
         grenadeClass: {
+            grenadeClassId: dto.grenade_class.grenade_class_id,
             name: dto.grenade_class.name,
             description: dto.grenade_class.description,
             price: dto.grenade_class.price,
@@ -16,10 +17,16 @@ export const fromGrenadeDTO = (
         propertyList: dto.property_list.map((el) => ({
             propertyId: el.property_id,
             name: el.name,
-            value: el.name,
+            value: el.value,
         })),
         linkToVideo: dto.link_to_video,
-        userId: dto.user_id,
+        creator: {
+            userId: dto.creator.user_id,
+            username: dto.creator.username,
+            avatarUrl: dto.creator.avatar_url,
+            firstName: dto.creator.first_name,
+            lastName: dto.creator.last_name,
+        },
         createdAt: dto.created_at,
         title: dto.title,
         description: dto.description,

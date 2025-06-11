@@ -10,21 +10,26 @@ type ProfileOverviewProps = {
 }
 
 export function ProfileOverview({ isEditable }: ProfileOverviewProps) {
-    const { profile, userId } = useGetOwnProfile()
+    const { profile, isLoading } = useGetOwnProfile()
 
-    if (!profile) {
+    if (!profile || isLoading) {
         return <div>Data was not provided...</div>
     }
 
     return (
         <div className={classes.container}>
-            <h1 className={classes.title}>Профиль пользователя: {userId}</h1>
+            <h1 className={classes.title}>@{profile.username}</h1>
             <div className={classes.profile}>
-                <UserProfile user={profile} />
+                <UserProfile user={profile} isLoading={isLoading} />
             </div>
             {isEditable && (
                 <Button size='lg' asChild className={classes.editButton}>
-                    <Link to='/profile/edit'>Редактировать профиль</Link>
+                    <Link to='/profile/edit'>Edit</Link>
+                </Button>
+            )}
+            {isEditable && (
+                <Button size='lg' asChild className={classes.editButton}>
+                    <Link to='/profile/myGrenades'>My lineups</Link>
                 </Button>
             )}
         </div>

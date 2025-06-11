@@ -11,8 +11,6 @@
 .editButton {
     display: flex;
 
-    margin-bottom: toRem(5);
-
     font-size: var(--ui-normal);
     font-weight: bold;
     color: var(--color-text-main);
@@ -24,5 +22,5 @@
     width: 100%;
     min-width: 320px;
     max-width: 100vw;
-    padding: 0 toRem(5);
+    padding: 0 toRem(5) calc(2 * var(--site-padding-y) + 66px);
 }
