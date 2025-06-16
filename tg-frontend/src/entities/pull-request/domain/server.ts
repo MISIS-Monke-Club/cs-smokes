@@ -12,7 +12,7 @@ const admin_type_schema = z.object({
 })
 
 const pull_request_creator_schema = z.object({
-    user_id: z.number(),
+    id: z.number(),
     username: z.string(),
     first_name: z.string().nullable(),
     last_name: z.string().nullable(),
@@ -30,15 +30,19 @@ const pull_request_approver_schema = z.object({
 
 export const pull_request_details_schema = z.object({
     id: z.number(),
-    lineup_id: z.number(),
-    creator_id: z.number(),
-    approver_id: z.number().nullable(),
-    status: z.enum(["open", "closed", "pending", "rejected"]),
-    created_at: z.string().datetime(),
-    closed_at: z.string().datetime().nullable(),
+    status: z.enum([
+        "OPEN",
+        "APPROVED",
+        "REJECTED",
+        "MERGED",
+        "CLOSED",
+        "WAITING FOR CREATION",
+    ]),
     creator: pull_request_creator_schema,
     approver: pull_request_approver_schema.nullable(),
     lineup: grenadeDTOschema,
+    created_at: z.string().datetime(),
+    closed_at: z.string().datetime().nullable(),
 })
 
 export const message_schema = z.object({
@@ -54,35 +58,19 @@ export const message_schema = z.object({
         first_name: z.string().nullable(),
         last_name: z.string().nullable(),
         avatar_url: z.string().nullable(),
+        role: z.string(),
     }),
 })
-
-const mapStatus = (
-    status: "open" | "closed" | "pending" | "rejected"
-): PullRequest["status"] => {
-    switch (status) {
-        case "open":
-        case "pending":
-            return "Open"
-        case "closed":
-            return "Closed"
-        case "rejected":
-            return "Closed"
-    }
-}
 
 export const fromRequestDTOtoRequestModel = (
     request: z.infer<typeof pull_request_details_schema>
 ): PullRequest => ({
     id: request.id,
-    lineupId: request.lineup_id,
-    creatorId: request.creator_id,
-    approverId: request.approver_id,
-    status: mapStatus(request.status),
+    status: request.status,
     createdAt: request.created_at,
     closedAt: request.closed_at,
     creator: {
-        userId: request.creator.user_id,
+        userId: request.creator.id,
         username: request.creator.username,
         firstName: request.creator.first_name,
         lastName: request.creator.last_name,
@@ -123,6 +111,7 @@ export const fromMessageDTOtoMessageModel = (
         firstName: message.creator.first_name,
         lastName: message.creator.last_name,
         avatarUrl: message.creator.avatar_url,
+        role: message.creator.role,
     },
 })
 

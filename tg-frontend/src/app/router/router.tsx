@@ -32,12 +32,10 @@ export const router = createBrowserRouter(
 
                 return null
             },
-            errorElement: (
-                <div>Oups... Cant find that page or something is broken</div>
-            ),
             children: [
                 {
                     element: <LoginProvider />,
+                    errorElement: <div>Oops.... Something went wrong</div>,
                     children: [
                         { path: "/", element: <Homepage /> },
                         {

@@ -60,14 +60,14 @@
     padding: toRem(6) toRem(12);
     border-radius: toRem(8);
     font-size: var(--text-normal);
-}
 
-.approved {
-    color: var(--color-text-main);
-    background-color: green;
-}
+    &_approved {
+        color: var(--color-text-main);
+        background-color: green;
+    }
 
-.request {
-    color: var(--color-text-main);
-    background-color: blue;
+    &_request {
+        color: var(--color-text-main);
+        background-color: blue;
+    }
 }

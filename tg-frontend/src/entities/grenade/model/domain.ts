@@ -32,14 +32,17 @@ export const grenadeDTOschema = z.object({
     is_favorite: z.boolean(),
     views: z.number(),
     preview_image_link: z.string().nullable(),
-    status: z.enum([
-        "OPEN",
-        "APPROVED",
-        "REJECTED",
-        "MERGED",
-        "CLOSED",
-        "WAITING FOR CREATION",
-    ]),
+    request: z.object({
+        request_id: z.number().int().nullable(),
+        status: z.enum([
+            "OPEN",
+            "APPROVED",
+            "REJECTED",
+            "MERGED",
+            "CLOSED",
+            "WAITING FOR CREATION",
+        ]),
+    }),
 })
 
 export type GrenadeModel = {
@@ -71,13 +74,16 @@ export type GrenadeModel = {
     isFavorite: boolean
     views: number
     previewImageLink: string | null
-    status:
-        | "OPEN"
-        | "APPROVED"
-        | "REJECTED"
-        | "MERGED"
-        | "CLOSED"
-        | "WAITING FOR CREATION"
+    request: {
+        request_id: number | null
+        status:
+            | "OPEN"
+            | "APPROVED"
+            | "REJECTED"
+            | "MERGED"
+            | "CLOSED"
+            | "WAITING FOR CREATION"
+    }
 }
 
 export type GrenadesListMaper = (elements: GrenadeModel[]) => ReactNode

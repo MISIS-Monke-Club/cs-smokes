@@ -13,7 +13,7 @@ export function PullRequestPage() {
 
     return (
         <>
-            <GoBack />
+            <GoBack className='self-start' />
             <RequestOverview id={Number(requestId)} />
             <RequestFeed requestId={Number(requestId)} />
         </>
