@@ -33,7 +33,10 @@ export function RequestOverview({ id }: Pick<PullRequest, "id">) {
                 <h4>
                     grenade
                     <Button asChild variant='link'>
-                        #<Link to={`/grenades/${request.lineupId}`}></Link>
+                        #
+                        <Link to={`/grenades/${request.lineup.grenadeId}`}>
+                            {request.lineup.grenadeId}
+                        </Link>
                     </Button>
                 </h4>
             </div>
@@ -43,9 +46,11 @@ export function RequestOverview({ id }: Pick<PullRequest, "id">) {
                     <UserBadge user={request.approver} />
                 </div>
             )}
-            {request.status === "Open" ? (
-                <Button className='w-[calc(100dvw - 10px)]'>Сlose request</Button>
-            ) : request.status === "Approved" ? (
+            {request.status === "OPEN" ? (
+                <Button className='w-[calc(100dvw - 10px)]'>
+                    Сlose request
+                </Button>
+            ) : request.status === "APPROVED" ? (
                 <Badge color='success'>approved</Badge>
             ) : null}
         </>

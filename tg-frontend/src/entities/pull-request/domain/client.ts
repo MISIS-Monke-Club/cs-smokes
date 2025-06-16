@@ -4,10 +4,13 @@ import { GrenadeModel } from "@entities/grenade"
 // App models
 export type PullRequest = {
     id: number
-    lineupId: number
-    creatorId: number
-    approverId?: number | null
-    status: "Open" | "Approved" | "Merged" | "Closed"
+    status:
+        | "OPEN"
+        | "APPROVED"
+        | "REJECTED"
+        | "MERGED"
+        | "CLOSED"
+        | "WAITING FOR CREATION"
     createdAt: string
     closedAt?: string | null
     creator: Creator
@@ -27,7 +30,7 @@ export type MessageModel = {
     text: string
     parentId: number | null
     createdAt: string
-    creator: RequestUser
+    creator: RequestUser & { role: string }
 }
 
 export type RequestUser = {

@@ -1,11 +1,12 @@
 import { useNavigate } from "react-router-dom"
+import clsx from "clsx"
 import classes from "./go-back.module.scss"
 import { Button } from "@shared/ui/button"
 import { Icons } from "@shared/ui/icons"
 
 type GoBackProps = React.ComponentProps<"button"> & {}
 
-export function GoBack({ ...rest }: GoBackProps) {
+export function GoBack({ className = "", ...rest }: GoBackProps) {
     const navigate = useNavigate()
 
     function clickHandler() {
@@ -14,7 +15,7 @@ export function GoBack({ ...rest }: GoBackProps) {
 
     return (
         <Button
-            className={classes.backButton}
+            className={clsx(classes.backButton, className)}
             size='icon'
             onClick={clickHandler}
             {...rest}
