@@ -34,7 +34,7 @@ export const fromGrenadeDTO = (
         isFavorite: dto.is_favorite,
         views: dto.views,
         previewImageLink: dto.preview_image_link,
-        status: dto.status,
+        request: dto.request,
     }
 }
 

@@ -1,8 +1,14 @@
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import { useSelector } from "react-redux"
+import { redirect } from "react-router-dom"
+import { useCallback } from "react"
+import { toast } from "sonner"
 import classes from "./my-grenades-page.module.scss"
-import { grenadeApi } from "@entities/grenade"
+import { grenadeApi, GrenadeModel } from "@entities/grenade"
 import { selectUserId } from "@entities/session"
+import { Button } from "@shared/ui/button"
+import { Badge } from "@shared/ui/badge"
+import { pullRequestApi } from "@entities/pull-request"
 
 export const MyGrenadesList = () => {
     const userId = useSelector(selectUserId)
@@ -10,6 +16,29 @@ export const MyGrenadesList = () => {
         ...grenadeApi.getMyGrenadesOptions(String(userId)),
         enabled: Boolean(userId),
     })
+    const { mutateAsync, isPending } = useMutation(
+        pullRequestApi.createRequest()
+    )
+
+    const clickHandler = useCallback((grenade: GrenadeModel) => {
+        if (
+            grenade.request.status !== "WAITING FOR CREATION" &&
+            grenade.request.request_id
+        ) {
+            redirect(`/requests/${grenade.request.request_id}`)
+        } else {
+            toast.error("Cant redirect you on page of this request")
+        }
+    }, [])
+    const createHandler = useCallback(
+        (grenade: GrenadeModel) => {
+            mutateAsync(grenade.grenadeId).catch((err) => {
+                console.error(err)
+                toast.error("cant create request now")
+            })
+        },
+        [mutateAsync]
+    )
 
     return (
         <div className={classes.container}>
@@ -17,7 +46,11 @@ export const MyGrenadesList = () => {
 
             <div className={classes.list}>
                 {grenades?.map((grenade) => (
-                    <div key={grenade.grenadeId} className={classes.card}>
+                    <div
+                        key={grenade.grenadeId}
+                        className={classes.card}
+                        onClick={() => clickHandler(grenade)}
+                    >
                         <div className={classes.info}>
                             <h3 className={classes.name}>{grenade.title}</h3>
                             <p className={classes.date}>
@@ -32,15 +65,23 @@ export const MyGrenadesList = () => {
                                 )}
                             </p>
                         </div>
-                        <div
-                            className={`${classes.status} ${
-                                grenade.isApproved
-                                    ? classes.approved
-                                    : classes.request
-                            }`}
-                        >
-                            {grenade.isApproved ? "approved" : "request review"}
-                        </div>
+                        {grenade.request.status === "WAITING FOR CREATION" ? (
+                            <Button
+                                className={classes.status_request}
+                                onClick={() => createHandler(grenade)}
+                                disabled={isPending}
+                            >
+                                Create request
+                            </Button>
+                        ) : grenade.request.status === "OPEN" ? (
+                            <Badge color='disabled'>Open</Badge>
+                        ) : grenade.request.status === "APPROVED" ? (
+                            <Badge color='success'>Approved</Badge>
+                        ) : grenade.request.status === "CLOSED" ? (
+                            <Badge color='danger'>Closed</Badge>
+                        ) : grenade.request.status === "REJECTED" ? (
+                            <Badge color='danger'>Rejected</Badge>
+                        ) : null}
                     </div>
                 ))}
             </div>

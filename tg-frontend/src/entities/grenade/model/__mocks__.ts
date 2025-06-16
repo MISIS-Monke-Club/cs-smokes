@@ -10,7 +10,10 @@ export const grenadeModelMock: GrenadeModel = {
         description: "Blocks vision temporarily",
         price: 300,
     },
-    status: "CLOSED",
+    request: {
+        request_id: 6,
+        status: "REJECTED",
+    },
     propertyList: [
         {
             propertyId: 1,
@@ -67,8 +70,10 @@ export const grenadesModelMocks: GrenadeModel[] = [
         isApproved: true,
         isFavorite: false,
         views: 1342,
-        status: "OPEN",
-
+        request: {
+            request_id: 5,
+            status: "OPEN",
+        },
         previewImageLink: "https://example.com/flashbang-preview.jpg",
     },
     {
@@ -103,7 +108,10 @@ export const grenadesModelMocks: GrenadeModel[] = [
         isFavorite: true,
         views: 823,
         previewImageLink: "https://example.com/smoke-preview.jpg",
-        status: "CLOSED",
+        request: {
+            request_id: 3,
+            status: "REJECTED",
+        },
     },
 ]
 
@@ -131,7 +139,10 @@ export const grenadeDTOmock: z.infer<typeof grenadeDTOschema> = {
         first_name: null,
         last_name: null,
     },
-    status: "MERGED",
+    request: {
+        request_id: 2,
+        status: "OPEN",
+    },
     created_at: "2025-04-01T10:00:00Z",
     title: "Mid Control Smoke",
     description: "Useful for taking mid safely.",
@@ -174,6 +185,9 @@ export const grenadesDTOmock: z.infer<typeof grenadeDTOschema>[] = [
         is_favorite: false,
         views: 823,
         preview_image_link: "https://example.com/smoke-preview.jpg",
-        status: "CLOSED",
+        request: {
+            request_id: 1,
+            status: "CLOSED",
+        },
     },
 ]

@@ -63,9 +63,7 @@ export function OwnProfilePage() {
                 </TabsContent>
 
                 <TabsContent value='lineups'>
-                    <div style={{ padding: "0px" }}>
-                        <MyGrenadesList />
-                    </div>
+                    <MyGrenadesList />
                 </TabsContent>
             </Tabs>
         </div>

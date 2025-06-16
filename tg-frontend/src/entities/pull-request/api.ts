@@ -1,4 +1,4 @@
-import { queryOptions } from "@tanstack/react-query"
+import { MutationOptions, queryOptions } from "@tanstack/react-query"
 import { PullRequest } from "./domain/client"
 import {
     fromMessagesDTOtoMessageModel,
@@ -6,8 +6,10 @@ import {
     message_schema,
     pull_request_details_schema,
 } from "./domain/server"
-import { instance } from "@shared/api"
+import { client, instance } from "@shared/api"
 import { typedQuery } from "@shared/lib/precooked-methods"
+// eslint-disable-next-line @conarti/feature-sliced/layers-slices
+import { grenadeApi, GrenadeModel } from "@entities/grenade"
 
 export const api = {
     baseUrl: "pull_requests",
@@ -27,8 +29,31 @@ export const api = {
                     pullRequestId: id,
                 }),
         }),
+    createRequest: (): MutationOptions<
+        unknown,
+        unknown,
+        GrenadeModel["grenadeId"],
+        GrenadeModel
+    > => ({
+        mutationFn: (id) =>
+            api.create({
+                grenadeId: id,
+            }),
+        onSettled: () => {
+            client.invalidateQueries({
+                queryKey: api.baseKey,
+            })
+            client.invalidateQueries({
+                queryKey: grenadeApi.baseKey,
+            })
+        },
+    }),
 
     // Api
+    create: ({ grenadeId }: Pick<GrenadeModel, "grenadeId">) =>
+        instance.post("/", {
+            lineup_id: grenadeId,
+        }),
     closeById: ({ pullRequestId }: { pullRequestId: PullRequest["id"] }) =>
         typedQuery({
             request: instance.get(`${api.baseUrl}/${pullRequestId}/`),
