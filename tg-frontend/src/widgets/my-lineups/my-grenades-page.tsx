@@ -74,13 +74,13 @@ export const MyGrenadesList = () => {
                                 Create request
                             </Button>
                         ) : grenade.request.status === "OPEN" ? (
-                            <Badge color='disabled'>Open</Badge>
+                            <Badge color='disabled'>Opened request</Badge>
                         ) : grenade.request.status === "APPROVED" ? (
-                            <Badge color='success'>Approved</Badge>
+                            <Badge color='success'>Approved by admins</Badge>
                         ) : grenade.request.status === "CLOSED" ? (
-                            <Badge color='danger'>Closed</Badge>
+                            <Badge color='danger'>Closed by you</Badge>
                         ) : grenade.request.status === "REJECTED" ? (
-                            <Badge color='danger'>Rejected</Badge>
+                            <Badge color='danger'>Rejected by admins</Badge>
                         ) : null}
                     </div>
                 ))}
