@@ -3,9 +3,10 @@
     flex-direction: column;
     gap: toRem(10);
     align-items: start;
+    justify-content: space-between;
 
     min-width: toRem(150);
-    height: fit-content;
+    height: 100%;
     border-radius: 10px;
 
     .content {
@@ -16,6 +17,7 @@
         width: 100%;
         min-width: toRem(130);
         height: unset;
+        max-height: 100%;
         border-radius: 6px;
     }
 
