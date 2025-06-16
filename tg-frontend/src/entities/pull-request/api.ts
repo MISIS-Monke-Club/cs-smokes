@@ -1,4 +1,5 @@
 import { MutationOptions, queryOptions } from "@tanstack/react-query"
+import { toast } from "sonner"
 import { PullRequest } from "./domain/client"
 import {
     fromMessagesDTOtoMessageModel,
@@ -65,6 +66,11 @@ export const api = {
             request: instance.get(`${api.baseUrl}/${pullRequestId}/`),
             dtoSchema: pull_request_details_schema,
             fromDTO: fromRequestDTOtoRequestModel,
+        }).catch((err) => {
+            toast.error("Error in request by id request")
+            console.error(err)
+
+            throw err
         }),
     getMessagesByRequest: ({
         pullRequestId,
@@ -75,5 +81,10 @@ export const api = {
             request: instance.get(`${api.baseUrl}/${pullRequestId}/`),
             dtoSchema: message_schema.array(),
             fromDTO: fromMessagesDTOtoMessageModel,
+        }).catch((err) => {
+            toast.error(`Cant get messages by request id #${pullRequestId}`)
+            console.error(err)
+
+            throw err
         }),
 }
