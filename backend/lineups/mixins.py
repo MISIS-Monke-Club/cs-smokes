@@ -39,14 +39,19 @@ class LineupStatusMixin:
             lineup_id__in=grenade_ids
         ).values_list("lineup_id", "status", "id")
         status_dict = {
-            lineup_id: {"status": status, "pr_id": pr_id}
+            lineup_id: {"status": status, "request_id": pr_id}
             for lineup_id, status, pr_id in grenades_status
         }
+
         for item in data:
             grenade_id = item["grenade_id"]
-            item["status"] = status_dict.get(grenade_id, {}).get(
-                "status", "WAITING FOR CREATION"
-            )
-            item["pr_id"] = status_dict.get(grenade_id, {}).get("pr_id")
+            status_info = status_dict.get(grenade_id)
+            if status_info:
+                item["request"] = {
+                    "request_id": status_info["request_id"],
+                    "status": status_info["status"],
+                }
+            else:
+                item["request"] = {"request_id": None, "status": "WAITING FOR CREATION"}
 
         return data[0] if is_single else data
