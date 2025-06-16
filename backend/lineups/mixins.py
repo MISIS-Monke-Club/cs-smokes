@@ -37,10 +37,16 @@ class LineupStatusMixin:
         grenade_ids = [item["grenade_id"] for item in data]
         grenades_status = PullRequest.objects.filter(
             lineup_id__in=grenade_ids
-        ).values_list("lineup_id", "status")
-        status_dict = {grenade_id: status for grenade_id, status in grenades_status}
+        ).values_list("lineup_id", "status", "id")
+        status_dict = {
+            lineup_id: {"status": status, "pr_id": pr_id}
+            for lineup_id, status, pr_id in grenades_status
+        }
         for item in data:
             grenade_id = item["grenade_id"]
-            item["status"] = status_dict.get(grenade_id, "WAITING FOR CREATION")
+            item["status"] = status_dict.get(grenade_id, {}).get(
+                "status", "WAITING FOR CREATION"
+            )
+            item["pr_id"] = status_dict.get(grenade_id, {}).get("pr_id")
 
         return data[0] if is_single else data
