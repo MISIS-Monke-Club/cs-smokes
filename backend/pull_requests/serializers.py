@@ -99,9 +99,21 @@ class PullRequestUpdateStatusSerializer(serializers.ModelSerializer):
 
 
 class CreaterSerializer(serializers.ModelSerializer):
+    role = serializers.SerializerMethodField()
+
     class Meta:
         model = User
-        fields = ["user_id", "username", "avatar_url", "first_name", "last_name"]
+        fields = [
+            "user_id",
+            "username",
+            "avatar_url",
+            "first_name",
+            "last_name",
+            "role",
+        ]
+
+    def get_role(self, obj):
+        return "admin" if obj.is_staff else "user"
 
 
 class CommentSerializer(serializers.ModelSerializer):
