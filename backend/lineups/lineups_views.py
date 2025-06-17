@@ -136,7 +136,9 @@ class LineupViews(APIView, IsFavoriteMixin, LineupStatusMixin):
         serializer = LineupSerializer(data=request.data, context={"request": request})
         if serializer.is_valid():
             serializer.save()
-            cache.delete("grenade_list")
+            keys = cache.keys("grenade_list_*")
+            if keys:
+                cache.delete_many(keys)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

@@ -104,7 +104,9 @@ class MapsView(APIView):
         serializer = MapSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            cache.delete("maps_list")
+            keys = cache.keys("map_list_*")
+            if keys:
+                cache.delete_many(keys)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -127,11 +129,10 @@ class MapDetailRUDView(
         cached_data = cache.get(cache_key)
 
         if cached_data is not None:
-            if cached_data is not None:
-                cached_data["map_lineups"] = self.add_status_and_favorite(
-                    cached_data.get("map_lineups", []), request
-                )
-                return Response(cached_data)
+            cached_data["map_lineups"] = self.add_status_and_favorite(
+                cached_data.get("map_lineups", []), request
+            )
+            return Response(cached_data)
 
         map_obj = get_object_or_404(Map, pk=pk)
         serializer = MapDetailSerializer(map_obj, context={"request": request})
@@ -160,6 +161,9 @@ class MapDetailRUDView(
             serializer.save()
             cache.delete(f"map_detail_{pk}")
             cache.delete("maps_list")
+            keys = cache.keys("map_list_*")
+            if keys:
+                cache.delete_many(keys)
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -181,6 +185,9 @@ class MapDetailRUDView(
             serializer.save()
             cache.delete(f"map_detail_{pk}")
             cache.delete("maps_list")
+            keys = cache.keys("map_list_*")
+            if keys:
+                cache.delete_many(keys)
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -198,4 +205,7 @@ class MapDetailRUDView(
         map_obj.delete()
         cache.delete(f"map_detail_{pk}")
         cache.delete("maps_list")
+        keys = cache.keys("map_list_*")
+        if keys:
+            cache.delete_many(keys)
         return Response(status=status.HTTP_204_NO_CONTENT)
