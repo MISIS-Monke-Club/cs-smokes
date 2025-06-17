@@ -2,7 +2,7 @@ from rest_framework import serializers
 from pull_requests.models import PullRequest, Comment
 from auth_app.models import User
 from lineups.models import Lineup
-from lineups.serializers import LineupSerializer
+from lineups.serializers import LineupSerializer, LineupToPullRequestSerializer
 from auth_app.serializers import AdminTypeSerializer
 from auth_app.models import Admins
 
@@ -45,7 +45,7 @@ class UserWithAdminTypeSerializer(serializers.ModelSerializer):
 class PullRequestSerializer(serializers.ModelSerializer):
     creator = UserShortSerializer(read_only=True)
     approver = UserWithAdminTypeSerializer(read_only=True)
-    lineup = LineupSerializer(read_only=True)
+    lineup = LineupToPullRequestSerializer(read_only=True)
 
     class Meta:
         model = PullRequest
