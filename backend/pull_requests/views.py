@@ -10,6 +10,11 @@ from pull_requests.serializers import (
     PullRequestUpdateStatusSerializer,
     CommentSerializer,
 )
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import NotFound, PermissionDenied
+from user.mixins import IsAdminOrCreator
+from django.utils import timezone
 
 
 def is_admin(user):
@@ -81,4 +86,60 @@ class CommentRetrieveUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
         return Response(
             {"detail": "PUT метод не поддерживается. Используйте PATCH."},
             status=status.HTTP_405_METHOD_NOT_ALLOWED,
+        )
+
+
+class ApprovePullRequestView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request, id):
+        if not request.user.is_staff:
+            raise PermissionDenied("Only admin can approve pull requests.")
+
+        try:
+            pr = PullRequest.objects.get(id=id)
+        except PullRequest.DoesNotExist:
+            raise NotFound("Pull request not found.")
+
+        pr.status = "APPROVED"
+        pr.approver = request.user
+        pr.save()
+        return Response({"detail": "Pull request approved."}, status=status.HTTP_200_OK)
+
+
+class RejectPullRequestView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request, id):
+        if not request.user.is_staff:
+            raise PermissionDenied("Only admin can reject pull requests.")
+
+        try:
+            pr = PullRequest.objects.get(id=id)
+        except PullRequest.DoesNotExist:
+            raise NotFound("Pull request not found.")
+
+        pr.status = "REJECTED"
+        pr.approver = request.user
+        pr.save()
+        return Response({"detail": "Pull request rejected."}, status=status.HTTP_200_OK)
+
+
+class CancelPullRequestView(APIView):
+    permission_classes = [IsAuthenticated, IsAdminOrCreator]
+
+    def patch(self, request, id):
+        try:
+            pr = PullRequest.objects.get(id=id)
+        except PullRequest.DoesNotExist:
+            raise NotFound("Pull request not found.")
+
+        if pr.creator != request.user and not request.user.is_staff:
+            raise PermissionDenied("You are not allowed to cancel this pull request.")
+
+        pr.status = "CLOSED"
+        pr.closed_at = timezone.now()
+        pr.save()
+        return Response(
+            {"detail": "Pull request cancelled."}, status=status.HTTP_200_OK
         )
