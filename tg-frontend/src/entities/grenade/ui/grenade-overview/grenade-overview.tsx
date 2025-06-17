@@ -127,7 +127,9 @@ export function GrenadeOverview({
                         <h6 className='text-muted-foreground'>
                             Grenade description
                         </h6>
-                        <p>{grenade.grenadeClass.description}</p>
+                        <p className='text-right'>
+                            {grenade.grenadeClass.description}
+                        </p>
                     </div>
                 </div>
             </div>

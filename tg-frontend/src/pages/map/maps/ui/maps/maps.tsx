@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
 import { useDebouncedCallback } from "use-debounce"
-import { MapsSortings } from "../sortings/sortings"
 import { MapsFilters } from "../filters/filters"
+import { MapsSortings } from "../sortings/sortings"
 import classes from "./maps.module.scss"
 import { mapApi, MapsList } from "@entities/map"
 import { mapsMaper } from "@entities/map"
@@ -12,7 +12,11 @@ export function Maps() {
     const { addParams, deleteParams, params } = useQueryPrams()
 
     const { data: maps, isLoading } = useQuery(
-        mapApi.getMapsOptions(Object.fromEntries(params.entries()))
+        mapApi.getMapsOptions(
+            params.get("search")
+                ? { query: params.get("search") || "" }
+                : undefined
+        )
     )
 
     // Will hold execution for 300ms
