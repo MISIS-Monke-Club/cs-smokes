@@ -25,6 +25,9 @@ class MapDetailSerializer(serializers.ModelSerializer):
         return serializer.data
 
     def get_image_link(self, obj):
+        if not obj.image_link:
+            return None
+
         request = self.context.get("request")
         if request:
             return request.build_absolute_uri(obj.image_link.url)
