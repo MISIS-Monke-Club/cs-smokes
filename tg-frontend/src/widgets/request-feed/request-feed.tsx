@@ -29,7 +29,7 @@ export function RequestFeed({ requestId }: { requestId: PullRequest["id"] }) {
 
     useEffect(() => {
         const socket = new WebSocket(
-            `ws://localhost:3000/ws/api/pull_requests/1/comments/`
+            `ws://localhost:3000/ws/api/pull_requests/${requestId}/comments/`
         )
 
         socket.onmessage = (event) => {

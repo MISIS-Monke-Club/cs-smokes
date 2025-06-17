@@ -9,4 +9,4 @@ export type {
 } from "./domain/client"
 export type { PullRequestParams } from "./domain/query-params"
 export { RequestOverview } from "./ui/request-overview"
-export { Message } from "./ui/message"
+export { Message } from "./ui/message/message"
