@@ -2,8 +2,9 @@ from rest_framework import serializers
 from pull_requests.models import PullRequest, Comment
 from auth_app.models import User
 from lineups.models import Lineup
-from lineups.serializers import LineupSerializer
+from lineups.serializers import LineupSerializer, LineupToPullRequestSerializer
 from auth_app.serializers import AdminTypeSerializer
+from auth_app.models import Admins
 
 
 def is_admin(user):
@@ -21,7 +22,7 @@ class UserShortSerializer(serializers.ModelSerializer):
 
 
 class UserWithAdminTypeSerializer(serializers.ModelSerializer):
-    admin_type = AdminTypeSerializer()
+    admin_type = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -34,11 +35,17 @@ class UserWithAdminTypeSerializer(serializers.ModelSerializer):
             "admin_type",
         ]
 
+    def get_admin_type(self, obj):
+        admin = Admins.objects.filter(user_id=obj).first()
+        if not admin:
+            return None
+        return AdminTypeSerializer(admin.admin_type_id).data
+
 
 class PullRequestSerializer(serializers.ModelSerializer):
     creator = UserShortSerializer(read_only=True)
     approver = UserWithAdminTypeSerializer(read_only=True)
-    lineup = LineupSerializer(read_only=True)
+    lineup = LineupToPullRequestSerializer(read_only=True)
 
     class Meta:
         model = PullRequest
