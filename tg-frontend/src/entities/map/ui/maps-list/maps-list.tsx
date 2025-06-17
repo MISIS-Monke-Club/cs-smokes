@@ -41,7 +41,14 @@ export function MapsList({
             elements={maps}
             mapFunction={mapFunction}
             customColumnsClassName={classes.columnsDisplay}
-            displayedLoadingItem={<CardComponent isLoading heading='text' />}
+            displayedLoadingItem={
+                <CardComponent
+                    imgUrl={""}
+                    imgAlt='placeholder'
+                    isLoading
+                    heading='text'
+                />
+            }
             {...rest}
         />
     )

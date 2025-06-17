@@ -12,10 +12,10 @@ export type PullRequest = {
         | "CLOSED"
         | "WAITING FOR CREATION"
     createdAt: string
-    closedAt?: string | null
+    closedAt: string | null
     creator: Creator
-    approver?: Approver | null
-    lineup: GrenadeModel
+    approver: Approver | null
+    lineup: Omit<GrenadeModel, "request">
 }
 
 export type Creator = RequestUser
@@ -25,10 +25,7 @@ export type Approver = RequestUser & {
 
 export type MessageModel = {
     id: number
-    prId: number
-    userId: number
     text: string
-    parentId: number | null
     createdAt: string
     creator: RequestUser & { role: string }
 }
@@ -36,9 +33,9 @@ export type MessageModel = {
 export type RequestUser = {
     userId: number
     username: string
-    firstName?: string | null
-    lastName?: string | null
-    avatarUrl?: string | null
+    firstName: string | null
+    lastName: string | null
+    avatarUrl: string | null
 }
 export type AdminType = {
     adminTypeId: number

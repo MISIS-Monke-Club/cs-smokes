@@ -47,7 +47,11 @@ export function MapInfo({ mapId }: { mapId: MapId }) {
             </Breadcrumb>
             <GoBack className={classes.goBack} />
             <h1 className={classes.title}>{data?.name}</h1>
-            <ImageComponent width='310' height='240' url={data?.imageLink} />
+            <ImageComponent
+                className='rounded-[8px]'
+                skeletonClasses='rounded-[8px]'
+                url={data?.imageLink}
+            />
             <Button asChild className={classes.accentAction}>
                 <Link to='grenades'>view map lineups</Link>
             </Button>

@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { useSelector } from "react-redux"
-import { redirect } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import { useCallback } from "react"
 import { toast } from "sonner"
 import classes from "./my-grenades-page.module.scss"
@@ -19,19 +19,25 @@ export const MyGrenadesList = () => {
     const { mutateAsync, isPending } = useMutation(
         pullRequestApi.createRequest()
     )
+    const navigate = useNavigate()
 
-    const clickHandler = useCallback((grenade: GrenadeModel) => {
-        if (
-            grenade.request.status !== "WAITING FOR CREATION" &&
-            grenade.request.request_id
-        ) {
-            redirect(`/requests/${grenade.request.request_id}`)
-        } else {
-            toast.error("Cant redirect you on page of this request")
-        }
-    }, [])
-    const createHandler = useCallback(
+    const clickHandler = useCallback(
         (grenade: GrenadeModel) => {
+            if (
+                grenade.request.status !== "WAITING FOR CREATION" &&
+                grenade.request.request_id !== null
+            ) {
+                navigate(`/requests/${grenade.request.request_id}`)
+            } else {
+                toast.error("Cant redirect you on page of this request")
+            }
+        },
+        [navigate]
+    )
+    const createHandler = useCallback(
+        (e: React.MouseEvent<HTMLButtonElement>, grenade: GrenadeModel) => {
+            e.stopPropagation()
+
             mutateAsync(grenade.grenadeId).catch((err) => {
                 console.error(err)
                 toast.error("cant create request now")
@@ -68,7 +74,7 @@ export const MyGrenadesList = () => {
                         {grenade.request.status === "WAITING FOR CREATION" ? (
                             <Button
                                 className={classes.status_request}
-                                onClick={() => createHandler(grenade)}
+                                onClick={(e) => createHandler(e, grenade)}
                                 disabled={isPending}
                             >
                                 Create request

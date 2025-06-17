@@ -49,17 +49,25 @@ export const api = {
             })
         },
     }),
+    closeRequestById: (): MutationOptions<
+        unknown,
+        unknown,
+        GrenadeModel["grenadeId"]
+    > => ({
+        mutationFn: (id) =>
+            instance.patch(`/${api.baseUrl}/${id}`, {
+                status: "CLOSED",
+                approver_id: 1,
+            }),
+        onSettled: () => {
+            client.invalidateQueries({ queryKey: api.baseKey })
+        },
+    }),
 
     // Api
     create: ({ grenadeId }: Pick<GrenadeModel, "grenadeId">) =>
-        instance.post("/", {
+        instance.post(api.baseUrl, {
             lineup_id: grenadeId,
-        }),
-    closeById: ({ pullRequestId }: { pullRequestId: PullRequest["id"] }) =>
-        typedQuery({
-            request: instance.get(`${api.baseUrl}/${pullRequestId}/`),
-            dtoSchema: pull_request_details_schema,
-            fromDTO: fromRequestDTOtoRequestModel,
         }),
     getById: ({ pullRequestId }: { pullRequestId: PullRequest["id"] }) =>
         typedQuery({
@@ -78,7 +86,7 @@ export const api = {
         pullRequestId: PullRequest["id"]
     }) =>
         typedQuery({
-            request: instance.get(`${api.baseUrl}/${pullRequestId}/`),
+            request: instance.get(`${api.baseUrl}/${pullRequestId}/comments`),
             dtoSchema: message_schema.array(),
             fromDTO: fromMessagesDTOtoMessageModel,
         }).catch((err) => {

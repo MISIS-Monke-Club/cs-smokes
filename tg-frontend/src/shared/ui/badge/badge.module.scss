@@ -1,9 +1,15 @@
 /* stylelint-disable selector-class-pattern */
 .badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
     padding-block: 3px;
     padding-inline: 5px;
+
     font-size: var(--ui-small);
     color: var(--color-text-main);
+    text-align: center;
 
     @include font-arial-rounded-mt;
 }

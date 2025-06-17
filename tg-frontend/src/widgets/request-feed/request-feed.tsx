@@ -2,7 +2,13 @@ import { useSelector } from "react-redux"
 import { useEffect, useRef, useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { Plus } from "lucide-react"
-import { Message, PullRequest, pullRequestApi } from "@entities/pull-request"
+import {
+    fromMessagesDTOtoMessageModel,
+    Message,
+    message_schema,
+    PullRequest,
+    pullRequestApi,
+} from "@entities/pull-request"
 import { selectAuthSession } from "@entities/session"
 import { client } from "@shared/api"
 import { Button } from "@shared/ui/button"
@@ -36,10 +42,11 @@ export function RequestFeed({ requestId }: { requestId: PullRequest["id"] }) {
             const data = JSON.parse(event.data)
 
             if (Array.isArray(data)) {
+                const parsed = message_schema.array().parse(data)
                 client.setQueryData(
                     pullRequestApi.getMessagesByRequestOptions(requestId)
                         .queryKey,
-                    data
+                    fromMessagesDTOtoMessageModel(parsed)
                 )
             }
         }
@@ -81,20 +88,26 @@ export function RequestFeed({ requestId }: { requestId: PullRequest["id"] }) {
     return (
         <div className='w-full flex flex-col gap-2.5'>
             <h2>Messages feed</h2>
-            <div className='flex flex-col gap-2.5'>
+            <div className='flex flex-col gap-2.5 pb-25'>
                 {feedMessages.map((el) => (
                     <Message key={el.id} message={el} />
                 ))}
                 <Dialog>
                     <DialogTrigger asChild>
                         <Button className='w-full text-[var(--color-accent)]'>
-                            <Plus /> добавить сообщение
+                            <Plus
+                                style={{
+                                    width: 24,
+                                    height: 24,
+                                }}
+                            />
+                            Create new message
                         </Button>
                     </DialogTrigger>
 
                     <DialogContent>
                         <DialogHeader>
-                            <DialogTitle>Новое сообщение</DialogTitle>
+                            <DialogTitle>New message</DialogTitle>
                         </DialogHeader>
                         <textarea
                             value={newMessageText}

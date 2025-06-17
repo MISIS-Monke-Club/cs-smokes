@@ -4,6 +4,7 @@
 
 .viewLineup {
     width: calc(100% - 36px - 10px);
+    height: 36px;
     background-color: var(--color-background-alt);
 
     @include font-arial-rounded-mt;

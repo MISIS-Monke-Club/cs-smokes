@@ -7,10 +7,12 @@ import { selectUserId } from "@entities/session"
 import { useGetOwnProfile } from "@features/profile/get-own"
 import { Button } from "@shared/ui/button"
 import { MyGrenadesList } from "@widgets/my-lineups"
+import { useQueryPrams } from "@shared/lib/params-parser"
 
 export function OwnProfilePage() {
     const userId = useSelector(selectUserId)
     const { profile, isLoading } = useGetOwnProfile()
+    const { params, addParams } = useQueryPrams()
 
     if (!profile || isLoading) {
         return <div>Loading your profile...</div>
@@ -20,7 +22,13 @@ export function OwnProfilePage() {
 
     return (
         <div className={classes.container}>
-            <Tabs defaultValue='profile' style={{ width: "100%" }}>
+            <Tabs
+                defaultValue={params.get("state") || "profile"}
+                onValueChange={(val) => {
+                    addParams("state", val)
+                }}
+                style={{ width: "100%" }}
+            >
                 <TabsList style={{ width: "100%" }}>
                     <TabsTrigger
                         value='profile'

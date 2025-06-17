@@ -26,11 +26,14 @@ export function GrenadesPage() {
             </div>
             <h1 className={classes.title}>Grenades list</h1>
             <Input
+                className='w-full'
                 placeholder='Find your grenade...'
                 onChange={(e) => handleInputChange(e.target.value)}
                 defaultValue={params.get("search")?.toString()}
             />
-            <GrenadesListWidget />
+            <div className='pb-25 contents'>
+                <GrenadesListWidget />
+            </div>
         </>
     )
 }

@@ -28,8 +28,8 @@
     display: flex;
 
     width: calc(100% - toRem(10));
-    margin: 0 auto calc(2 * var(--site-padding-y) + 66px);
-    padding: 0 toRem(5);
+    margin: 0 auto calc(2 * var(--site-padding-y) + 55px);
+    padding: toRem(10) toRem(15);
 
     color: var(--color-main-text);
 

@@ -40,7 +40,11 @@ export function GrenadePage() {
                 actions={
                     <>
                         <div className={classes.actionsWrapper}>
-                            <Button className={classes.viewLineup} asChild>
+                            <Button
+                                className={classes.viewLineup}
+                                size='sm'
+                                asChild
+                            >
                                 <Link to={grenade?.linkToVideo || ""}>
                                     View lineup
                                 </Link>

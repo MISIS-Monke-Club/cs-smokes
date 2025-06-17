@@ -1,18 +1,21 @@
 import { HTMLProps, useMemo } from "react"
+import { CircleUser } from "lucide-react"
 import { Skeleton } from "../skeleton"
 import classes from "./image.module.scss"
 
-type ImageProps = HTMLProps<HTMLImageElement> & {
-    url?: string | null
+type ImageProps = Omit<HTMLProps<HTMLImageElement>, "src"> & {
+    url: string | null
     skeletonClasses?: string
     isLoading?: boolean
+    placeholderElement?: React.ReactNode
 }
 
 export function ImageComponent({
-    url = "",
+    url,
     className = "",
     skeletonClasses = "",
     isLoading = false,
+    placeholderElement = <CircleUser />,
     ...rest
 }: ImageProps) {
     const combinedClass: string = useMemo(() => {
@@ -29,7 +32,7 @@ export function ImageComponent({
         const draftClass = [classes.fakeImage]
 
         if (skeletonClasses) {
-            draftClass.push(skeletonClasses)
+            draftClass.push(skeletonClasses.split(" "))
         }
 
         return draftClass.join(" ")
@@ -52,7 +55,7 @@ export function ImageComponent({
         return draftWidth
     }, [rest.height, rest.width])
 
-    if (isLoading || !url || url.length === 0) {
+    if (isLoading) {
         return (
             <Skeleton
                 className={placeholderClass}
@@ -62,6 +65,9 @@ export function ImageComponent({
             />
         )
     }
+
+    if (!url || url.length === 0)
+        return <div className={skeletonClasses}>{placeholderElement}</div>
 
     return <img className={combinedClass} src={url} loading='lazy' {...rest} />
 }

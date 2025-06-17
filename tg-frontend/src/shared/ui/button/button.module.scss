@@ -1,5 +1,18 @@
 .button {
+    border: 1px solid var(--color-background-alt);
+
+    font-size: 16px;
+    font-size: toRem(18);
     color: var(--color-text-main);
+
+    transition-duration: var(--transition-duration);
+
+    &:active,
+    &:hover {
+        border-color: var(--color-accent);
+        color: var(--color-accent);
+        background-color: var(--color-background-alt);
+    }
 
     @include font-arial-rounded-mt;
 }

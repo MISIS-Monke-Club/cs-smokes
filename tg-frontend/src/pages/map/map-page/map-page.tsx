@@ -19,8 +19,8 @@ export function MapPage() {
     }
 
     return (
-        <>
+        <div className='mb-25 contents'>
             <MapOverview mapId={mapId} />
-        </>
+        </div>
     )
 }

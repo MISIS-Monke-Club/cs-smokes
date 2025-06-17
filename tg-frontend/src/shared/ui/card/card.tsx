@@ -1,5 +1,7 @@
 import * as React from "react"
 import clsx from "clsx"
+import { Frown } from "lucide-react"
+import { ImageComponent } from "../image"
 import classes from "./card.module.scss"
 
 type CardComponentProps = React.ComponentProps<"div"> & {
@@ -9,8 +11,8 @@ type CardComponentProps = React.ComponentProps<"div"> & {
     heading?: string
     bottomSlot?: React.ReactNode
     topSlot?: React.ReactNode
-    imgUrl?: string
-    imgAlt?: string
+    imgUrl: string | null
+    imgAlt: string
 }
 
 export function CardComponent({
@@ -39,14 +41,19 @@ export function CardComponent({
                 <CardHeader className={classes.topSlot}>{topSlot}</CardHeader>
             )}
             <CardContent className={classes.content}>
-                <img
+                <ImageComponent
                     className={classes.img}
-                    src={imgUrl}
+                    url={imgUrl}
                     alt={imgAlt}
-                    width='130'
-                    height='65'
-                    loading='lazy'
+                    skeletonClasses='w-full h-full rounded-[8px] bg-background flex flex-col justify-center items-center gap-1'
+                    placeholderElement={
+                        <>
+                            <span>Without image</span>
+                            <Frown />
+                        </>
+                    }
                 />
+                <img />
                 <div className={classes.textWrapper}>
                     <h4 className={classes.heading}>{heading}</h4>
                     {subheading && (

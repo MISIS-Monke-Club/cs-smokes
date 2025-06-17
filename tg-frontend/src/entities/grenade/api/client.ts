@@ -65,5 +65,10 @@ export const api = {
             request: instance.get(`/${api.baseApiUrl}/${grenadeId}`),
             dtoSchema: grenadeDTOschema,
             fromDTO: fromGrenadeDTO,
+        }).catch((err) => {
+            console.error(err)
+            toast.error("Cant get grenade by id")
+
+            throw err
         }),
 }

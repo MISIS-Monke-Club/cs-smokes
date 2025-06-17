@@ -1,7 +1,8 @@
 import { z } from "zod"
 import { MessageModel, PullRequest } from "./client"
+
 // eslint-disable-next-line @conarti/feature-sliced/layers-slices
-import { fromGrenadeDTO, grenadeDTOschema } from "@entities/grenade"
+import { grenadeDTOschema, GrenadeModel } from "@entities/grenade"
 
 // Api schemas
 const admin_type_schema = z.object({
@@ -40,17 +41,16 @@ export const pull_request_details_schema = z.object({
     ]),
     creator: pull_request_creator_schema,
     approver: pull_request_approver_schema.nullable(),
-    lineup: grenadeDTOschema,
+    lineup: grenadeDTOschema.omit({
+        request: true,
+    }),
     created_at: z.string().datetime(),
     closed_at: z.string().datetime().nullable(),
 })
 
 export const message_schema = z.object({
     id: z.number(),
-    pr_id: z.number(),
-    user_id: z.number(),
     text: z.string(),
-    parent_id: z.number().nullable(),
     created_at: z.string().datetime(),
     creator: z.object({
         user_id: z.number(),
@@ -93,17 +93,50 @@ export const fromRequestDTOtoRequestModel = (
                   : null,
           }
         : null,
-    lineup: fromGrenadeDTO(request.lineup),
+    lineup: fromRequestLineupDto(request.lineup),
 })
+
+export const fromRequestLineupDto = (
+    dto: z.infer<typeof pull_request_details_schema.shape.lineup>
+): Omit<GrenadeModel, "request"> => {
+    // Transforming dto -> model
+    return {
+        grenadeId: dto.grenade_id,
+        mapId: dto.map_id,
+        grenadeClass: {
+            grenadeClassId: dto.grenade_class.grenade_class_id,
+            name: dto.grenade_class.name,
+            description: dto.grenade_class.description,
+            price: dto.grenade_class.price,
+        },
+        propertyList: dto.property_list.map((el) => ({
+            propertyId: el.property_id,
+            name: el.name,
+            value: el.value,
+        })),
+        linkToVideo: dto.link_to_video,
+        creator: {
+            userId: dto.creator.user_id,
+            username: dto.creator.username,
+            avatarUrl: dto.creator.avatar_url,
+            firstName: dto.creator.first_name,
+            lastName: dto.creator.last_name,
+        },
+        createdAt: dto.created_at,
+        title: dto.title,
+        description: dto.description,
+        isApproved: dto.is_approved,
+        isFavorite: dto.is_favorite,
+        views: dto.views,
+        previewImageLink: dto.preview_image_link,
+    }
+}
 
 export const fromMessageDTOtoMessageModel = (
     message: z.infer<typeof message_schema>
 ): MessageModel => ({
     id: message.id,
-    prId: message.pr_id,
-    userId: message.user_id,
     text: message.text,
-    parentId: message.parent_id,
     createdAt: message.created_at,
     creator: {
         userId: message.creator.user_id,

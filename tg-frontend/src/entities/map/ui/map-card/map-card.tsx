@@ -16,7 +16,7 @@ export function MapCard({ map }: { map: MapModel }) {
             heading={map.name}
             onClick={clickHandler}
             aria-label='map-card'
-            imgUrl={map.imageLink || undefined}
+            imgUrl={map.imageLink}
             imgAlt='map preview image'
         />
     )

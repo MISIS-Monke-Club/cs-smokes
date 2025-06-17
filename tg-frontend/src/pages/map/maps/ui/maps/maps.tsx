@@ -32,6 +32,7 @@ export function Maps() {
             </div>
             <h1 className={classes.title}>Select map</h1>
             <Input
+                className='w-full'
                 placeholder='Find your map...'
                 onChange={(e) => handleChange(e.target.value)}
                 defaultValue={params.get("search")?.toString()}

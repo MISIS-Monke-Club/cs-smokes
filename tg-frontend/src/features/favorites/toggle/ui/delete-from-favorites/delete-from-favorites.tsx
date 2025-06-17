@@ -29,6 +29,7 @@ export function DeleteFromFavorites({
 
     return (
         <Button
+            className='bg-[var(--background)]'
             onClick={clickHandler}
             variant='outline'
             size='icon'

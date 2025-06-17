@@ -20,9 +20,10 @@ export const Input = ({
     iconPosition = "before",
     inputClassName,
     labelClassName,
+    className,
     ...props
 }: InputProps) => {
-    const inputClass = clsx(classes.input, inputClassName)
+    const inputClass = clsx(classes.input, inputClassName, className)
     const labelClass = clsx(classes.label, labelClassName)
 
     const id = useId()
