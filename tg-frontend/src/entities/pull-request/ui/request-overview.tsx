@@ -2,6 +2,7 @@ import { useMutation, useQuery } from "@tanstack/react-query"
 import { Link } from "react-router-dom"
 import { toast } from "sonner"
 import { CircleHelp } from "lucide-react"
+import { useSelector } from "react-redux"
 import { api as requestApi } from "../api"
 import { PullRequest } from "../domain/client"
 import { UserBadge } from "./user-badge"
@@ -10,8 +11,11 @@ import { PlaceholderBlock } from "@shared/ui/placeholder-block"
 import { Badge } from "@shared/ui/badge"
 import { ImageComponent } from "@shared/ui/image"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@shared/ui/tooltip"
+// eslint-disable-next-line @conarti/feature-sliced/layers-slices
+import { selectUserId } from "@entities/session"
 
 export function RequestOverview({ id }: Pick<PullRequest, "id">) {
+    const userId = useSelector(selectUserId)
     const {
         data: request,
         isLoading,
@@ -88,7 +92,7 @@ export function RequestOverview({ id }: Pick<PullRequest, "id">) {
                     <UserBadge user={request.approver} />
                 </div>
             )}
-            {request.status === "OPEN" ? (
+            {request.status === "OPEN" && request.creator.userId === userId ? (
                 <Button
                     onClick={clickHandler}
                     className='w-full bg-rose-600! hover:bg-rose-700! active:bg-rose-700!'
@@ -97,12 +101,17 @@ export function RequestOverview({ id }: Pick<PullRequest, "id">) {
                 >
                     Cancel request
                 </Button>
+            ) : request.status === "OPEN" &&
+              request.creator.userId !== userId ? (
+                <Badge className='w-full' color='accent'>
+                    status: Open
+                </Badge>
             ) : request.status === "APPROVED" ? (
-                <Badge color='success'>approved</Badge>
+                <Badge color='success'>status: Approved</Badge>
             ) : request.status === "CLOSED" ? (
-                <Badge color='danger'>closed</Badge>
+                <Badge color='danger'>status: Canceled</Badge>
             ) : request.status === "REJECTED" ? (
-                <Badge color='danger'>rejected</Badge>
+                <Badge color='danger'>status: Rejected</Badge>
             ) : null}
         </>
     )

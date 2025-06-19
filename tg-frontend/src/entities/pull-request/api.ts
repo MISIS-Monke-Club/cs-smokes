@@ -54,11 +54,7 @@ export const api = {
         unknown,
         GrenadeModel["grenadeId"]
     > => ({
-        mutationFn: (id) =>
-            instance.patch(`/${api.baseUrl}/${id}`, {
-                status: "CLOSED",
-                approver_id: 1,
-            }),
+        mutationFn: (id) => instance.patch(`/${api.baseUrl}/${id}/cancel`),
         onSettled: () => {
             client.invalidateQueries({ queryKey: api.baseKey })
         },
