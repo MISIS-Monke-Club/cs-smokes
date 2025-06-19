@@ -1,0 +1,66 @@
+.cardComponent {
+    display: flex;
+    flex-direction: column;
+    gap: toRem(10);
+    align-items: start;
+    justify-content: space-between;
+
+    min-width: toRem(150);
+    height: 100%;
+    border-radius: 10px;
+
+    .content {
+        display: contents;
+    }
+
+    .img {
+        width: 100%;
+        min-width: toRem(130);
+        height: unset;
+        max-height: 100%;
+        border-radius: 6px;
+    }
+
+    .topSlot,
+    .bottomSlot {
+        align-self: flex-end;
+    }
+
+    .textWrapper {
+        .heading,
+        .subheading {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .heading {
+            max-width: toRem(135);
+        }
+
+        .subheading {
+            max-width: toRem(120);
+        }
+    }
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    gap: toRem(10);
+
+    padding: toRem(10);
+    border: var(--border-classic);
+    border-radius: var(--border-radius-large);
+
+    background-color: var(--color-background-alt);
+
+    &:active {
+        border: var(--border-accent);
+        transition-duration: var(--default-transition-duration);
+    }
+
+    &:only-child {
+        width: 100%;
+    }
+}

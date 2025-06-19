@@ -1,0 +1,45 @@
+name: CI for frontend and web-frontend
+on: push
+
+env:
+  VITE_BACKEND_URL: http://localhost:3000/api
+  VITE_IN_TG_ENVIRONMENT: true 
+  VITE_TG_INIT_DATA: 123
+
+jobs:
+  build:
+    name: run ci for tg-frontend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup NodeJS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Dependencies
+        run: npm install
+        working-directory: ./tg-frontend
+      - name: Types
+        run: npm run type-check
+        working-directory: ./tg-frontend
+      - name: Linters
+        run: npm run lint
+        working-directory: ./tg-frontend
+      - name: Prepare for tests
+        run: npm run test:prepare-ci
+        working-directory: ./tg-frontend
+      - name: Tests
+        run: npm run test
+        working-directory: ./tg-frontend
+      - name: Reinstall production dependencies only
+        run: |
+          rm -rf node_modules
+          npm install --omit=dev
+        working-directory: ./tg-frontend
+
+      - name: Ability to Deploy (build with prod deps only)
+        run: npm run build
+        working-directory: ./tg-frontend

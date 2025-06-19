@@ -1,0 +1,4 @@
+export { api as grenadeClassApi } from "./api/client"
+export { grenadeClassDTOschema } from "./model/domain"
+export { fromGrenadeClassArrayDTO } from "./dto-transformer"
+export type { GrenadeClassModel } from "./model/domain"

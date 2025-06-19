@@ -12,4 +12,5 @@ repos:
         name: flake8
         types: [python]
         language: system
-        entry: flake8 --config .flake8 .
+        entry: flake8 --config backend/.flake8 .
+        

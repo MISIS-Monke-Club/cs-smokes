@@ -1,0 +1,33 @@
+name: Frontend CD (for storybook)
+on: 
+  push:
+      branches: 
+        - develop
+        - main
+
+env: 
+  VITE_BACKEND_URL: http://localhost:3000/api
+  VITE_IN_TG_ENVIRONMENT: false 
+  VITE_TG_INIT_DATA: 123 
+
+jobs:
+  build:
+    name: auto-deploy storybook
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup NodeJS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Dependencies
+        run: npm install
+        working-directory: ./tg-frontend
+      - name: Publish tg-frontend to Chromatic
+        uses: chromaui/action@latest
+        with:
+          projectToken: ${{ secrets.CHROMATIC_TG_FRONTEND_TOKEN }}
+          workingDir: ./tg-frontend

@@ -1,0 +1,76 @@
+import classes from "./sortings.module.scss"
+import { useQueryPrams } from "@shared/lib/params-parser"
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectLabel,
+    SelectTrigger,
+    SelectValue,
+    SelectItem,
+} from "@shared/ui/shadcn-select"
+import {
+    SheetTrigger,
+    SheetContent,
+    SheetHeader,
+    SheetTitle,
+    SheetDescription,
+    Sheet,
+} from "@shared/ui/sheet"
+import { Icons } from "@shared/ui/icons"
+
+export function MapsSortings() {
+    const { params, addParams } = useQueryPrams()
+
+    function handleSortingsChange(val: string) {
+        addParams("ordering", val)
+    }
+
+    return (
+        <Sheet>
+            <SheetTrigger asChild>
+                <div className={classes.trigger}>
+                    <Icons.SortIcon />
+                </div>
+            </SheetTrigger>
+            <SheetContent>
+                <SheetHeader>
+                    <SheetTitle>Maps options</SheetTitle>
+                    <SheetDescription>
+                        You can sort maps by name or number of lineups
+                    </SheetDescription>
+                </SheetHeader>
+                <div className={classes.content}>
+                    <Select
+                        onValueChange={handleSortingsChange}
+                        defaultValue={params.get("ordering")?.toString()}
+                    >
+                        <SelectTrigger className='w-[200px]'>
+                            <SelectValue placeholder='Sort by...' />
+                        </SelectTrigger>
+                        <SelectContent className='w-[220px]'>
+                            <SelectGroup>
+                                <SelectLabel>Upwards sorting</SelectLabel>
+                                <SelectItem value='by_alphabet'>
+                                    By alphabet
+                                </SelectItem>
+                                <SelectItem value='quantity'>
+                                    By quantity
+                                </SelectItem>
+                            </SelectGroup>
+                            <SelectGroup>
+                                <SelectLabel>Downwards sorting</SelectLabel>
+                                <SelectItem value='-by_alphabet'>
+                                    By alphabet
+                                </SelectItem>
+                                <SelectItem value='-quantity'>
+                                    By quantity
+                                </SelectItem>
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
+                </div>
+            </SheetContent>
+        </Sheet>
+    )
+}

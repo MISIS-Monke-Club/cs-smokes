@@ -1,25 +1,34 @@
 import logging
 import asyncio
+import os
+
+from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher, types
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
 from aiogram.filters import CommandStart
+from aiogram.fsm.storage.memory import MemoryStorage
 
-TOKEN = "7226023253:AAHcvwhAjEnSGM-ABVNdV3Nu0KDBnIV2spc"
-WEB_APP_URL = "https://misis.ru"  # ссылка на наш вебап(пока что рандомная)
+# Getting environment variables from .env file
+load_dotenv(override=False)
+
+TOKEN = os.getenv("TOKEN", "bot_token")
+WEB_APP_URL = os.getenv("WEB_APP_URL", "https://google.com")
 
 logging.basicConfig(level=logging.INFO)
 
 bot = Bot(token=TOKEN)
-dp = Dispatcher()
+dp = Dispatcher(storage=MemoryStorage())
 
 
 @dp.message(CommandStart())
 async def start(message: types.Message):
+    init_data = message.web_app_data.data if message.web_app_data else ""
     keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
             [
                 InlineKeyboardButton(
-                    text="Смотреть смоки", web_app=WebAppInfo(url=WEB_APP_URL)
+                    text="Открыть веб-приложение",
+                    web_app=WebAppInfo(url=f"{WEB_APP_URL}?initData={init_data}"),
                 )
             ]
         ]
@@ -30,7 +39,12 @@ async def start(message: types.Message):
     )
 
 
+async def on_startup():
+    logging.info("Бот запущен!")
+
+
 async def main():
+    await on_startup()
     await dp.start_polling(bot)
 
 

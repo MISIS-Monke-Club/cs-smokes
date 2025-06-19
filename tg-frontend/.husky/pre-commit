@@ -1,0 +1,7 @@
+REPO_ROOT=$(git rev-parse --show-toplevel)
+CURRENT_DIR=$(pwd)
+
+cd $REPO_ROOT/tg-frontend
+npx lint-staged
+
+cd $CURRENT_DIR

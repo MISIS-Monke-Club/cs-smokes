@@ -1,0 +1,104 @@
+@mixin hover {
+    @media (hover: hover) {
+        &:hover {
+            @content;
+        }
+    }
+
+    @media (hover: none) {
+        &:hover {
+            @content;
+        }
+    }
+}
+
+@mixin hidden {
+    position: absolute;
+
+    overflow: hidden;
+
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+
+    white-space: nowrap;
+
+    clip: rect(0 0 0 0);
+    clip-path: inset(100%);
+}
+
+@mixin centered {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@mixin background-styles {
+    position: absolute;
+    z-index: -100;
+    top: 0;
+    left: 0;
+
+    width: 100dvw;
+    max-width: 100%;
+    height: 100dvh;
+    @content;
+}
+
+@mixin font-roboto {
+    font-family: "Roboto", sans-serif;
+    font-weight: 400;
+}
+
+@function toRem($px, $base-font-size: 16) {
+    @return calc(#{$px} / #{$base-font-size} * 1rem);
+}
+
+@mixin font-arial-regular($weight: normal, $style: normal) {
+    font-family: "Arial Regular", sans-serif;
+    font-weight: $weight;
+    font-style: $style;
+}
+
+@mixin font-arial-narrow($weight: normal, $style: normal) {
+    font-family: "Arial Narrow", sans-serif;
+    font-weight: $weight;
+    font-style: $style;
+}
+
+@mixin font-arial-italic($weight: normal) {
+    font-family: "Arial Italic", sans-serif;
+    font-weight: $weight;
+    font-style: italic;
+}
+
+@mixin font-arial-bold($style: normal) {
+    font-family: "Arial Bold", sans-serif;
+    font-weight: bold;
+    font-style: $style;
+}
+
+@mixin font-arial-black($style: normal) {
+    font-family: "Arial Black", sans-serif;
+    font-weight: bold;
+    font-style: $style;
+}
+
+@mixin font-arial-light($style: normal) {
+    font-family: "Arial Light Regular", sans-serif;
+    font-weight: 300;
+    font-style: $style;
+}
+
+@mixin font-arial-rounded-mt($weight: bold, $style: normal) {
+    font-family: "Arial Rounded MT", sans-serif;
+    font-weight: $weight;
+    font-style: $style;
+}
+
+@mixin auto-columns($width: 100px) {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax($width, 1fr));
+}

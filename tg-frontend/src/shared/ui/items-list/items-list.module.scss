@@ -1,0 +1,35 @@
+.list {
+    width: 100%;
+}
+
+/* TYPE */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 1fr);
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* GAP */
+.smGap {
+    gap: toRem(8);
+}
+
+.mdGap {
+    gap: toRem(16);
+}
+
+.lgGap {
+    gap: toRem(20);
+}
+
+.emptyList {
+    align-content: center;
+    align-items: center;
+    justify-content: center;
+    padding-left: 10;
+}

@@ -1,0 +1,19 @@
+import { Store } from "@reduxjs/toolkit"
+import { selectAuthSession } from "@entities/session"
+import { instance } from "@shared/api"
+
+export const setupInterceptors = (store: Store) => {
+    instance.interceptors.request.use((config) => {
+        const { accessToken } = selectAuthSession(store.getState())
+        // Checks are this path contains "login"
+        const searchResult = config.url?.search(/login/)
+        // Removing access token from headers of login requests
+        const isLoginUrl = searchResult === -1 ? false : true
+
+        if (accessToken && !isLoginUrl) {
+            config.headers.Authorization = `Bearer ${accessToken}`
+        }
+
+        return config
+    })
+}

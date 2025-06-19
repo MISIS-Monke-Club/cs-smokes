@@ -1,0 +1,28 @@
+name: CI for backend and Telegram Bot
+
+on: push  
+
+jobs:
+  DRF_bot_test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+          pip install -r bot/requirements_bot.txt
+
+      - name: Run Flake8
+        run: flake8 --config=backend/.flake8 .
+
+      - name: Run Black
+        run: black --check .

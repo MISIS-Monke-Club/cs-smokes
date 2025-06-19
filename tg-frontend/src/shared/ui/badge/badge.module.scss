@@ -1,0 +1,47 @@
+/* stylelint-disable selector-class-pattern */
+.badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding-block: 3px;
+    padding-inline: 5px;
+
+    font-size: var(--ui-small);
+    color: var(--color-text-main);
+    text-align: center;
+
+    @include font-arial-rounded-mt;
+}
+
+.color {
+    &-accent {
+        background-color: var(--color-accent);
+    }
+
+    &-disabled {
+        background-color: var(--color-disabled);
+    }
+
+    &-danger {
+        background-color: var(--color-danger);
+    }
+
+    &-success {
+        background-color: var(--color-success);
+    }
+}
+
+.radius {
+    &-sm {
+        border-radius: 2px;
+    }
+
+    &-md {
+        border-radius: 5px;
+    }
+
+    &-lg {
+        border-radius: 16px;
+    }
+}

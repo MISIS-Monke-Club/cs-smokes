@@ -1,0 +1,15 @@
+FROM node:22 as builder
+ARG MODE=development
+
+ENV NODE_ENV=$MODE
+
+WORKDIR /tg-frontend
+COPY package*.json ./
+
+RUN npm install
+
+COPY . /tg-frontend/
+
+EXPOSE 8080
+
+CMD [ "npm", "install", "&&", "npm", "run", "host"]

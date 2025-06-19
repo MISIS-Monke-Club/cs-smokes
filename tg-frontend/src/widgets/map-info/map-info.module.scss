@@ -1,0 +1,16 @@
+.goBack,
+.title {
+    align-self: flex-start;
+}
+
+.action {
+    width: 100%;
+    height: 40px;
+    background-color: var(--color-background-alt);
+}
+
+.accentAction {
+    width: 100%;
+    height: 40px;
+    background: var(--color-accent);
+}

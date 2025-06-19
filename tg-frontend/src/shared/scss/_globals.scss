@@ -1,0 +1,51 @@
+@use "./mixins" as *;
+
+#root {
+    width: 100%;
+    height: 100%;
+
+    @include font-arial-regular;
+
+    font-size: var(--text-normal);
+    color: var(--color-text-main);
+}
+
+body {
+    background-color: var(--color-main-background);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    @include font-arial-bold;
+}
+
+button {
+    @include font-arial-rounded-mt;
+
+    font-size: var(--ui-normal);
+}
+
+// -- FONT SIZE --
+h1 {
+    font-size: var(--h1-font-size);
+}
+
+h2 {
+    font-size: var(--h2-font-size);
+}
+
+h3 {
+    font-size: var(--h3-font-size);
+}
+
+h4 {
+    font-size: var(--h4-font-size);
+}
+
+p {
+    font-size: var(--text-normal);
+}

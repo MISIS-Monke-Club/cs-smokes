@@ -1,0 +1,37 @@
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: toRem(15);
+
+    max-width: toRem(500);
+    margin: 0 auto;
+    padding: 0 0 calc(2 * var(--site-padding-y) + 2 * 66px);
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+}
+
+.select {
+    padding: toRem(5);
+    border: toRem(1) solid #272626;
+    border-radius: toRem(4);
+}
+
+.button {
+    position: fixed;
+    bottom: toRem(15);
+    left: 50%;
+    transform: translateX(-50%);
+
+    display: flex;
+
+    width: calc(100% - toRem(10));
+    margin: 0 auto calc(2 * var(--site-padding-y) + 55px);
+    padding: toRem(10) toRem(15);
+
+    color: var(--color-main-text);
+
+    background-color: var(--color-accent);
+}

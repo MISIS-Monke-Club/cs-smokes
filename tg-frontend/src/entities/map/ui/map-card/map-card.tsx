@@ -1,0 +1,23 @@
+import { useNavigate } from "react-router-dom"
+import { MapModel } from "../../model/domain"
+import classes from "./map-card.module.scss"
+import { CardComponent } from "@shared/ui/card/card"
+
+export function MapCard({ map }: { map: MapModel }) {
+    const navigate = useNavigate()
+
+    function clickHandler() {
+        navigate(`/maps/${map.mapId}/grenades`)
+    }
+
+    return (
+        <CardComponent
+            className={classes.mapCard}
+            heading={map.name}
+            onClick={clickHandler}
+            aria-label='map-card'
+            imgUrl={map.imageLink}
+            imgAlt='map preview image'
+        />
+    )
+}

@@ -1,0 +1,24 @@
+.textareaGroup {
+    display: flex;
+    flex-direction: column;
+    gap: toRem(5);
+}
+
+.label {
+    font-size: toRem(20);
+}
+
+.textarea {
+    padding: toRem(7);
+    border: 1px solid var(--color-main-alt);
+    border-radius: 5px;
+
+    font-size: var(--ui-normal);
+    font-weight: bold;
+
+    &::placeholder {
+        font-size: toRem(16);
+        font-weight: bold;
+        color: var(--color-disabled);
+    }
+}

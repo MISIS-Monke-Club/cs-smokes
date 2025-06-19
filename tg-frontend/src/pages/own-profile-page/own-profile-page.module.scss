@@ -1,0 +1,25 @@
+.title {
+    margin-bottom: toRem(15);
+    font-size: var(--h1-font-size);
+    font-weight: bold;
+}
+
+.profile {
+    margin-bottom: toRem(30);
+}
+
+.editButton {
+    display: flex;
+
+    font-size: var(--ui-normal);
+    font-weight: bold;
+    color: var(--color-text-main);
+
+    background-color: var(--color-accent);
+}
+
+.container {
+    width: 100%;
+    min-width: 320px;
+    max-width: 100dvw;
+}

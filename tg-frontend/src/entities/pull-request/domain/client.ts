@@ -1,0 +1,45 @@
+// eslint-disable-next-line @conarti/feature-sliced/layers-slices
+import { GrenadeModel } from "@entities/grenade"
+
+// App models
+export type PullRequest = {
+    id: number
+    status:
+        | "OPEN"
+        | "APPROVED"
+        | "REJECTED"
+        | "MERGED"
+        | "CLOSED"
+        | "WAITING FOR CREATION"
+    createdAt: string
+    closedAt: string | null
+    creator: Creator
+    approver: Approver | null
+    lineup: Omit<GrenadeModel, "request">
+}
+
+export type Creator = RequestUser
+export type Approver = RequestUser & {
+    adminType?: AdminType | null
+}
+
+export type MessageModel = {
+    id: number
+    text: string
+    createdAt: string
+    creator: RequestUser & { role: string }
+}
+
+export type RequestUser = {
+    userId: number
+    username: string
+    firstName: string | null
+    lastName: string | null
+    avatarUrl: string | null
+}
+export type AdminType = {
+    adminTypeId: number
+    isSuperuser: boolean
+    isBaseAdmin: boolean
+    isEditor: boolean
+}

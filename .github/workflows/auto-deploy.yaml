@@ -1,0 +1,34 @@
+name: Deploy to Remote Server
+
+on:
+  push:
+    branches:
+        - develop
+
+jobs:
+  deploy:
+    name: Deploy via SSH
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Add SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan cs-lineups.ru >> ~/.ssh/known_hosts
+
+      - name: Deploy to server
+        run: |
+          ssh root@cs-lineups.ru << 'EOF'
+            cd /root/cs-smokes/
+
+            git pull origin develop
+
+            docker-compose -f docker-compose.prod.yaml down
+            docker-compose -f docker-compose.prod.yaml build --no-cache
+            docker-compose -f docker-compose.prod.yaml up -d
+          EOF

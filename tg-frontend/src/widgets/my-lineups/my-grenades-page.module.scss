@@ -1,0 +1,73 @@
+.container {
+    width: 100%;
+    min-width: toRem(320);
+    max-width: 100%;
+}
+
+.title {
+    margin-bottom: var(--h1-font-size);
+    font-size: toRem(24);
+    font-weight: bold;
+    color: var(--color-text-main);
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: toRem(10);
+}
+
+.card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: toRem(10);
+    border-radius: toRem(8);
+
+    background-color: var(--color-background-alt);
+}
+
+.info {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+
+    min-width: 0;
+}
+
+.name {
+    overflow: hidden;
+
+    margin: 0;
+
+    font-size: var(--h4-font-size);
+    font-weight: bold;
+    color: var(--color-text-main);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.date {
+    margin: toRem(4) 0 0;
+    font-size: var(--text-normal);
+    color: var(--color-disabled);
+}
+
+.status {
+    margin-left: toRem(16);
+    padding: toRem(6) toRem(12);
+    border-radius: toRem(8);
+    font-size: var(--text-normal);
+
+    &_approved {
+        color: var(--color-text-main);
+        background-color: green;
+    }
+
+    &_request {
+        color: var(--color-text-main);
+        background-color: blue;
+    }
+}
