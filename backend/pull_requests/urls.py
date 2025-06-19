@@ -4,6 +4,9 @@ from .views import (
     PullRequestRetrieveUpdateDeleteView,
     CommentListCreateView,
     CommentRetrieveUpdateDeleteView,
+    ApprovePullRequestView,
+    RejectPullRequestView,
+    CancelPullRequestView,
 )
 
 urlpatterns = [
@@ -26,5 +29,20 @@ urlpatterns = [
         r"^comments/(?P<pk>\d+)/?$",
         CommentRetrieveUpdateDeleteView.as_view(),
         name="pullrequestcomment-detail",
+    ),
+    re_path(
+        r"^pull_requests/(?P<id>\d+)/approve/?$",
+        ApprovePullRequestView.as_view(),
+        name="pullrequest-approve",
+    ),
+    re_path(
+        r"^pull_requests/(?P<id>\d+)/reject/?$",
+        RejectPullRequestView.as_view(),
+        name="pullrequest-reject",
+    ),
+    re_path(
+        r"^pull_requests/(?P<id>\d+)/cancel/?$",
+        CancelPullRequestView.as_view(),
+        name="pullrequest-cancel",
     ),
 ]
