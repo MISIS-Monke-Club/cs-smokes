@@ -1,0 +1,4 @@
+interface:
+  display_name: "Spec Review Fixer"
+  short_description: "Apply spec-review fixes safely"
+  default_prompt: "Use $spec-review-fixer to apply Spec Reviewer findings to this spec or plan."

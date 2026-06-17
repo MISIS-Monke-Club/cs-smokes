@@ -1,0 +1,4 @@
+interface:
+  display_name: "Spec Reviewer"
+  short_description: "Deep review for specs and plans"
+  default_prompt: "Use $spec-reviewer to review this spec or implementation plan point by point."
