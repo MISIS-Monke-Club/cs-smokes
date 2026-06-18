@@ -39,6 +39,7 @@ func New(db generated.DBTX) *Store {
 func (s *Store) Repositories() httpserver.Repositories {
 	return httpserver.Repositories{
 		Auth:           s,
+		AdminRoles:     s,
 		Users:          s,
 		GrenadeClasses: s,
 		Maps:           s,
@@ -231,6 +232,32 @@ func (s *Store) RolesForUser(ctx context.Context, userID int) (auth.RoleSet, err
 		}
 	}
 	return roles, nil
+}
+
+func (s *Store) SetUserRoles(ctx context.Context, userID int, roles auth.RoleSet) error {
+	if err := s.q.DeleteUserRoles(ctx, int32(userID)); err != nil {
+		return err
+	}
+	for _, code := range roleCodes(roles) {
+		if err := s.q.AddUserRoleByCode(ctx, generated.AddUserRoleByCodeParams{UserID: int32(userID), Code: code}); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func roleCodes(roles auth.RoleSet) []string {
+	var codes []string
+	if roles.IsSuperuser {
+		codes = append(codes, "superuser")
+	}
+	if roles.IsBaseAdmin {
+		codes = append(codes, "base_admin")
+	}
+	if roles.IsEditor {
+		codes = append(codes, "editor")
+	}
+	return codes
 }
 
 func (s *Store) ListGrenadeClasses(ctx context.Context) ([]grenadeclasses.GrenadeClass, error) {
@@ -767,7 +794,7 @@ func (r Realtime) DeleteComment(ctx context.Context, commentID int, actor pullre
 	if err != nil {
 		return nil, err
 	}
-	if comment.Creator.UserID != actor.UserID && !actor.IsSuperuser && !actor.IsBaseAdmin && !actor.IsEditor {
+	if !pullrequests.CanDeleteComment(actor, comment) {
 		return nil, pullrequests.ErrNotFound
 	}
 	if err := r.store.q.DeleteComment(ctx, int32(commentID)); err != nil {

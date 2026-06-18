@@ -43,6 +43,17 @@ join admin_roles ar on ar.role_id = uar.role_id
 where uar.user_id = $1
 order by ar.code;
 
+-- name: DeleteUserRoles :exec
+delete from user_admin_roles
+where user_id = $1;
+
+-- name: AddUserRoleByCode :exec
+insert into user_admin_roles (user_id, role_id)
+select $1, role_id
+from admin_roles
+where code = $2
+on conflict do nothing;
+
 -- name: ListGrenadeClasses :many
 select grenade_class_id, name, description, price
 from grenade_classes

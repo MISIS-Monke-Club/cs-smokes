@@ -5,6 +5,7 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/MISIS-Monke-Club/cs-smokes/backend/internal/auth"
 	"github.com/MISIS-Monke-Club/cs-smokes/backend/internal/platform/postgresrepo"
 	"github.com/MISIS-Monke-Club/cs-smokes/backend/internal/users"
 	"github.com/jackc/pgx/v5"
@@ -125,6 +126,31 @@ func TestStorePatchUserPreservesExistingPasswordHash(t *testing.T) {
 	}
 	if row.FirstName == nil || *row.FirstName != "Patched" {
 		t.Fatalf("row = %#v", row)
+	}
+	if err := db.ExpectationsWereMet(); err != nil {
+		t.Fatalf("expectations: %v", err)
+	}
+}
+
+func TestStoreSetUserRolesReplacesRoleCodes(t *testing.T) {
+	db, err := pgxmock.NewPool()
+	if err != nil {
+		t.Fatalf("new mock pool: %v", err)
+	}
+	defer db.Close()
+	db.ExpectExec("delete from user_admin_roles").
+		WithArgs(int32(7)).
+		WillReturnResult(pgxmock.NewResult("DELETE", 2))
+	db.ExpectExec("insert into user_admin_roles").
+		WithArgs(int32(7), "base_admin").
+		WillReturnResult(pgxmock.NewResult("INSERT", 1))
+	db.ExpectExec("insert into user_admin_roles").
+		WithArgs(int32(7), "editor").
+		WillReturnResult(pgxmock.NewResult("INSERT", 1))
+
+	err = postgresrepo.New(db).SetUserRoles(context.Background(), 7, auth.RoleSet{IsBaseAdmin: true, IsEditor: true})
+	if err != nil {
+		t.Fatalf("SetUserRoles: %v", err)
 	}
 	if err := db.ExpectationsWereMet(); err != nil {
 		t.Fatalf("expectations: %v", err)

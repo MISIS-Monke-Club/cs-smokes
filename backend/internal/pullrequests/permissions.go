@@ -17,6 +17,10 @@ func CanCancel(actor Actor, pr PullRequest) bool {
 	return CanModerate(actor) || actor.UserID == pr.CreatorID
 }
 
+func CanDeleteComment(actor Actor, comment Comment) bool {
+	return CanModerate(actor) || actor.UserID == comment.Creator.UserID
+}
+
 func ForbiddenBody() (int, map[string]string) {
 	return http.StatusForbidden, map[string]string{"detail": "You do not have permission to perform this action."}
 }

@@ -11,6 +11,24 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const addUserRoleByCode = `-- name: AddUserRoleByCode :exec
+insert into user_admin_roles (user_id, role_id)
+select $1, role_id
+from admin_roles
+where code = $2
+on conflict do nothing
+`
+
+type AddUserRoleByCodeParams struct {
+	UserID int32
+	Code   string
+}
+
+func (q *Queries) AddUserRoleByCode(ctx context.Context, arg AddUserRoleByCodeParams) error {
+	_, err := q.db.Exec(ctx, addUserRoleByCode, arg.UserID, arg.Code)
+	return err
+}
+
 const changeLineupGrenadeClass = `-- name: ChangeLineupGrenadeClass :one
 update lineups
 set grenade_class_id = $2, updated_at = now()
@@ -446,6 +464,16 @@ where user_id = $1
 
 func (q *Queries) DeleteUser(ctx context.Context, userID int32) error {
 	_, err := q.db.Exec(ctx, deleteUser, userID)
+	return err
+}
+
+const deleteUserRoles = `-- name: DeleteUserRoles :exec
+delete from user_admin_roles
+where user_id = $1
+`
+
+func (q *Queries) DeleteUserRoles(ctx context.Context, userID int32) error {
+	_, err := q.db.Exec(ctx, deleteUserRoles, userID)
 	return err
 }
 
