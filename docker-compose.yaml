@@ -23,6 +23,25 @@ services:
             - backend
         command: sh ./run-server.sh
 
+    admin-frontend:
+        container_name: admin-frontend
+        build:
+            context: ./admin-frontend
+            dockerfile: dockerfile.dev
+        volumes:
+            - ./admin-frontend:/admin-frontend
+            - ./admin-frontend/node_modules:/admin-frontend/node_modules
+        env_file: ./.env
+        environment:
+            - VITE_ADMIN_API_URL=${VITE_ADMIN_API_URL}
+            - VITE_BACKEND_URL=${VITE_BACKEND_URL}
+            - NODE_ENV=${MODE:?Variable Mode is required}
+        ports:
+            - 8001:8001
+        depends_on:
+            - backend
+        command: sh ./run-server.sh
+
     backend:
         container_name: backend
         build:

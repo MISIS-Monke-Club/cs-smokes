@@ -1,0 +1,30 @@
+{
+    "name": "cs-smokes-admin",
+    "private": true,
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+        "dev": "vite --port 8001",
+        "host": "vite --host 0.0.0.0 --port 8001",
+        "build": "tsc --noEmit --pretty --skipLibCheck -p tsconfig.json && vite build",
+        "preview": "vite preview --port 8001",
+        "test": "vitest run",
+        "type-check": "tsc --noEmit --pretty --skipLibCheck -p tsconfig.json"
+    },
+    "dependencies": {
+        "@vitejs/plugin-react": "^4.3.4",
+        "axios": "^1.8.1",
+        "lucide-react": "^0.477.0",
+        "react": "^18.3.1",
+        "react-dom": "^18.3.1",
+        "react-router-dom": "^6.26.2",
+        "vite": "^6.2.4"
+    },
+    "devDependencies": {
+        "@types/node": "^22.13.9",
+        "@types/react": "^18.3.11",
+        "@types/react-dom": "^18.3.1",
+        "typescript": "^5.8.2",
+        "vitest": "^3.1.1"
+    }
+}
