@@ -30,13 +30,23 @@ export function RequestFeed({ requestId }: { requestId: PullRequest["id"] }) {
         isError,
         isLoading,
     } = useQuery(pullRequestApi.getMessagesByRequestOptions(requestId))
-    const { userId } = useSelector(selectAuthSession)
+    const { accessToken, userId } = useSelector(selectAuthSession)
     const [newMessageText, setNewMessageText] = useState("")
 
     useEffect(() => {
-        const socket = new WebSocket(
-            `ws://localhost:3000/ws/api/pull_requests/${requestId}/comments/`
+        if (!accessToken) return
+
+        const backendUrl = new URL(
+            import.meta.env.VITE_BACKEND_URL ?? window.location.origin
         )
+        backendUrl.protocol = backendUrl.protocol === "https:" ? "wss:" : "ws:"
+        backendUrl.pathname = backendUrl.pathname.replace(/\/api\/?$/, "")
+        const wsUrl = new URL(
+            `/ws/api/pull_requests/${requestId}/comments/`,
+            backendUrl
+        )
+        wsUrl.searchParams.set("token", accessToken)
+        const socket = new WebSocket(wsUrl)
 
         socket.onmessage = (event) => {
             const data = JSON.parse(event.data)
@@ -56,7 +66,7 @@ export function RequestFeed({ requestId }: { requestId: PullRequest["id"] }) {
         return () => {
             socket.close()
         }
-    }, [requestId])
+    }, [accessToken, requestId])
 
     const handleSendMessage = () => {
         const message = {

@@ -17,3 +17,7 @@ func RedactTokenQuery(rawURL string) string {
 	}
 	return parsed.String()
 }
+
+func RedactURL(rawURL string) string {
+	return RedactTokenQuery(rawURL)
+}

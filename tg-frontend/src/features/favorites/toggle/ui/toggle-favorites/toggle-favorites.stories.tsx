@@ -26,6 +26,7 @@ const meta: Meta<typeof ToggleFavorites> = {
         grenadeId: grenadeDTOmock.grenade_id,
     },
     beforeEach: async () => {
+        client.clear()
         await client.prefetchQuery(
             grenadeApi.getGrenadesByIdOptions({
                 grenadeId: grenadeDTOmock.grenade_id,
@@ -68,6 +69,7 @@ export const AddToFavorites: Story = {
         },
     },
     beforeEach: async () => {
+        client.clear()
         await client.prefetchQuery(
             grenadeApi.getGrenadesByIdOptions({
                 grenadeId: grenadeDTOmock.grenade_id,
@@ -96,6 +98,7 @@ export const AddToFavoritesError: Story = {
         },
     },
     beforeEach: async () => {
+        client.clear()
         await client.prefetchQuery(
             grenadeApi.getGrenadesByIdOptions({
                 grenadeId: grenadeDTOmock.grenade_id,
@@ -126,6 +129,7 @@ export const RemoveFromFavorites: Story = {
         },
     },
     beforeEach: async () => {
+        client.clear()
         await client.prefetchQuery(
             grenadeApi.getGrenadesByIdOptions({
                 grenadeId: grenadesDTOmock[1].grenade_id,
@@ -155,6 +159,7 @@ export const RemoveFromFavoritesError: Story = {
         },
     },
     beforeEach: async () => {
+        client.clear()
         await client.prefetchQuery(
             grenadeApi.getGrenadesByIdOptions({
                 grenadeId: grenadesDTOmock[1].grenade_id,

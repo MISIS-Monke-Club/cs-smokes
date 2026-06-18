@@ -53,7 +53,7 @@ export const testErrorAddInFavorites = async (canvas: Canvas) => {
     await testDeleteButtonInDocument(canvas)
     await testAddButtonNotInDocument(canvas)
 
-    waitFor(
+    await waitFor(
         async () => {
             // Optimistic update fallen with error and ui reseted
             await testAddButtonInDocument(canvas)
@@ -81,7 +81,7 @@ export const testErrorRemoveFromFavorites = async (canvas: Canvas) => {
     await testAddButtonInDocument(canvas)
     await testDeleteButtonNotInDocument(canvas)
 
-    waitFor(
+    await waitFor(
         async () => {
             // Reset of optimistic on error
             await testDeleteButtonInDocument(canvas)

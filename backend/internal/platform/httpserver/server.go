@@ -13,6 +13,7 @@ import (
 	"github.com/MISIS-Monke-Club/cs-smokes/backend/internal/platform/httpx"
 	"github.com/MISIS-Monke-Club/cs-smokes/backend/internal/properties"
 	"github.com/MISIS-Monke-Club/cs-smokes/backend/internal/pullrequests"
+	"github.com/MISIS-Monke-Club/cs-smokes/backend/internal/realtime"
 	"github.com/MISIS-Monke-Club/cs-smokes/backend/internal/users"
 	"github.com/go-chi/chi/v5"
 )
@@ -34,6 +35,7 @@ func New(cfg config.Config) *http.Server {
 	properties.RegisterRoutes(router, properties.NewHandler(nil))
 	favorites.RegisterRoutes(router, favorites.NewHandler(nil, nil))
 	pullrequests.RegisterRoutes(router, pullrequests.NewHandler(nil, nil))
+	router.Get("/ws/api/pull_requests/{pr_id}/comments/", realtime.NewHandler(nil, cfg.SecretKey, cfg.WSAllowDevAnon).Comments)
 
 	return &http.Server{Addr: cfg.HTTPAddr, Handler: router}
 }

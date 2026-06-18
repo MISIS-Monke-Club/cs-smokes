@@ -12,14 +12,24 @@ class LegacyContractBaselineTests(unittest.TestCase):
     def test_legacy_baseline_artifacts_are_present_and_wired(self):
         dockerfile = REPO_ROOT / "backend" / "dockerfile.legacy-django"
         compose_file = REPO_ROOT / "docker-compose.legacy-django.yaml"
-        manifest_file = REPO_ROOT / "docs" / "legacy-contract" / "manifest.json"
+        manifest_file = (
+            REPO_ROOT / "docs" / "legacy-contract" / "manifest.json"
+        )
         readme_file = REPO_ROOT / "docs" / "legacy-contract" / "README.md"
         capture_file = (
             REPO_ROOT / "backend" / "tests" / "contract" / "legacy-capture.md"
         )
 
-        for path in (dockerfile, compose_file, manifest_file, readme_file, capture_file):
-            self.assertTrue(path.exists(), f"{path.relative_to(REPO_ROOT)} is missing")
+        for path in (
+            dockerfile,
+            compose_file,
+            manifest_file,
+            readme_file,
+            capture_file,
+        ):
+            self.assertTrue(
+                path.exists(), f"{path.relative_to(REPO_ROOT)} is missing"
+            )
 
         dockerfile_text = dockerfile.read_text(encoding="utf-8")
         self.assertIn("backend.asgi:application", dockerfile_text)
@@ -55,8 +65,12 @@ class LegacyContractBaselineTests(unittest.TestCase):
 
         readme_text = readme_file.read_text(encoding="utf-8")
         capture_text = capture_file.read_text(encoding="utf-8")
+        compose_command = (
+            "docker compose -f docker-compose.yaml "
+            "-f docker-compose.legacy-django.yaml"
+        )
         for text in (readme_text, capture_text):
-            self.assertIn("docker compose -f docker-compose.yaml -f docker-compose.legacy-django.yaml", text)
+            self.assertIn(compose_command, text)
             self.assertIn("localhost:3001/api/health", text)
             self.assertIn("refresh", text.lower())
         self.assertIn("go run ./tools/contract-diff", capture_text)
