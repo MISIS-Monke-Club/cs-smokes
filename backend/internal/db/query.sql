@@ -80,3 +80,51 @@ returning grenade_id, map_id, user_id, grenade_class_id, link_to_video, title, d
 -- name: DeleteLineup :exec
 delete from lineups
 where grenade_id = $1;
+
+-- name: ListProperties :many
+select property_id, name, value
+from properties
+order by property_id;
+
+-- name: GetPropertyByID :one
+select property_id, name, value
+from properties
+where property_id = $1;
+
+-- name: ListLineupProperties :many
+select p.property_id, lp.grenade_id, p.name, p.value
+from lineup_properties lp
+join properties p on p.property_id = lp.property_id
+where sqlc.narg('grenade_id')::int is null or lp.grenade_id = sqlc.narg('grenade_id')::int
+order by p.property_id;
+
+-- name: CreateProperty :one
+insert into properties (name, value)
+values ($1, $2)
+returning property_id, name, value;
+
+-- name: UpdateProperty :one
+update properties
+set name = $2, value = $3, updated_at = now()
+where property_id = $1
+returning property_id, name, value;
+
+-- name: DeleteProperty :exec
+delete from properties
+where property_id = $1;
+
+-- name: CreateLineupProperty :exec
+insert into lineup_properties (property_id, grenade_id)
+values ($1, $2);
+
+-- name: DeleteLineupProperty :exec
+delete from lineup_properties
+where property_id = $1 and grenade_id = $2;
+
+-- name: CreateFavorite :exec
+insert into favorites (user_id, grenade_id)
+values ($1, $2);
+
+-- name: DeleteFavorite :exec
+delete from favorites
+where user_id = $1 and grenade_id = $2;

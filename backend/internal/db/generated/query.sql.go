@@ -56,6 +56,21 @@ func (q *Queries) ChangeLineupGrenadeClass(ctx context.Context, arg ChangeLineup
 	return i, err
 }
 
+const createFavorite = `-- name: CreateFavorite :exec
+insert into favorites (user_id, grenade_id)
+values ($1, $2)
+`
+
+type CreateFavoriteParams struct {
+	UserID    int32
+	GrenadeID int32
+}
+
+func (q *Queries) CreateFavorite(ctx context.Context, arg CreateFavoriteParams) error {
+	_, err := q.db.Exec(ctx, createFavorite, arg.UserID, arg.GrenadeID)
+	return err
+}
+
 const createLineup = `-- name: CreateLineup :one
 insert into lineups (map_id, user_id, grenade_class_id, link_to_video, title, description, is_approved, views, preview_image_path)
 values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
@@ -117,6 +132,21 @@ func (q *Queries) CreateLineup(ctx context.Context, arg CreateLineupParams) (Cre
 	return i, err
 }
 
+const createLineupProperty = `-- name: CreateLineupProperty :exec
+insert into lineup_properties (property_id, grenade_id)
+values ($1, $2)
+`
+
+type CreateLineupPropertyParams struct {
+	PropertyID int32
+	GrenadeID  int32
+}
+
+func (q *Queries) CreateLineupProperty(ctx context.Context, arg CreateLineupPropertyParams) error {
+	_, err := q.db.Exec(ctx, createLineupProperty, arg.PropertyID, arg.GrenadeID)
+	return err
+}
+
 const createMap = `-- name: CreateMap :one
 insert into maps (name, link, is_esports_pool, image_path)
 values ($1, $2, $3, $4)
@@ -156,6 +186,45 @@ func (q *Queries) CreateMap(ctx context.Context, arg CreateMapParams) (CreateMap
 	return i, err
 }
 
+const createProperty = `-- name: CreateProperty :one
+insert into properties (name, value)
+values ($1, $2)
+returning property_id, name, value
+`
+
+type CreatePropertyParams struct {
+	Name  string
+	Value pgtype.Text
+}
+
+type CreatePropertyRow struct {
+	PropertyID int32
+	Name       string
+	Value      pgtype.Text
+}
+
+func (q *Queries) CreateProperty(ctx context.Context, arg CreatePropertyParams) (CreatePropertyRow, error) {
+	row := q.db.QueryRow(ctx, createProperty, arg.Name, arg.Value)
+	var i CreatePropertyRow
+	err := row.Scan(&i.PropertyID, &i.Name, &i.Value)
+	return i, err
+}
+
+const deleteFavorite = `-- name: DeleteFavorite :exec
+delete from favorites
+where user_id = $1 and grenade_id = $2
+`
+
+type DeleteFavoriteParams struct {
+	UserID    int32
+	GrenadeID int32
+}
+
+func (q *Queries) DeleteFavorite(ctx context.Context, arg DeleteFavoriteParams) error {
+	_, err := q.db.Exec(ctx, deleteFavorite, arg.UserID, arg.GrenadeID)
+	return err
+}
+
 const deleteLineup = `-- name: DeleteLineup :exec
 delete from lineups
 where grenade_id = $1
@@ -166,6 +235,21 @@ func (q *Queries) DeleteLineup(ctx context.Context, grenadeID int32) error {
 	return err
 }
 
+const deleteLineupProperty = `-- name: DeleteLineupProperty :exec
+delete from lineup_properties
+where property_id = $1 and grenade_id = $2
+`
+
+type DeleteLineupPropertyParams struct {
+	PropertyID int32
+	GrenadeID  int32
+}
+
+func (q *Queries) DeleteLineupProperty(ctx context.Context, arg DeleteLineupPropertyParams) error {
+	_, err := q.db.Exec(ctx, deleteLineupProperty, arg.PropertyID, arg.GrenadeID)
+	return err
+}
+
 const deleteMap = `-- name: DeleteMap :exec
 delete from maps
 where map_id = $1
@@ -173,6 +257,16 @@ where map_id = $1
 
 func (q *Queries) DeleteMap(ctx context.Context, mapID int32) error {
 	_, err := q.db.Exec(ctx, deleteMap, mapID)
+	return err
+}
+
+const deleteProperty = `-- name: DeleteProperty :exec
+delete from properties
+where property_id = $1
+`
+
+func (q *Queries) DeleteProperty(ctx context.Context, propertyID int32) error {
+	_, err := q.db.Exec(ctx, deleteProperty, propertyID)
 	return err
 }
 
@@ -282,6 +376,25 @@ func (q *Queries) GetMapByID(ctx context.Context, mapID int32) (GetMapByIDRow, e
 	return i, err
 }
 
+const getPropertyByID = `-- name: GetPropertyByID :one
+select property_id, name, value
+from properties
+where property_id = $1
+`
+
+type GetPropertyByIDRow struct {
+	PropertyID int32
+	Name       string
+	Value      pgtype.Text
+}
+
+func (q *Queries) GetPropertyByID(ctx context.Context, propertyID int32) (GetPropertyByIDRow, error) {
+	row := q.db.QueryRow(ctx, getPropertyByID, propertyID)
+	var i GetPropertyByIDRow
+	err := row.Scan(&i.PropertyID, &i.Name, &i.Value)
+	return i, err
+}
+
 const getUserByID = `-- name: GetUserByID :one
 select user_id, username, email, first_name, last_name, avatar_url, steam_link, tg_id, is_banned
 from users
@@ -344,6 +457,46 @@ func (q *Queries) ListGrenadeClasses(ctx context.Context) ([]ListGrenadeClassesR
 			&i.Name,
 			&i.Description,
 			&i.Price,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listLineupProperties = `-- name: ListLineupProperties :many
+select p.property_id, lp.grenade_id, p.name, p.value
+from lineup_properties lp
+join properties p on p.property_id = lp.property_id
+where $1::int is null or lp.grenade_id = $1::int
+order by p.property_id
+`
+
+type ListLineupPropertiesRow struct {
+	PropertyID int32
+	GrenadeID  int32
+	Name       string
+	Value      pgtype.Text
+}
+
+func (q *Queries) ListLineupProperties(ctx context.Context, grenadeID pgtype.Int4) ([]ListLineupPropertiesRow, error) {
+	rows, err := q.db.Query(ctx, listLineupProperties, grenadeID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListLineupPropertiesRow
+	for rows.Next() {
+		var i ListLineupPropertiesRow
+		if err := rows.Scan(
+			&i.PropertyID,
+			&i.GrenadeID,
+			&i.Name,
+			&i.Value,
 		); err != nil {
 			return nil, err
 		}
@@ -441,6 +594,38 @@ func (q *Queries) ListMaps(ctx context.Context) ([]ListMapsRow, error) {
 			&i.ImagePath,
 			&i.Quantity,
 		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listProperties = `-- name: ListProperties :many
+select property_id, name, value
+from properties
+order by property_id
+`
+
+type ListPropertiesRow struct {
+	PropertyID int32
+	Name       string
+	Value      pgtype.Text
+}
+
+func (q *Queries) ListProperties(ctx context.Context) ([]ListPropertiesRow, error) {
+	rows, err := q.db.Query(ctx, listProperties)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListPropertiesRow
+	for rows.Next() {
+		var i ListPropertiesRow
+		if err := rows.Scan(&i.PropertyID, &i.Name, &i.Value); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -602,5 +787,31 @@ func (q *Queries) UpdateMap(ctx context.Context, arg UpdateMapParams) (UpdateMap
 		&i.IsEsportsPool,
 		&i.ImagePath,
 	)
+	return i, err
+}
+
+const updateProperty = `-- name: UpdateProperty :one
+update properties
+set name = $2, value = $3, updated_at = now()
+where property_id = $1
+returning property_id, name, value
+`
+
+type UpdatePropertyParams struct {
+	PropertyID int32
+	Name       string
+	Value      pgtype.Text
+}
+
+type UpdatePropertyRow struct {
+	PropertyID int32
+	Name       string
+	Value      pgtype.Text
+}
+
+func (q *Queries) UpdateProperty(ctx context.Context, arg UpdatePropertyParams) (UpdatePropertyRow, error) {
+	row := q.db.QueryRow(ctx, updateProperty, arg.PropertyID, arg.Name, arg.Value)
+	var i UpdatePropertyRow
+	err := row.Scan(&i.PropertyID, &i.Name, &i.Value)
 	return i, err
 }
