@@ -1,0 +1,11 @@
+drop table if exists comments;
+drop table if exists pull_requests;
+drop table if exists favorites;
+drop table if exists lineup_properties;
+drop table if exists properties;
+drop table if exists lineups;
+drop table if exists grenade_classes;
+drop table if exists maps;
+drop table if exists user_admin_roles;
+drop table if exists admin_roles;
+drop table if exists users;
