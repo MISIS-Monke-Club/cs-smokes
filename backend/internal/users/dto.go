@@ -24,6 +24,14 @@ type UserDTO struct {
 	IsBanned  bool    `json:"is_banned"`
 }
 
+type ProfileDTO struct {
+	UserID    int     `json:"user_id"`
+	Username  string  `json:"username"`
+	AvatarURL *string `json:"avatar_url"`
+	FirstName *string `json:"first_name"`
+	LastName  *string `json:"last_name"`
+}
+
 type UserInput struct {
 	Username  string  `json:"username"`
 	Email     *string `json:"email"`
@@ -45,5 +53,15 @@ func ToDTO(user User) UserDTO {
 		SteamLink: user.SteamLink,
 		TgID:      user.TgID,
 		IsBanned:  user.IsBanned,
+	}
+}
+
+func ToProfileDTO(user User) ProfileDTO {
+	return ProfileDTO{
+		UserID:    user.UserID,
+		Username:  user.Username,
+		AvatarURL: user.AvatarURL,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
 	}
 }

@@ -49,3 +49,34 @@ returning map_id, name, link, is_esports_pool, image_path;
 -- name: DeleteMap :exec
 delete from maps
 where map_id = $1;
+
+-- name: ListLineups :many
+select grenade_id, map_id, user_id, grenade_class_id, link_to_video, title, description, is_approved, views, preview_image_path, created_at
+from lineups
+order by grenade_id;
+
+-- name: GetLineupByID :one
+select grenade_id, map_id, user_id, grenade_class_id, link_to_video, title, description, is_approved, views, preview_image_path, created_at
+from lineups
+where grenade_id = $1;
+
+-- name: CreateLineup :one
+insert into lineups (map_id, user_id, grenade_class_id, link_to_video, title, description, is_approved, views, preview_image_path)
+values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+returning grenade_id, map_id, user_id, grenade_class_id, link_to_video, title, description, is_approved, views, preview_image_path, created_at;
+
+-- name: UpdateLineup :one
+update lineups
+set map_id = $2, user_id = $3, grenade_class_id = $4, link_to_video = $5, title = $6, description = $7, is_approved = $8, views = $9, preview_image_path = $10, updated_at = now()
+where grenade_id = $1
+returning grenade_id, map_id, user_id, grenade_class_id, link_to_video, title, description, is_approved, views, preview_image_path, created_at;
+
+-- name: ChangeLineupGrenadeClass :one
+update lineups
+set grenade_class_id = $2, updated_at = now()
+where grenade_id = $1
+returning grenade_id, map_id, user_id, grenade_class_id, link_to_video, title, description, is_approved, views, preview_image_path, created_at;
+
+-- name: DeleteLineup :exec
+delete from lineups
+where grenade_id = $1;

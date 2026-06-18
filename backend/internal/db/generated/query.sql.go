@@ -11,6 +11,112 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const changeLineupGrenadeClass = `-- name: ChangeLineupGrenadeClass :one
+update lineups
+set grenade_class_id = $2, updated_at = now()
+where grenade_id = $1
+returning grenade_id, map_id, user_id, grenade_class_id, link_to_video, title, description, is_approved, views, preview_image_path, created_at
+`
+
+type ChangeLineupGrenadeClassParams struct {
+	GrenadeID      int32
+	GrenadeClassID int32
+}
+
+type ChangeLineupGrenadeClassRow struct {
+	GrenadeID        int32
+	MapID            int32
+	UserID           int32
+	GrenadeClassID   int32
+	LinkToVideo      pgtype.Text
+	Title            string
+	Description      pgtype.Text
+	IsApproved       bool
+	Views            int32
+	PreviewImagePath pgtype.Text
+	CreatedAt        pgtype.Timestamptz
+}
+
+func (q *Queries) ChangeLineupGrenadeClass(ctx context.Context, arg ChangeLineupGrenadeClassParams) (ChangeLineupGrenadeClassRow, error) {
+	row := q.db.QueryRow(ctx, changeLineupGrenadeClass, arg.GrenadeID, arg.GrenadeClassID)
+	var i ChangeLineupGrenadeClassRow
+	err := row.Scan(
+		&i.GrenadeID,
+		&i.MapID,
+		&i.UserID,
+		&i.GrenadeClassID,
+		&i.LinkToVideo,
+		&i.Title,
+		&i.Description,
+		&i.IsApproved,
+		&i.Views,
+		&i.PreviewImagePath,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const createLineup = `-- name: CreateLineup :one
+insert into lineups (map_id, user_id, grenade_class_id, link_to_video, title, description, is_approved, views, preview_image_path)
+values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+returning grenade_id, map_id, user_id, grenade_class_id, link_to_video, title, description, is_approved, views, preview_image_path, created_at
+`
+
+type CreateLineupParams struct {
+	MapID            int32
+	UserID           int32
+	GrenadeClassID   int32
+	LinkToVideo      pgtype.Text
+	Title            string
+	Description      pgtype.Text
+	IsApproved       bool
+	Views            int32
+	PreviewImagePath pgtype.Text
+}
+
+type CreateLineupRow struct {
+	GrenadeID        int32
+	MapID            int32
+	UserID           int32
+	GrenadeClassID   int32
+	LinkToVideo      pgtype.Text
+	Title            string
+	Description      pgtype.Text
+	IsApproved       bool
+	Views            int32
+	PreviewImagePath pgtype.Text
+	CreatedAt        pgtype.Timestamptz
+}
+
+func (q *Queries) CreateLineup(ctx context.Context, arg CreateLineupParams) (CreateLineupRow, error) {
+	row := q.db.QueryRow(ctx, createLineup,
+		arg.MapID,
+		arg.UserID,
+		arg.GrenadeClassID,
+		arg.LinkToVideo,
+		arg.Title,
+		arg.Description,
+		arg.IsApproved,
+		arg.Views,
+		arg.PreviewImagePath,
+	)
+	var i CreateLineupRow
+	err := row.Scan(
+		&i.GrenadeID,
+		&i.MapID,
+		&i.UserID,
+		&i.GrenadeClassID,
+		&i.LinkToVideo,
+		&i.Title,
+		&i.Description,
+		&i.IsApproved,
+		&i.Views,
+		&i.PreviewImagePath,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const createMap = `-- name: CreateMap :one
 insert into maps (name, link, is_esports_pool, image_path)
 values ($1, $2, $3, $4)
@@ -48,6 +154,16 @@ func (q *Queries) CreateMap(ctx context.Context, arg CreateMapParams) (CreateMap
 		&i.ImagePath,
 	)
 	return i, err
+}
+
+const deleteLineup = `-- name: DeleteLineup :exec
+delete from lineups
+where grenade_id = $1
+`
+
+func (q *Queries) DeleteLineup(ctx context.Context, grenadeID int32) error {
+	_, err := q.db.Exec(ctx, deleteLineup, grenadeID)
+	return err
 }
 
 const deleteMap = `-- name: DeleteMap :exec
@@ -94,6 +210,45 @@ func (q *Queries) GetHealthValue(ctx context.Context) (int32, error) {
 	var value int32
 	err := row.Scan(&value)
 	return value, err
+}
+
+const getLineupByID = `-- name: GetLineupByID :one
+select grenade_id, map_id, user_id, grenade_class_id, link_to_video, title, description, is_approved, views, preview_image_path, created_at
+from lineups
+where grenade_id = $1
+`
+
+type GetLineupByIDRow struct {
+	GrenadeID        int32
+	MapID            int32
+	UserID           int32
+	GrenadeClassID   int32
+	LinkToVideo      pgtype.Text
+	Title            string
+	Description      pgtype.Text
+	IsApproved       bool
+	Views            int32
+	PreviewImagePath pgtype.Text
+	CreatedAt        pgtype.Timestamptz
+}
+
+func (q *Queries) GetLineupByID(ctx context.Context, grenadeID int32) (GetLineupByIDRow, error) {
+	row := q.db.QueryRow(ctx, getLineupByID, grenadeID)
+	var i GetLineupByIDRow
+	err := row.Scan(
+		&i.GrenadeID,
+		&i.MapID,
+		&i.UserID,
+		&i.GrenadeClassID,
+		&i.LinkToVideo,
+		&i.Title,
+		&i.Description,
+		&i.IsApproved,
+		&i.Views,
+		&i.PreviewImagePath,
+		&i.CreatedAt,
+	)
+	return i, err
 }
 
 const getMapByID = `-- name: GetMapByID :one
@@ -200,6 +355,58 @@ func (q *Queries) ListGrenadeClasses(ctx context.Context) ([]ListGrenadeClassesR
 	return items, nil
 }
 
+const listLineups = `-- name: ListLineups :many
+select grenade_id, map_id, user_id, grenade_class_id, link_to_video, title, description, is_approved, views, preview_image_path, created_at
+from lineups
+order by grenade_id
+`
+
+type ListLineupsRow struct {
+	GrenadeID        int32
+	MapID            int32
+	UserID           int32
+	GrenadeClassID   int32
+	LinkToVideo      pgtype.Text
+	Title            string
+	Description      pgtype.Text
+	IsApproved       bool
+	Views            int32
+	PreviewImagePath pgtype.Text
+	CreatedAt        pgtype.Timestamptz
+}
+
+func (q *Queries) ListLineups(ctx context.Context) ([]ListLineupsRow, error) {
+	rows, err := q.db.Query(ctx, listLineups)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListLineupsRow
+	for rows.Next() {
+		var i ListLineupsRow
+		if err := rows.Scan(
+			&i.GrenadeID,
+			&i.MapID,
+			&i.UserID,
+			&i.GrenadeClassID,
+			&i.LinkToVideo,
+			&i.Title,
+			&i.Description,
+			&i.IsApproved,
+			&i.Views,
+			&i.PreviewImagePath,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listMaps = `-- name: ListMaps :many
 select m.map_id, m.name, m.link, m.is_esports_pool, m.image_path, count(l.grenade_id)::int as quantity
 from maps m
@@ -290,6 +497,70 @@ func (q *Queries) ListUsers(ctx context.Context) ([]ListUsersRow, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateLineup = `-- name: UpdateLineup :one
+update lineups
+set map_id = $2, user_id = $3, grenade_class_id = $4, link_to_video = $5, title = $6, description = $7, is_approved = $8, views = $9, preview_image_path = $10, updated_at = now()
+where grenade_id = $1
+returning grenade_id, map_id, user_id, grenade_class_id, link_to_video, title, description, is_approved, views, preview_image_path, created_at
+`
+
+type UpdateLineupParams struct {
+	GrenadeID        int32
+	MapID            int32
+	UserID           int32
+	GrenadeClassID   int32
+	LinkToVideo      pgtype.Text
+	Title            string
+	Description      pgtype.Text
+	IsApproved       bool
+	Views            int32
+	PreviewImagePath pgtype.Text
+}
+
+type UpdateLineupRow struct {
+	GrenadeID        int32
+	MapID            int32
+	UserID           int32
+	GrenadeClassID   int32
+	LinkToVideo      pgtype.Text
+	Title            string
+	Description      pgtype.Text
+	IsApproved       bool
+	Views            int32
+	PreviewImagePath pgtype.Text
+	CreatedAt        pgtype.Timestamptz
+}
+
+func (q *Queries) UpdateLineup(ctx context.Context, arg UpdateLineupParams) (UpdateLineupRow, error) {
+	row := q.db.QueryRow(ctx, updateLineup,
+		arg.GrenadeID,
+		arg.MapID,
+		arg.UserID,
+		arg.GrenadeClassID,
+		arg.LinkToVideo,
+		arg.Title,
+		arg.Description,
+		arg.IsApproved,
+		arg.Views,
+		arg.PreviewImagePath,
+	)
+	var i UpdateLineupRow
+	err := row.Scan(
+		&i.GrenadeID,
+		&i.MapID,
+		&i.UserID,
+		&i.GrenadeClassID,
+		&i.LinkToVideo,
+		&i.Title,
+		&i.Description,
+		&i.IsApproved,
+		&i.Views,
+		&i.PreviewImagePath,
+		&i.CreatedAt,
+	)
+	return i, err
 }
 
 const updateMap = `-- name: UpdateMap :one
