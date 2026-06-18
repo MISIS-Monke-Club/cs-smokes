@@ -24,6 +24,7 @@
 
 Create or replace these backend files:
 
+- `backend/dockerfile.legacy-django`: preserved Django image target used only for baseline capture and contract comparison.
 - `backend/go.mod`: Go module definition.
 - `backend/go.sum`: Go dependency locks.
 - `backend/cmd/server/main.go`: server entrypoint.
@@ -58,6 +59,7 @@ Create or replace these backend files:
 - `backend/tests/contract/*.go`: Go contract fixture runner.
 - `backend/tools/migrate-django/*.go`: production migration tool.
 - `backend/tools/logscan/*.go`: sentinel token log scanner.
+- `backend/tools/ws-redaction-probe/*.go`: production-like WebSocket sentinel probe.
 
 Create these admin frontend files:
 
@@ -81,6 +83,7 @@ Modify these shared files:
 
 - `docker-compose.yaml`: replace Django backend command/image behavior, add `admin-frontend`.
 - `docker-compose.prod.yaml`: replace Django backend, add admin static serving/build, preserve db/redis/bot.
+- `docker-compose.legacy-django.yaml`: preserved legacy Django backend on `localhost:3001` for baseline contract capture and contract diff.
 - `nginx/nginx.conf`: route `/api/*`, `/ws/api/*`, `/media/*`, `/admin/*`; redact `token` in logs.
 - `.env.example`: replace Django-specific names with Go names while keeping compatibility aliases where compose still needs them.
 - `README.md`: updated local run instructions.
@@ -88,7 +91,64 @@ Modify these shared files:
 - `admin-frontend/README.md`: admin setup and security notes.
 - `tg-frontend/src/widgets/request-feed/request-feed.tsx`: minimal WebSocket token/base-URL adapter only.
 
-## Task 1: Backend Foundation
+## Task 1: Preserve Legacy Django Contract Baseline
+
+**Files:**
+- Create: `backend/dockerfile.legacy-django`
+- Create: `docker-compose.legacy-django.yaml`
+- Create: `docs/legacy-contract/manifest.json`
+- Create: `docs/legacy-contract/README.md`
+- Create: `backend/tests/contract/legacy-capture.md`
+- Modify: `README.md`
+
+- [ ] **Step 1: Create preserved legacy Django image target**
+
+Add `backend/dockerfile.legacy-django` that builds the current Django backend runtime before replacing `backend/` with Go files. The target must install the current Python requirements, run the current Django ASGI/uvicorn entrypoint, and remain buildable after the Go rewrite changes the default backend Dockerfile.
+
+- [ ] **Step 2: Add legacy compose override**
+
+Create `docker-compose.legacy-django.yaml` with a service named `legacy-django` that:
+
+- builds `backend/dockerfile.legacy-django`;
+- uses the same PostgreSQL and Redis service dependencies as the current backend;
+- binds Django to host port `3001`;
+- mounts media read-only unless a baseline capture explicitly requires fixture media writes.
+
+Run:
+
+```bash
+docker compose -f docker-compose.yaml -f docker-compose.legacy-django.yaml up --build -d legacy-django
+curl -fsS http://localhost:3001/api/health
+```
+
+Expected: legacy Django health returns `200` from `localhost:3001`.
+
+- [ ] **Step 3: Capture initial contract corpus metadata**
+
+Create `docs/legacy-contract/manifest.json` with:
+
+- git commit SHA used to build the preserved Django image;
+- Docker image tag or digest for `legacy-django`;
+- database fixture or seed command used for capture;
+- media fixture path or archive checksum;
+- capture timestamp;
+- contract corpus version;
+- known accepted legacy quirks, including overloaded `/api/favorites/{id}` semantics and slash/no-slash route behavior.
+
+Do not store secrets, JWTs, real user data, or raw Telegram credentials in the manifest.
+
+- [ ] **Step 4: Document baseline replay**
+
+Create `docs/legacy-contract/README.md` and `backend/tests/contract/legacy-capture.md` with exact commands to start `legacy-django` on `localhost:3001`, seed deterministic data, capture or refresh contract fixtures, and stop the service.
+
+- [ ] **Step 5: Commit legacy baseline preservation**
+
+```bash
+git add backend/dockerfile.legacy-django docker-compose.legacy-django.yaml docs/legacy-contract backend/tests/contract/legacy-capture.md README.md
+git commit -m "test: preserve Django contract baseline"
+```
+
+## Task 2: Backend Foundation
 
 **Files:**
 - Create: `backend/go.mod`
@@ -355,7 +415,69 @@ git add backend/go.mod backend/go.sum backend/cmd backend/internal/config backen
 git commit -m "feat: scaffold Go backend foundation"
 ```
 
-## Task 2: Database Migrations And sqlc Skeleton
+## Task 3: Write Gate Middleware And Production Default
+
+**Files:**
+- Modify: `backend/internal/config/config.go`
+- Modify: `backend/internal/platform/httpx/middleware.go`
+- Modify: `backend/internal/platform/httpserver/server.go`
+- Modify: `docker-compose.prod.yaml`
+- Modify: `.env.example`
+- Test: `backend/internal/platform/httpx/write_gate_test.go`
+- Test: `backend/internal/config/config_test.go`
+
+- [ ] **Step 1: Write failing write-gate middleware tests**
+
+Create `backend/internal/platform/httpx/write_gate_test.go` with table-driven coverage:
+
+- `POST`, `PUT`, `PATCH`, and `DELETE` to public write routes return `503`;
+- `POST`, `PUT`, `PATCH`, and `DELETE` to `/api/admin/*` return `503`;
+- `GET`, `HEAD`, and `OPTIONS` to public/admin routes pass through;
+- `GET /api/health` and `GET /api/health/` pass through without auth;
+- blocked responses use stable JSON:
+
+```json
+{ "error": "write_gate_enabled", "detail": "Writes are temporarily disabled during migration." }
+```
+
+- [ ] **Step 2: Write failing config tests**
+
+Extend `backend/internal/config/config_test.go` to assert:
+
+- `WRITE_GATE=true` sets `cfg.WriteGate` to `true`;
+- production-like env parsing defaults `WS_ALLOW_UNAUTHENTICATED_DEV=false`;
+- missing `WRITE_GATE` defaults to `false` in local/dev config, while `docker-compose.prod.yaml` explicitly sets `WRITE_GATE=true`.
+
+- [ ] **Step 3: Implement write-gate middleware**
+
+Implement middleware in `backend/internal/platform/httpx/middleware.go` that activates only when `cfg.WriteGate == true`, permits safe methods `GET`, `HEAD`, and `OPTIONS`, permits `/api/health` and `/api/health/`, and blocks unsafe methods `POST`, `PUT`, `PATCH`, and `DELETE` for public and admin write routes before handler side effects run.
+
+- [ ] **Step 4: Wire the middleware into the router**
+
+Apply the middleware in `backend/internal/platform/httpserver/server.go` before route registration. The middleware must not change CORS preflight behavior and must not require authentication for health/read smoke.
+
+- [ ] **Step 5: Set production default**
+
+Update `docker-compose.prod.yaml` and `.env.example` so production compose sets `WRITE_GATE=true` until the release runbook explicitly opens writes after post-cutover smoke, contract diff, and migration checks pass. Keep `WS_ALLOW_UNAUTHENTICATED_DEV=false` in every production example.
+
+- [ ] **Step 6: Run write-gate checks**
+
+```bash
+cd backend
+go test ./internal/config ./internal/platform/httpx ./...
+docker compose -f docker-compose.prod.yaml config | grep 'WRITE_GATE=true'
+```
+
+Expected: tests PASS; rendered production compose contains `WRITE_GATE=true`; read/health tests pass while unsafe methods are blocked.
+
+- [ ] **Step 7: Commit write gate**
+
+```bash
+git add backend/internal/config backend/internal/platform/httpx backend/internal/platform/httpserver/server.go docker-compose.prod.yaml .env.example
+git commit -m "feat: add migration write gate"
+```
+
+## Task 4: Database Migrations And sqlc Skeleton
 
 **Files:**
 - Create: `backend/migrations/000001_initial_schema.up.sql`
@@ -387,11 +509,12 @@ func TestInitialSchemaPreservesPublicIDColumns(t *testing.T) {
 	}
 	content := string(contentBytes)
 	required := []string{
-		"user_id integer primary key",
-		"map_id integer primary key",
-		"grenade_id integer primary key",
-		"grenade_class_id integer primary key",
-		"property_id integer primary key",
+		"user_id integer generated by default as identity primary key",
+		"map_id integer generated by default as identity primary key",
+		"grenade_id integer generated by default as identity primary key",
+		"grenade_class_id integer generated by default as identity primary key",
+		"property_id integer generated by default as identity primary key",
+		"id integer generated by default as identity primary key",
 		"unique (tg_id)",
 	}
 	for _, text := range required {
@@ -417,7 +540,7 @@ Create `backend/migrations/000001_initial_schema.up.sql` with tables:
 
 ```sql
 create table users (
-    user_id integer primary key,
+    user_id integer generated by default as identity primary key,
     username text not null unique,
     email text unique,
     password_hash text,
@@ -432,7 +555,7 @@ create table users (
 );
 
 create table admin_roles (
-    role_id integer primary key,
+    role_id integer generated by default as identity primary key,
     code text not null unique check (code in ('superuser', 'base_admin', 'editor')),
     created_at timestamptz not null default now()
 );
@@ -445,7 +568,7 @@ create table user_admin_roles (
 );
 
 create table maps (
-    map_id integer primary key,
+    map_id integer generated by default as identity primary key,
     name text not null,
     link text,
     is_esports_pool boolean not null default false,
@@ -455,7 +578,7 @@ create table maps (
 );
 
 create table grenade_classes (
-    grenade_class_id integer primary key,
+    grenade_class_id integer generated by default as identity primary key,
     name text not null,
     description text,
     price integer not null default 0,
@@ -464,7 +587,7 @@ create table grenade_classes (
 );
 
 create table lineups (
-    grenade_id integer primary key,
+    grenade_id integer generated by default as identity primary key,
     map_id integer not null references maps(map_id) on delete cascade,
     user_id integer not null references users(user_id) on delete cascade,
     grenade_class_id integer not null references grenade_classes(grenade_class_id) on delete restrict,
@@ -479,7 +602,7 @@ create table lineups (
 );
 
 create table properties (
-    property_id integer primary key,
+    property_id integer generated by default as identity primary key,
     name text not null,
     value text,
     created_at timestamptz not null default now(),
@@ -501,7 +624,7 @@ create table favorites (
 );
 
 create table pull_requests (
-    id integer primary key,
+    id integer generated by default as identity primary key,
     lineup_id integer not null references lineups(grenade_id) on delete cascade,
     creator_id integer not null references users(user_id) on delete cascade,
     approver_id integer references users(user_id) on delete set null,
@@ -511,7 +634,7 @@ create table pull_requests (
 );
 
 create table comments (
-    id integer primary key,
+    id integer generated by default as identity primary key,
     pull_request_id integer not null references pull_requests(id) on delete cascade,
     author_id integer not null references users(user_id) on delete cascade,
     text text not null,
@@ -591,7 +714,7 @@ git add backend/migrations backend/sqlc.yaml backend/internal/db
 git commit -m "feat: add Go database schema skeleton"
 ```
 
-## Task 3: Auth Compatibility
+## Task 5: Auth Compatibility
 
 **Files:**
 - Create: `backend/internal/auth/password.go`
@@ -689,6 +812,14 @@ Create handlers for:
 - `POST /api/login/`
 - `POST /api/register/`
 
+Add handler tests before SQL integration that assert:
+
+- Telegram login returns `{ "error": "init_data is required" }` for missing `init_data`.
+- Telegram login returns `{ "error": "Invalid hash. Data has been tampered with." }` for invalid hash.
+- username login and email login both return `{ user, access_token, refresh_token }`.
+- invalid credentials preserve visible field-error behavior for `username` and `password`.
+- registration returns `201` public user DTO and duplicate email/required-field errors match the contract corpus.
+
 The first implementation can use repository interfaces that are backed by tests before connecting to SQL:
 
 ```go
@@ -717,7 +848,7 @@ git add backend/internal/auth backend/internal/platform/httpserver/server.go
 git commit -m "feat: add compatible auth primitives"
 ```
 
-## Task 4: Golden Contract Harness
+## Task 6: Golden Contract Harness
 
 **Files:**
 - Create: `backend/tests/contract/corpus.yaml`
@@ -728,7 +859,9 @@ git commit -m "feat: add compatible auth primitives"
 
 - [ ] **Step 1: Write corpus for public routes**
 
-Create `backend/tests/contract/corpus.yaml` with representative requests for every public route in the spec. Include both slash and no-slash forms for `/api/maps`, `/api/lineups`, `/api/users`, `/api/grenade-classes`, `/api/favorites/{id}`, `/api/pull_requests/{id}`, and `/api/health`.
+Create `backend/tests/contract/corpus.yaml` with representative requests for every public route in the spec. Include method-by-method coverage for every public route listed in the spec, including success, validation error, auth error, permission error, missing row `404`, unsupported method `405`, duplicate write error, multipart write, and both slash/no-slash forms where Django currently accepts both. Include both slash and no-slash forms for `/api/maps`, `/api/lineups`, `/api/users`, `/api/grenade-classes`, `/api/favorites/{id}`, `/api/pull_requests/{id}`, and `/api/health`.
+
+The corpus must be runnable against the preserved `legacy-django` service from Task 1. Record the manifest SHA/image tag from `docs/legacy-contract/manifest.json` in corpus metadata so a later backend replacement cannot lose the contract baseline.
 
 - [ ] **Step 2: Add contract runner test**
 
@@ -744,8 +877,8 @@ func TestCorpusLoads(t *testing.T) {
 	if err != nil {
 		t.Fatalf("LoadCorpus returned error: %v", err)
 	}
-	if len(corpus.Cases) < 20 {
-		t.Fatalf("expected at least 20 contract cases, got %d", len(corpus.Cases))
+	if len(corpus.Cases) < 80 {
+		t.Fatalf("expected at least 80 contract cases, got %d", len(corpus.Cases))
 	}
 }
 ```
@@ -785,6 +918,8 @@ go run ./tools/contract-diff --old-base http://localhost:3001 --new-base http://
 
 The CLI exits non-zero when status code, content type, JSON keys, enum values, nullable field presence, or representative error body differs.
 
+The CLI must verify that `--old-base` is reachable before issuing new-backend requests. If `localhost:3001` is unavailable, it exits non-zero with an explicit "legacy baseline unavailable" error instead of silently using stale fixtures.
+
 - [ ] **Step 5: Run contract loader tests**
 
 ```bash
@@ -801,7 +936,7 @@ git add backend/tests/contract backend/tools/contract-diff backend/go.mod backen
 git commit -m "test: add public API contract harness"
 ```
 
-## Task 5: Public Users And Grenade Classes
+## Task 7: Public Users And Grenade Classes
 
 **Files:**
 - Create: `backend/internal/users/dto.go`
@@ -821,8 +956,17 @@ git commit -m "test: add public API contract harness"
 
 Create tests that assert:
 
+- `GET /api/users` returns a list of user DTOs.
+- `POST /api/users` accepts registration-compatible JSON and returns `201` user DTO.
 - `GET /api/users/{id}` returns `user_id`, `username`, `email`, `first_name`, `last_name`, `avatar_url`, `steam_link`, `tg_id`, `is_banned`.
-- `GET /api/grenade-classes` returns `grenade_class_id`, `name`, `description`, `price`.
+- `PUT /api/users/{id}` and `PATCH /api/users/{id}` preserve public authenticated update behavior and visible validation field-error bodies.
+- `DELETE /api/users/{id}` returns `204` empty body.
+- missing users return the legacy-visible `404` body.
+- duplicate username/email writes return field errors compatible with the contract corpus.
+- `GET /api/grenade-classes` returns grenade class DTOs.
+- `POST /api/grenade-classes` returns `201` and validates `name`, `description`, and `price`.
+- `GET`, `PUT`, `PATCH`, and `DELETE /api/grenade-classes/{id}` preserve current public authenticated CRUD behavior.
+- missing grenade classes return legacy-visible `404`; validation failures return field-error bodies.
 - both slash forms return the same status.
 
 - [ ] **Step 2: Run failing tests**
@@ -905,7 +1049,7 @@ git add backend/internal/users backend/internal/grenadeclasses backend/internal/
 git commit -m "feat: add users and grenade class compatibility routes"
 ```
 
-## Task 6: Media Storage And Public Maps
+## Task 8: Media Storage And Public Maps
 
 **Files:**
 - Create: `backend/internal/media/storage.go`
@@ -927,8 +1071,13 @@ Create tests for allowed `image/png`, `image/jpeg`, max size from config, path u
 Assert:
 
 - `GET /api/maps?ordering=by_alphabet` returns list.
+- `GET /api/maps?ordering=quantity`, `GET /api/maps?ordering=-quantity`, `GET /api/maps?is_esports_pool=true`, and `GET /api/maps?query=mirage` preserve filtering and ordering behavior.
 - `GET /api/maps/{id}` returns `map_lineups`.
 - `POST /api/maps` accepts multipart `image_link`.
+- `PUT /api/maps/{id}` and `PATCH /api/maps/{id}` accept the same multipart/form fields as Django and return map DTOs.
+- `DELETE /api/maps/{id}` returns `204` empty body and invalidates affected list/detail caches.
+- missing map reads/writes return legacy-visible `404` bodies.
+- invalid multipart fields return representative DRF-like validation bodies captured in the contract corpus.
 - `image_link` is `null` or compatible URL.
 
 - [ ] **Step 3: Run failing map/media tests**
@@ -983,7 +1132,7 @@ git add backend/internal/media backend/internal/maps backend/internal/db backend
 git commit -m "feat: add media storage and map routes"
 ```
 
-## Task 7: Public Lineups And Derived Fields
+## Task 9: Public Lineups And Derived Fields
 
 **Files:**
 - Create: `backend/internal/lineups/dto.go`
@@ -1003,6 +1152,17 @@ Assert supported filters: `is_approved`, `ordering`, `query`, `by_user_name`; as
 - [ ] **Step 2: Write lineup DTO tests**
 
 Assert lineup DTO includes `creator`, `grenade_class`, `property_list`, `is_favorite`, and `request` with `WAITING FOR CREATION` when no PR exists.
+
+Also assert method-by-method public compatibility:
+
+- `GET /api/lineups` covers `is_approved`, `ordering`, `query`, and `by_user_name`.
+- `POST /api/lineups` accepts Django-compatible multipart field names and returns `201` lineup DTO.
+- `GET /api/lineups/{id}` returns derived fields and compatible media URLs.
+- `PUT /api/lineups/{id}` and `PATCH /api/lineups/{id}` accept lineup multipart/form fields and preserve partial-update behavior.
+- `DELETE /api/lineups/{id}` returns `204` empty body.
+- `PATCH /api/lineups/{id}/change-grenade-class` returns the current tolerated success body, `400` for missing class id, and `404` for unknown class id.
+- `GET /api/lineups/view_filters` and `GET /api/lineups/view_sorts` return exact DTOs from the spec.
+- missing lineups and invalid multipart bodies return representative legacy-visible error bodies captured in the contract corpus.
 
 - [ ] **Step 3: Run failing lineup tests**
 
@@ -1064,7 +1224,7 @@ git add backend/internal/lineups backend/internal/db backend/internal/platform/h
 git commit -m "feat: add lineup compatibility routes"
 ```
 
-## Task 8: Properties And Favorites
+## Task 10: Properties And Favorites
 
 **Files:**
 - Create: `backend/internal/properties/dto.go`
@@ -1082,7 +1242,15 @@ git commit -m "feat: add lineup compatibility routes"
 
 - [ ] **Step 1: Write property link tests**
 
-Assert `GET /api/property-list?grenade_id=1`, `POST /api/lineups/{id}/properties`, duplicate relation errors, and delete missing relation `404`.
+Assert:
+
+- `GET /api/properties` returns property DTO list.
+- `POST /api/properties` returns `201` and validates `name` and `value`.
+- `GET`, `PUT`, `PATCH`, and `DELETE /api/properties/{id}` preserve current public authenticated CRUD behavior.
+- missing properties return legacy-visible `404` bodies and validation failures return field-error bodies.
+- `GET /api/property-list?grenade_id=1` returns relation DTOs with exact shape.
+- `POST /api/lineups/{id}/properties` returns `201`, duplicate relation errors, and missing property errors.
+- `DELETE /api/lineups/{grenade_id}/properties/{property_id}` returns `204`; delete missing relation returns `404`.
 
 - [ ] **Step 2: Write favorites overload tests**
 
@@ -1092,6 +1260,7 @@ Assert:
 - `GET /api/favorites/{id}` treats `{id}` as `user_id`.
 - `DELETE /api/favorites/{id}` treats `{id}` as `grenade_id`.
 - duplicate favorite returns DRF-like `non_field_errors`.
+- missing lineup/user cases return representative legacy-visible error bodies.
 
 - [ ] **Step 3: Run failing tests**
 
@@ -1137,7 +1306,7 @@ git add backend/internal/properties backend/internal/favorites backend/internal/
 git commit -m "feat: add properties and favorites compatibility routes"
 ```
 
-## Task 9: Pull Requests And REST Comments
+## Task 11: Pull Requests And REST Comments
 
 **Files:**
 - Create: `backend/internal/pullrequests/dto.go`
@@ -1154,15 +1323,30 @@ git commit -m "feat: add properties and favorites compatibility routes"
 
 Assert:
 
+- `GET /api/pull_requests` returns list DTOs.
+- `POST /api/pull_requests` accepts `{ "lineup_id": number }`, derives creator from auth, returns current create serializer body containing `lineup_id`, and returns representative missing/unknown lineup error bodies.
+- `GET /api/pull_requests/{id}` returns detail DTO.
+- `PATCH /api/pull_requests/{id}` accepts compatible status payloads and preserves creator/admin permissions.
+- `DELETE /api/pull_requests/{id}` returns `204`.
 - creator can cancel own PR;
 - non-creator non-admin cannot cancel;
 - admin can approve/reject;
 - editor cannot approve/reject;
+- approve/reject/cancel endpoints return exact `detail` messages and `403` bodies for unauthorized users;
+- missing PRs return legacy-visible `404` bodies;
 - `PUT` returns `405`.
 
 - [ ] **Step 2: Write comment DTO tests**
 
-Assert comments are ordered by `created_at` and creator has `role`.
+Assert:
+
+- `GET /api/pull_requests/{id}/comments` returns comments ordered by `created_at` and creator has `role`.
+- `POST /api/pull_requests/{id}/comments` returns `201` comment DTO and validates missing `text`.
+- `GET /api/comments/{id}` returns comment DTO.
+- `PATCH /api/comments/{id}` accepts `{ "text": string }` and preserves current public authenticated behavior.
+- `DELETE /api/comments/{id}` returns `204`.
+- `PUT /api/comments/{id}` returns `405` when routed.
+- missing PR/comment cases return representative legacy-visible `404` bodies.
 
 - [ ] **Step 3: Run failing PR tests**
 
@@ -1205,7 +1389,7 @@ git add backend/internal/pullrequests backend/internal/db backend/internal/platf
 git commit -m "feat: add pull request and comment routes"
 ```
 
-## Task 10: WebSocket Comments And Token Redaction
+## Task 12: WebSocket Comments And Token Redaction
 
 **Files:**
 - Create: `backend/internal/realtime/hub.go`
@@ -1213,7 +1397,9 @@ git commit -m "feat: add pull request and comment routes"
 - Create: `backend/internal/realtime/handler_test.go`
 - Create: `backend/internal/platform/logger/redaction_test.go`
 - Create: `backend/tools/logscan/main.go`
+- Create: `backend/tools/ws-redaction-probe/main.go`
 - Modify: `backend/internal/platform/httpserver/server.go`
+- Modify: `docker-compose.prod.yaml`
 - Modify: `tg-frontend/src/widgets/request-feed/request-feed.tsx`
 - Test: `backend/internal/realtime/handler_test.go`
 
@@ -1224,6 +1410,7 @@ Assert:
 - missing token rejected;
 - malformed token rejected;
 - expired token rejected;
+- production config rejects unauthenticated WebSocket when `WS_ALLOW_UNAUTHENTICATED_DEV=false`;
 - `create` with mismatched `user_id` rejected;
 - unauthorized delete rejected;
 - valid create broadcasts full comment array.
@@ -1251,16 +1438,29 @@ func TestRedactTokenQuery(t *testing.T) {
 
 Implement `hasSubstring` in the test or use `strings.Contains`.
 
-- [ ] **Step 3: Run failing realtime tests**
+- [ ] **Step 3: Write redaction probe and logscan tests**
+
+Create `backend/tools/ws-redaction-probe` as an executable harness that:
+
+- obtains or mints a normal valid signed access token using the same `SECRET_KEY` and JWT issuer as the backend; the raw token string from that mint/login step is the success-path sentinel written to `./tmp/logscan/sentinels.txt`;
+- opens `ws://localhost:3000/ws/api/pull_requests/1/comments/?token=<valid_access_token>` with that valid access token, sends one valid create payload, and receives the comment broadcast;
+- separately exercises invalid-token failure paths with clearly invalid values such as `malformed.token.value` and an expired generated token, and writes those raw invalid/expired token values to `./tmp/logscan/sentinels.txt`;
+- sends one invalid payload on an authenticated connection to exercise non-auth error handling;
+- captures nginx access/error logs, backend request logs, backend application error logs, metrics/traces if enabled, and client diagnostics into `./tmp/logscan`;
+- records the effective production config and fails if `WS_ALLOW_UNAUTHENTICATED_DEV` is not `false`.
+
+Create `backend/tools/logscan` as an executable scanner that fails if any raw sentinel from `./tmp/logscan/sentinels.txt` appears in any captured sink. It must scan plain text and JSON logs under the provided directory and report the matching file path without echoing any sentinel value.
+
+- [ ] **Step 4: Run failing realtime tests**
 
 ```bash
 cd backend
-go test ./internal/realtime ./internal/platform/logger
+go test ./internal/realtime ./internal/platform/logger ./tools/logscan ./tools/ws-redaction-probe
 ```
 
-Expected: FAIL because realtime and redaction functions are missing.
+Expected: FAIL because realtime, redaction, probe, and scanner functions are missing.
 
-- [ ] **Step 4: Implement WebSocket handler**
+- [ ] **Step 5: Implement WebSocket handler**
 
 Use `nhooyr.io/websocket`. Route:
 
@@ -1270,7 +1470,7 @@ Use `nhooyr.io/websocket`. Route:
 
 Authenticate using `token` query parameter. Derive actor from JWT. Accept `user_id` in create payload only if it matches the token user.
 
-- [ ] **Step 5: Implement frontend adapter**
+- [ ] **Step 6: Implement frontend adapter**
 
 Modify only `tg-frontend/src/widgets/request-feed/request-feed.tsx`:
 
@@ -1278,26 +1478,28 @@ Modify only `tg-frontend/src/widgets/request-feed/request-feed.tsx`:
 - append `token=${accessToken}`;
 - keep message payloads and rendering unchanged.
 
-- [ ] **Step 6: Run backend and frontend checks**
+- [ ] **Step 7: Run backend, frontend, and redaction checks**
 
 ```bash
 cd backend
-go test ./internal/realtime ./internal/platform/logger ./...
+go test ./internal/realtime ./internal/platform/logger ./tools/logscan ./tools/ws-redaction-probe ./...
+go run ./tools/ws-redaction-probe --base-url http://localhost:3000 --ws-url ws://localhost:3000/ws/api/pull_requests/1/comments/ --mint-valid-token --secret-key "$SECRET_KEY" --user-id 1 --capture-dir ./tmp/logscan
+go run ./tools/logscan --sentinel-file ./tmp/logscan/sentinels.txt --logs ./tmp/logscan
 cd ../tg-frontend
 npm run type-check
 npm run test
 ```
 
-Expected: backend tests PASS; frontend type-check and tests PASS.
+Expected: backend tests PASS; redaction probe creates `./tmp/logscan` and `./tmp/logscan/sentinels.txt`; `sentinels.txt` contains the valid raw JWT used for the success path plus the invalid and expired probe token values; success path opens WebSocket, creates a comment, and receives the broadcast; invalid/malformed/expired token paths are rejected; logscan PASS with none of the sentinel values present in nginx, backend, app, metrics/trace, or client diagnostic captures; frontend type-check and tests PASS.
 
-- [ ] **Step 7: Commit WebSocket compatibility**
+- [ ] **Step 8: Commit WebSocket compatibility**
 
 ```bash
-git add backend/internal/realtime backend/internal/platform/logger backend/tools/logscan backend/internal/platform/httpserver/server.go tg-frontend/src/widgets/request-feed/request-feed.tsx
+git add backend/internal/realtime backend/internal/platform/logger backend/tools/logscan backend/tools/ws-redaction-probe backend/internal/platform/httpserver/server.go docker-compose.prod.yaml tg-frontend/src/widgets/request-feed/request-feed.tsx
 git commit -m "feat: add authenticated websocket comments"
 ```
 
-## Task 11: Cache Layer And Invalidation
+## Task 13: Cache Layer And Invalidation
 
 **Files:**
 - Create: `backend/internal/cache/cache.go`
@@ -1381,7 +1583,7 @@ git add backend/internal/cache backend/internal/maps backend/internal/lineups ba
 git commit -m "feat: add cache layer and invalidation"
 ```
 
-## Task 12: Admin API Roles
+## Task 14: Admin API Roles
 
 **Files:**
 - Create: `backend/internal/admin/dto.go`
@@ -1400,8 +1602,12 @@ Assert:
 - superuser can grant roles;
 - base_admin cannot grant roles or delete users;
 - editor cannot approve/reject PRs;
+- superuser and base_admin can list PR comments, create PR comments, and delete any comment through `/api/admin/*`;
+- editor can list PR comments, create PR comments, and delete only comments authored by that editor through `/api/admin/*`;
+- editor cannot delete another user's admin comment and receives the admin forbidden error shape;
 - authenticated non-admin cannot access `/api/admin/*`;
 - anonymous cannot access `/api/admin/*`;
+- non-admin and anonymous users cannot list, create, delete, or update comments through admin routes;
 - tampered JWT role claim does not bypass DB role checks.
 
 - [ ] **Step 2: Run failing admin tests**
@@ -1435,9 +1641,20 @@ Implement:
 - `PATCH /api/admin/pull-requests/{id}/approve`
 - `PATCH /api/admin/pull-requests/{id}/reject`
 - `PATCH /api/admin/pull-requests/{id}/cancel`
+- `GET /api/admin/pull-requests/{id}/comments`
+- `POST /api/admin/pull-requests/{id}/comments`
+- `DELETE /api/admin/comments/{id}`
+- `PATCH /api/admin/comments/{id}` only if an admin comment-edit action is exposed; if routed, it must use the same server-side role source and own/all-comment authorization rules as delete.
 - `GET /api/admin/users`
 - `PATCH /api/admin/users/{id}/roles`
 - admin CRUD wrappers for maps, lineups, grenade classes, properties.
+
+Comment authorization:
+
+- superuser and base_admin can list comments on any pull request, create comments on any pull request, and delete any comment;
+- editor can list comments on pull requests visible in the admin UI, create comments, and delete only comments where the editor is the author;
+- authenticated non-admin and anonymous users receive the admin forbidden/unauthorized error shape for every admin comment route;
+- client-supplied role claims never override database-backed roles for admin comment routes.
 
 - [ ] **Step 5: Run admin tests**
 
@@ -1455,7 +1672,7 @@ git add backend/internal/admin backend/internal/db backend/internal/platform/htt
 git commit -m "feat: add admin API role enforcement"
 ```
 
-## Task 13: Admin Frontend Scaffold
+## Task 15: Admin Frontend Scaffold
 
 **Files:**
 - Create: `admin-frontend/package.json`
@@ -1537,7 +1754,7 @@ git add admin-frontend
 git commit -m "feat: scaffold admin frontend"
 ```
 
-## Task 14: Admin Moderation UI
+## Task 16: Admin Moderation UI
 
 **Files:**
 - Create: `admin-frontend/src/entities/pull-request/api.ts`
@@ -1555,7 +1772,13 @@ Assert:
 - PR queue shows status filters;
 - base_admin sees approve/reject/cancel buttons;
 - editor does not see approve/reject buttons;
+- PR detail renders a comments panel with existing comments ordered consistently with the admin API;
+- admin comment form creates a comment and refreshes or appends the rendered comments list;
+- editor can delete own comments but does not see enabled delete controls for other users' comments;
+- base_admin and superuser can delete any rendered comment;
+- hidden or disabled comment controls match the current user's server-backed role;
 - failed backend authorization displays admin error message.
+- a backend `403` from comment create/delete renders the admin error message without mutating the visible comment list.
 
 - [ ] **Step 2: Run failing UI tests**
 
@@ -1568,7 +1791,7 @@ Expected: FAIL until moderation UI exists.
 
 - [ ] **Step 3: Implement moderation pages**
 
-Use tables, compact filters, and detail panel. Avoid cards inside cards. Keep controls dense and operational.
+Use tables, compact filters, and detail panel. The PR detail page includes a comments panel, create-comment form, role-aware delete actions for own/all comments, hidden or disabled controls for unauthorized actions, and backend `403` rendering. Avoid cards inside cards. Keep controls dense and operational.
 
 - [ ] **Step 4: Run admin checks**
 
@@ -1588,35 +1811,39 @@ git add admin-frontend/src/entities/pull-request admin-frontend/src/pages/pull-r
 git commit -m "feat: add admin moderation workspace"
 ```
 
-## Task 15: Admin Content UI
+## Task 17: Admin Maps, Classes, And Properties UI
 
 **Files:**
 - Create: `admin-frontend/src/entities/map/api.ts`
-- Create: `admin-frontend/src/entities/lineup/api.ts`
 - Create: `admin-frontend/src/entities/grenade-class/api.ts`
 - Create: `admin-frontend/src/entities/property/api.ts`
-- Create: `admin-frontend/src/entities/user/api.ts`
 - Create: `admin-frontend/src/pages/maps.tsx`
-- Create: `admin-frontend/src/pages/lineups.tsx`
 - Create: `admin-frontend/src/pages/grenade-classes.tsx`
 - Create: `admin-frontend/src/pages/properties.tsx`
-- Create: `admin-frontend/src/pages/users.tsx`
-- Test: admin page tests for CRUD and role restrictions.
+- Test: `admin-frontend/src/pages/maps.test.tsx`
+- Test: `admin-frontend/src/pages/grenade-classes.test.tsx`
+- Test: `admin-frontend/src/pages/properties.test.tsx`
 
-- [ ] **Step 1: Write CRUD smoke tests**
+- [ ] **Step 1: Write maps/classes/properties UI tests**
 
-Assert maps, lineups, grenade classes, properties, and users pages render tables, create/edit forms, and role-disabled states.
+Assert:
+
+- maps page renders table, filters, create/edit form, image upload field, delete action, and role-disabled states;
+- grenade classes page renders table, create/edit form for `name`, `description`, `price`, delete action, and validation errors;
+- properties page renders table, create/edit form for `name`, `value`, delete action, and validation errors;
+- editor/base_admin/superuser role states match the admin API matrix;
+- failed admin API authorization displays the admin error shape.
 
 - [ ] **Step 2: Run failing tests**
 
 ```bash
 cd admin-frontend
-npm run test -- maps lineups grenade-classes properties users
+npm run test -- maps grenade-classes properties
 ```
 
 Expected: FAIL until pages exist.
 
-- [ ] **Step 3: Implement content pages**
+- [ ] **Step 3: Implement maps/classes/properties pages**
 
 Use shared table/form components only after two pages repeat the same structure. Keep forms explicit for fields from the public/admin DTOs.
 
@@ -1634,11 +1861,110 @@ Expected: PASS.
 - [ ] **Step 5: Commit content UI**
 
 ```bash
-git add admin-frontend/src/entities admin-frontend/src/pages
-git commit -m "feat: add admin content management screens"
+git add admin-frontend/src/entities/map admin-frontend/src/entities/grenade-class admin-frontend/src/entities/property admin-frontend/src/pages/maps.tsx admin-frontend/src/pages/grenade-classes.tsx admin-frontend/src/pages/properties.tsx
+git commit -m "feat: add admin content taxonomy screens"
 ```
 
-## Task 16: Production Migration Tool
+## Task 18: Admin Lineups UI
+
+**Files:**
+- Create: `admin-frontend/src/entities/lineup/api.ts`
+- Create: `admin-frontend/src/entities/lineup/schema.ts`
+- Create: `admin-frontend/src/pages/lineups.tsx`
+- Test: `admin-frontend/src/pages/lineups.test.tsx`
+
+- [ ] **Step 1: Write lineup UI tests**
+
+Assert:
+
+- lineups page renders table with map, creator, grenade class, approval, views, and created date columns;
+- filters cover map, grenade class, approval state, and text query;
+- create/edit form exposes fields from admin lineup DTOs, including media upload fields and property linking;
+- delete action requires confirmation and surfaces admin error bodies;
+- editor/base_admin/superuser role states match the admin API matrix.
+
+- [ ] **Step 2: Run failing lineup UI tests**
+
+```bash
+cd admin-frontend
+npm run test -- lineups
+```
+
+Expected: FAIL until lineup UI exists.
+
+- [ ] **Step 3: Implement lineups page**
+
+Use compact tables and explicit forms. Do not change `tg-frontend` lineup behavior or public DTOs.
+
+- [ ] **Step 4: Run admin checks**
+
+```bash
+cd admin-frontend
+npm run type-check
+npm run test
+npm run build
+```
+
+Expected: PASS.
+
+- [ ] **Step 5: Commit lineups UI**
+
+```bash
+git add admin-frontend/src/entities/lineup admin-frontend/src/pages/lineups.tsx
+git commit -m "feat: add admin lineups screen"
+```
+
+## Task 19: Admin Users And Roles UI
+
+**Files:**
+- Create: `admin-frontend/src/entities/user/api.ts`
+- Create: `admin-frontend/src/entities/user/schema.ts`
+- Create: `admin-frontend/src/pages/users.tsx`
+- Test: `admin-frontend/src/pages/users.test.tsx`
+
+- [ ] **Step 1: Write users/roles UI tests**
+
+Assert:
+
+- users page renders table with user identity, ban state, and admin roles;
+- base_admin can view users and update moderation flags but cannot grant roles or delete users;
+- superuser can grant/revoke roles and delete users;
+- editor cannot access user management navigation;
+- authenticated non-admin and anonymous states redirect or show the admin authorization error;
+- client-supplied role claims do not unlock controls when `/api/admin/me` denies capability.
+
+- [ ] **Step 2: Run failing users UI tests**
+
+```bash
+cd admin-frontend
+npm run test -- users
+```
+
+Expected: FAIL until users/roles UI exists.
+
+- [ ] **Step 3: Implement users/roles page**
+
+Use the admin API role matrix as the only authority for enabled controls. Keep tokens in memory plus `sessionStorage` as defined by the scaffold.
+
+- [ ] **Step 4: Run admin checks**
+
+```bash
+cd admin-frontend
+npm run type-check
+npm run test
+npm run build
+```
+
+Expected: PASS.
+
+- [ ] **Step 5: Commit users/roles UI**
+
+```bash
+git add admin-frontend/src/entities/user admin-frontend/src/pages/users.tsx
+git commit -m "feat: add admin users and roles screen"
+```
+
+## Task 20: Production Migration Tool
 
 **Files:**
 - Create: `backend/tools/migrate-django/main.go`
@@ -1657,7 +1983,7 @@ Assert report fails on:
 - ID remap attempt;
 - duplicate non-null `tg_id`;
 - missing media file that existed in source path;
-- target sequence lower than max migrated ID.
+- any identity sequence whose next value is not greater than `max(id)` for its table after explicit ID load.
 
 - [ ] **Step 2: Run failing migration tool tests**
 
@@ -1685,9 +2011,24 @@ Output includes row counts, ID preservation report, orphan report, media report,
 
 - [ ] **Step 4: Implement load mode**
 
-Load mode copies rows preserving IDs exactly and exits non-zero when any required guarantee fails.
+Load mode copies rows preserving IDs exactly, then runs `setval` or the PostgreSQL equivalent for every identity-backed preserved ID column:
 
-- [ ] **Step 5: Run migration tests**
+- `users.user_id`
+- `admin_roles.role_id`
+- `maps.map_id`
+- `grenade_classes.grenade_class_id`
+- `lineups.grenade_id`
+- `properties.property_id`
+- `pull_requests.id`
+- `comments.id`
+
+After sequence adjustment, the tool must query each table and verify `nextval(sequence) > max(id)` without consuming an unsafe production value permanently; use a transaction or sequence inspection approach that leaves the next inserted row safe. The command exits non-zero when any sequence remains lower than or equal to `max(id)`.
+
+- [ ] **Step 5: Verify post-migration inserts**
+
+Add integration tests that insert explicit migrated IDs, adjust sequences, then insert one row without an explicit ID for users, maps, grenade classes, lineups, properties, pull requests, and comments. Each implicit insert must receive an ID greater than the maximum migrated ID.
+
+- [ ] **Step 6: Run migration tests**
 
 ```bash
 cd backend
@@ -1696,14 +2037,14 @@ go test ./tools/migrate-django ./...
 
 Expected: PASS.
 
-- [ ] **Step 6: Commit migration tool**
+- [ ] **Step 7: Commit migration tool**
 
 ```bash
 git add backend/tools/migrate-django
 git commit -m "feat: add Django data migration tool"
 ```
 
-## Task 17: Docker, nginx, OpenAPI, And Docs
+## Task 21: Docker, nginx, OpenAPI, And Docs
 
 **Files:**
 - Modify: `docker-compose.yaml`
@@ -1752,12 +2093,14 @@ git add docker-compose.yaml docker-compose.prod.yaml nginx/nginx.conf .env.examp
 git commit -m "chore: update Docker nginx and docs for Go backend"
 ```
 
-## Task 18: End-To-End Verification And Release Rehearsal
+## Task 22: End-To-End Verification And Release Rehearsal
 
 **Files:**
 - Create: `docs/release/golang-backend-cutover.md`
 - Create: `docs/release/golang-backend-rollback.md`
 - Create: `backend/tests/e2e/README.md`
+- Modify: `tg-frontend/package.json`
+- Modify: `admin-frontend/package.json`
 - Modify: `backend/tests/contract/corpus.yaml`
 
 - [ ] **Step 1: Run full backend checks**
@@ -1776,13 +2119,15 @@ cd tg-frontend
 npm run type-check
 npm run test
 npm run build
+npm run test:e2e -- --reporter=html --output=../tmp/e2e/tg-frontend
 cd ../admin-frontend
 npm run type-check
 npm run test
 npm run build
+npm run test:e2e -- --reporter=html --output=../tmp/e2e/admin-frontend
 ```
 
-Expected: PASS.
+Expected: PASS. If `test:e2e` scripts do not already exist, add scripts that run Playwright or the repository-standard browser E2E runner. The `tg-frontend` E2E suite must cover login bootstrap, maps browse/detail, lineups list/detail, favorites, create-lineup form smoke, pull request detail, and WebSocket comments smoke. The `admin-frontend` E2E suite must cover login, moderation queue/detail approval controls by role, admin PR detail comments smoke, admin comment create, editor delete-own-comment, editor forbidden delete-other-comment, base_admin delete-any-comment, maps/classes/properties CRUD smoke, lineups CRUD smoke, and users/roles access control. Store artifacts under `tmp/e2e/tg-frontend` and `tmp/e2e/admin-frontend`.
 
 - [ ] **Step 3: Run contract diff**
 
@@ -1813,10 +2158,11 @@ Expected: report shows preserved IDs, no required orphan blockers, valid media r
 
 ```bash
 cd backend
-go run ./tools/logscan --sentinel "sentinel.jwt.value" --logs ./tmp/logscan
+go run ./tools/ws-redaction-probe --base-url http://localhost:3000 --ws-url ws://localhost:3000/ws/api/pull_requests/1/comments/ --mint-valid-token --secret-key "$SECRET_KEY" --user-id 1 --capture-dir ./tmp/logscan
+go run ./tools/logscan --sentinel-file ./tmp/logscan/sentinels.txt --logs ./tmp/logscan
 ```
 
-Expected: PASS and raw sentinel absent from nginx, backend, app, metrics, trace, and client diagnostic captures.
+Expected: probe PASS with `WS_ALLOW_UNAUTHENTICATED_DEV=false` recorded in captured config; `sentinels.txt` contains the valid raw JWT used for the WebSocket success path plus the invalid and expired probe token values; success path opens WebSocket, creates a comment, and receives the broadcast; invalid/malformed/expired token paths are rejected; logscan PASS and none of the sentinel values appear in nginx, backend, app, metrics, trace, or client diagnostic captures.
 
 - [ ] **Step 6: Document cutover and rollback**
 
@@ -1835,13 +2181,15 @@ git commit -m "docs: add Go backend release rehearsal"
 ## Self-Review Checklist
 
 - [ ] Every public route listed in the approved spec has a task: auth routes, users, maps, grenade classes, lineups, properties, property-list links, favorites, pull requests, comments, health, and WebSocket.
+- [ ] The preserved Django baseline is available through `legacy-django` on `localhost:3001`, and `docs/legacy-contract/manifest.json` records the exact baseline used for contract diff.
+- [ ] The write gate has middleware, production config, blocked unsafe-method tests, and allowed health/read smoke tests.
 - [ ] The plan preserves current `tg-frontend` REST contracts and limits frontend edits to the WebSocket token/base-URL adapter.
-- [ ] The plan includes data migration with exact ID preservation, password hash compatibility, media checks, orphan report, cutover, and rollback.
-- [ ] The plan includes admin role matrix enforcement and a separate `admin-frontend/`.
-- [ ] The plan includes token query redaction and sentinel log scan verification.
-- [ ] The plan includes Docker, nginx, docs, contract diff, migration rehearsal, rollback rehearsal, and E2E checks.
+- [ ] The plan includes identity-backed preserved ID columns, migration sequence adjustment, exact ID preservation, password hash compatibility, media checks, orphan report, cutover, and rollback.
+- [ ] The plan includes admin role matrix enforcement, admin comment list/create/delete authorization, admin frontend comment action coverage, and a separate `admin-frontend/`.
+- [ ] The plan includes token query redaction, production-like sentinel WebSocket probe, and log scan verification across nginx, backend, app, metrics/traces, and client diagnostics.
+- [ ] The plan includes Docker, nginx, docs, contract diff, migration rehearsal, rollback rehearsal, and executable `tg-frontend`/`admin-frontend` E2E checks with artifact paths.
 - [ ] Each task has a commit boundary and concrete verification command.
 
 ## Execution Handoff
 
-Plan implementation starts by creating Beads issues from the task list above. The first implementation issue is `Backend foundation`; dependent issues follow the dependency order in the approved spec and this plan.
+Plan implementation starts by creating Beads issues from the task list above. The first implementation issue is `Preserve legacy Django contract baseline`; `Backend foundation` and dependent issues follow the dependency order in the approved spec and this plan.
