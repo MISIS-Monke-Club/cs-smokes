@@ -18,7 +18,9 @@ body {
 }
 
 button,
-input {
+input,
+select,
+textarea {
     font: inherit;
 }
 
@@ -217,6 +219,10 @@ p {
 
 .panel {
     padding: 18px;
+}
+
+.follow-panel {
+    margin-top: 18px;
 }
 
 .panel-heading {
@@ -451,6 +457,148 @@ td[data-label="Action"] {
     margin: 0;
 }
 
+.lineup-tools,
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.lineup-tools {
+    margin-bottom: 14px;
+}
+
+.lineup-tools label,
+.lineup-form label {
+    display: grid;
+    gap: 6px;
+    color: #344054;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.lineup-tools input,
+.lineup-tools select,
+.lineup-form input,
+.lineup-form select,
+.lineup-form textarea {
+    min-height: 38px;
+    padding: 8px 10px;
+    border: 1px solid #cfd6e2;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #1b1f29;
+}
+
+.lineup-tools input:disabled,
+.lineup-tools select:disabled,
+.lineup-form input:disabled,
+.lineup-form textarea:disabled {
+    background: #f2f4f7;
+    color: #667085;
+}
+
+.lineup-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.75fr);
+    gap: 12px;
+}
+
+.compact-table table {
+    min-width: 100%;
+}
+
+.compact-detail {
+    padding: 14px;
+}
+
+.derived-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin: 0 0 12px;
+}
+
+.derived-list div {
+    display: grid;
+    gap: 2px;
+}
+
+.derived-list dt {
+    color: #667085;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.derived-list dd {
+    margin: 0;
+    color: #1b1f29;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.lineup-form {
+    display: grid;
+    gap: 10px;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid #edf0f5;
+}
+
+.form-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.form-heading h3 {
+    margin: 0;
+    font-size: 16px;
+}
+
+.form-heading p {
+    font-size: 13px;
+}
+
+.lineup-form textarea {
+    min-height: 74px;
+    resize: vertical;
+}
+
+.checkbox-label {
+    align-content: end;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    min-height: 58px;
+}
+
+.checkbox-label input {
+    min-height: auto;
+}
+
+.lineup-form > button,
+.danger-action {
+    min-height: 38px;
+    border: 0;
+    border-radius: 8px;
+    background: #0f766e;
+    color: #ffffff;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.lineup-form > button:disabled,
+.danger-action:disabled {
+    background: #c7d0dc;
+    cursor: not-allowed;
+}
+
+.danger-action {
+    background: #b42318;
+}
+
 .link-action {
     justify-self: start;
     min-height: 30px;
@@ -573,7 +721,11 @@ td[data-label="Action"] {
 
     .metric-grid,
     .split-panels,
-    .moderation-grid {
+    .moderation-grid,
+    .lineup-grid,
+    .lineup-tools,
+    .form-grid,
+    .derived-list {
         grid-template-columns: 1fr;
     }
 }
@@ -625,10 +777,14 @@ td[data-label="Action"] {
 
     td[data-label="Action"] {
         display: grid;
-        grid-template-columns: 88px minmax(0, 1fr);
+        grid-template-columns: 1fr;
     }
 
     td[data-label="Action"] button {
         justify-self: stretch;
+    }
+
+    .button-row {
+        grid-template-columns: 1fr;
     }
 }

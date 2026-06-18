@@ -10,12 +10,16 @@ import {
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react"
 
 import {
+    AdminLineup,
     approvePullRequest,
     cancelPullRequest,
+    createLineup,
     createComment,
+    deleteLineup,
     deleteComment,
     AdminUser,
     errorMessage,
+    fetchLineups,
     fetchMe,
     fetchPullRequestDetail,
     fetchPullRequests,
@@ -26,7 +30,9 @@ import {
     PullRequestSummary,
     rejectPullRequest,
     setUserRoles,
+    updateLineup,
 } from "./api"
+import { canManageContent, emptyLineupForm, lineupFormFromLineup, lineupInputFromForm, LineupFormState } from "./lineups"
 import {
     AdminMe,
     AdminRole,
@@ -41,12 +47,23 @@ import {
 } from "./session"
 
 type LoadState = "idle" | "loading" | "ready" | "error"
+type ApprovedFilter = "all" | "approved" | "pending"
+type LineupFiltersState = {
+    approved: ApprovedFilter
+    ordering: "date_of_creation" | "-date_of_creation" | "by_alphabet" | "-by_alphabet"
+    query: string
+}
 
 export function App() {
     const [token, setToken] = useState(() => readSession()?.token ?? "")
     const [me, setMe] = useState<AdminMe | null>(null)
     const [requests, setRequests] = useState<PullRequestSummary[]>([])
     const [users, setUsers] = useState<AdminUser[]>([])
+    const [lineups, setLineups] = useState<AdminLineup[]>([])
+    const [lineupFilters, setLineupFilters] = useState<LineupFiltersState>({ approved: "all", ordering: "-date_of_creation", query: "" })
+    const [selectedLineupID, setSelectedLineupID] = useState<number | null>(null)
+    const [editingLineupID, setEditingLineupID] = useState<number | null>(null)
+    const [lineupForm, setLineupForm] = useState<LineupFormState>(emptyLineupForm)
     const [selectedID, setSelectedID] = useState<number | null>(null)
     const [detail, setDetail] = useState<PullRequestDetail | null>(null)
     const [commentText, setCommentText] = useState("")
@@ -58,6 +75,9 @@ export function App() {
         setToken("")
         setMe(null)
         setRequests([])
+        setUsers([])
+        setLineups([])
+        setDetail(null)
     }, [])
 
     const loadAdminData = useCallback(async () => {
@@ -69,10 +89,21 @@ export function App() {
         try {
             const [adminUser, pullRequests] = await Promise.all([fetchMe(token), fetchPullRequests(token)])
             const adminUsers = canManageUsers(adminUser) ? await fetchUsers(token) : []
+            const adminLineups = canManageContent(adminUser)
+                ? await fetchLineups(token, {
+                      isApproved: approvedFilterValue(lineupFilters.approved),
+                      ordering: lineupFilters.ordering,
+                      query: lineupFilters.query.trim() || undefined,
+                  })
+                : []
             setMe(adminUser)
             setRequests(pullRequests)
             setUsers(adminUsers)
+            setLineups(adminLineups)
             setSelectedID((current) => current ?? pullRequests[0]?.id ?? null)
+            setSelectedLineupID((current) =>
+                current != null && adminLineups.some((lineup) => lineup.grenade_id === current) ? current : (adminLineups[0]?.grenade_id ?? null),
+            )
             setLoadState("ready")
         } catch (error) {
             if (isAuthFailure(error)) {
@@ -83,7 +114,7 @@ export function App() {
                 setMessage(errorMessage(error))
             }
         }
-    }, [resetSession, token])
+    }, [lineupFilters.approved, lineupFilters.ordering, lineupFilters.query, resetSession, token])
 
     useEffect(() => {
         void loadAdminData()
@@ -115,6 +146,10 @@ export function App() {
         const closed = requests.length - open
         return { open, closed, total: requests.length }
     }, [requests])
+    const selectedLineup = useMemo(
+        () => lineups.find((lineup) => lineup.grenade_id === selectedLineupID) ?? null,
+        [lineups, selectedLineupID],
+    )
 
     if (!token) {
         return <LoginScreen message={message} onLogin={setToken} />
@@ -212,24 +247,53 @@ export function App() {
                     </div>
                 </section>
 
-                <section className="split-panels">
-                    <div className="panel" id="users">
-                        <UsersPanel
-                            canGrant={canGrantRoles(me)}
-                            canView={canManageUsers(me)}
-                            onRolesChange={(userID, roles) =>
-                                handleModerationAction(async () => {
-                                    await setUserRoles(token, userID, roles)
-                                })
-                            }
-                            users={users}
-                        />
-                    </div>
-                    <div className="panel" id="content">
-                        <h2>Content tools</h2>
-                        <p>Maps, lineups, grenade classes, properties, and lineup metadata use the same protected API namespace.</p>
-                        <span className="status ok">Editor content access</span>
-                    </div>
+                <section className="panel follow-panel" id="users">
+                    <UsersPanel
+                        canGrant={canGrantRoles(me)}
+                        canView={canManageUsers(me)}
+                        onRolesChange={(userID, roles) =>
+                            handleModerationAction(async () => {
+                                await setUserRoles(token, userID, roles)
+                            })
+                        }
+                        users={users}
+                    />
+                </section>
+
+                <section className="panel follow-panel" id="content">
+                    <LineupsPanel
+                        canManage={canManageContent(me)}
+                        editingID={editingLineupID}
+                        filters={lineupFilters}
+                        form={lineupForm}
+                        lineups={lineups}
+                        onDelete={(id) => handleModerationAction(() => deleteLineup(token, id))}
+                        onEdit={(lineup) => {
+                            setSelectedLineupID(lineup.grenade_id)
+                            setEditingLineupID(lineup.grenade_id)
+                            setLineupForm(lineupFormFromLineup(lineup))
+                        }}
+                        onFiltersChange={setLineupFilters}
+                        onFormChange={setLineupForm}
+                        onNew={() => {
+                            setEditingLineupID(null)
+                            setLineupForm(emptyLineupForm)
+                        }}
+                        onSelect={setSelectedLineupID}
+                        onSubmit={async () => {
+                            await handleModerationAction(async () => {
+                                const input = lineupInputFromForm(lineupForm)
+                                if (editingLineupID == null) {
+                                    await createLineup(token, input)
+                                } else {
+                                    await updateLineup(token, editingLineupID, input)
+                                }
+                                setEditingLineupID(null)
+                                setLineupForm(emptyLineupForm)
+                            })
+                        }}
+                        selectedLineup={selectedLineup}
+                    />
                 </section>
             </section>
         </main>
@@ -244,6 +308,291 @@ export function App() {
         } catch (error) {
             setMessage(errorMessage(error))
         }
+    }
+}
+
+function LineupsPanel({
+    canManage,
+    editingID,
+    filters,
+    form,
+    lineups,
+    onDelete,
+    onEdit,
+    onFiltersChange,
+    onFormChange,
+    onNew,
+    onSelect,
+    onSubmit,
+    selectedLineup,
+}: {
+    canManage: boolean
+    editingID: number | null
+    filters: LineupFiltersState
+    form: LineupFormState
+    lineups: AdminLineup[]
+    onDelete: (id: number) => Promise<void>
+    onEdit: (lineup: AdminLineup) => void
+    onFiltersChange: (filters: LineupFiltersState) => void
+    onFormChange: (form: LineupFormState) => void
+    onNew: () => void
+    onSelect: (id: number) => void
+    onSubmit: () => Promise<void>
+    selectedLineup: AdminLineup | null
+}) {
+    return (
+        <>
+            <div className="panel-heading tight">
+                <div>
+                    <h2>Lineups</h2>
+                    <p>Filter, inspect derived fields, and manage lineup records through the protected admin API.</p>
+                </div>
+                <span className={canManage ? "status ok" : "status muted"}>{canManage ? "Editor content access" : "Content locked"}</span>
+            </div>
+            <div className="lineup-tools">
+                <label>
+                    Search
+                    <input
+                        disabled={!canManage}
+                        onChange={(event) => onFiltersChange({ ...filters, query: event.target.value })}
+                        placeholder="Title or description"
+                        value={filters.query}
+                    />
+                </label>
+                <label>
+                    Approval
+                    <select
+                        disabled={!canManage}
+                        onChange={(event) => onFiltersChange({ ...filters, approved: event.target.value as ApprovedFilter })}
+                        value={filters.approved}
+                    >
+                        <option value="all">All</option>
+                        <option value="approved">Approved</option>
+                        <option value="pending">Pending</option>
+                    </select>
+                </label>
+                <label>
+                    Sort
+                    <select
+                        disabled={!canManage}
+                        onChange={(event) => onFiltersChange({ ...filters, ordering: event.target.value as LineupFiltersState["ordering"] })}
+                        value={filters.ordering}
+                    >
+                        <option value="-date_of_creation">Newest</option>
+                        <option value="date_of_creation">Oldest</option>
+                        <option value="by_alphabet">A-Z</option>
+                        <option value="-by_alphabet">Z-A</option>
+                    </select>
+                </label>
+            </div>
+            <div className="lineup-grid">
+                <div className="table-wrap compact-table">
+                    {lineups.length === 0 ? (
+                        <div className="empty-state">No lineups loaded.</div>
+                    ) : (
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Title</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {lineups.map((lineup) => (
+                                    <tr className={lineup.grenade_id === selectedLineup?.grenade_id ? "selected-row" : ""} key={lineup.grenade_id}>
+                                        <td data-label="ID">#{lineup.grenade_id}</td>
+                                        <td data-label="Title">{lineup.title}</td>
+                                        <td data-label="Status">
+                                            <span className={`status ${lineup.is_approved ? "ok" : "warn"}`}>
+                                                {lineup.is_approved ? "Approved" : "Pending"}
+                                            </span>
+                                        </td>
+                                        <td data-label="Action">
+                                            <button className="row-action secondary" onClick={() => onSelect(lineup.grenade_id)} type="button">
+                                                View
+                                            </button>
+                                            <button className="row-action" disabled={!canManage} onClick={() => onEdit(lineup)} type="button">
+                                                Edit
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    )}
+                </div>
+                <LineupDetail canManage={canManage} lineup={selectedLineup} onDelete={onDelete} onEdit={onEdit} />
+            </div>
+            <LineupForm canManage={canManage} editingID={editingID} form={form} onChange={onFormChange} onNew={onNew} onSubmit={onSubmit} />
+        </>
+    )
+}
+
+function LineupDetail({
+    canManage,
+    lineup,
+    onDelete,
+    onEdit,
+}: {
+    canManage: boolean
+    lineup: AdminLineup | null
+    onDelete: (id: number) => Promise<void>
+    onEdit: (lineup: AdminLineup) => void
+}) {
+    if (!lineup) {
+        return <aside className="detail-panel compact-detail">Select a lineup to inspect metadata.</aside>
+    }
+
+    return (
+        <aside className="detail-panel compact-detail">
+            <div className="detail-heading">
+                <div>
+                    <span className="eyeless-label">Lineup #{lineup.grenade_id}</span>
+                    <h2>{lineup.title}</h2>
+                </div>
+                <span className={`status ${lineup.is_approved ? "ok" : "warn"}`}>{lineup.is_approved ? "Approved" : "Pending"}</span>
+            </div>
+            <dl className="derived-list">
+                <div>
+                    <dt>Creator</dt>
+                    <dd>
+                        {lineup.creator.username} #{lineup.user_id}
+                    </dd>
+                </div>
+                <div>
+                    <dt>Map</dt>
+                    <dd>#{lineup.map_id}</dd>
+                </div>
+                <div>
+                    <dt>Grenade class</dt>
+                    <dd>
+                        {lineup.grenade_class.name} · ${lineup.grenade_class.price}
+                    </dd>
+                </div>
+                <div>
+                    <dt>Views</dt>
+                    <dd>{lineup.views}</dd>
+                </div>
+                <div>
+                    <dt>Request</dt>
+                    <dd>{lineup.request.status}</dd>
+                </div>
+                <div>
+                    <dt>Properties</dt>
+                    <dd>{lineup.property_list.length ? lineup.property_list.map((item) => `${item.name}${item.value ? `: ${item.value}` : ""}`).join(", ") : "None"}</dd>
+                </div>
+            </dl>
+            {lineup.description && <p>{lineup.description}</p>}
+            {lineup.link_to_video && (
+                <a className="link-action" href={lineup.link_to_video} rel="noreferrer" target="_blank">
+                    Open video
+                </a>
+            )}
+            <div className="button-row">
+                <button disabled={!canManage} onClick={() => onEdit(lineup)} type="button">
+                    Edit
+                </button>
+                <button className="danger-action" disabled={!canManage} onClick={() => void onDelete(lineup.grenade_id)} type="button">
+                    Delete
+                </button>
+            </div>
+        </aside>
+    )
+}
+
+function LineupForm({
+    canManage,
+    editingID,
+    form,
+    onChange,
+    onNew,
+    onSubmit,
+}: {
+    canManage: boolean
+    editingID: number | null
+    form: LineupFormState
+    onChange: (form: LineupFormState) => void
+    onNew: () => void
+    onSubmit: () => Promise<void>
+}) {
+    return (
+        <form
+            className="lineup-form"
+            onSubmit={(event) => {
+                event.preventDefault()
+                void onSubmit()
+            }}
+        >
+            <div className="form-heading">
+                <div>
+                    <h3>{editingID == null ? "Create lineup" : `Edit lineup #${editingID}`}</h3>
+                    <p>IDs map directly to backend validation fields.</p>
+                </div>
+                <button className="secondary-action compact" onClick={onNew} type="button">
+                    New
+                </button>
+            </div>
+            <div className="form-grid">
+                <label>
+                    Title
+                    <input disabled={!canManage} onChange={(event) => onChange({ ...form, title: event.target.value })} required value={form.title} />
+                </label>
+                <label>
+                    Map ID
+                    <input disabled={!canManage} onChange={(event) => onChange({ ...form, mapID: event.target.value })} required value={form.mapID} />
+                </label>
+                <label>
+                    Creator user ID
+                    <input disabled={!canManage} onChange={(event) => onChange({ ...form, userID: event.target.value })} required value={form.userID} />
+                </label>
+                <label>
+                    Grenade class ID
+                    <input
+                        disabled={!canManage}
+                        onChange={(event) => onChange({ ...form, grenadeClassID: event.target.value })}
+                        required
+                        value={form.grenadeClassID}
+                    />
+                </label>
+                <label>
+                    Views
+                    <input disabled={!canManage} onChange={(event) => onChange({ ...form, views: event.target.value })} value={form.views} />
+                </label>
+                <label className="checkbox-label">
+                    <input
+                        checked={form.isApproved}
+                        disabled={!canManage}
+                        onChange={(event) => onChange({ ...form, isApproved: event.target.checked })}
+                        type="checkbox"
+                    />
+                    Approved
+                </label>
+            </div>
+            <label>
+                Video URL
+                <input disabled={!canManage} onChange={(event) => onChange({ ...form, linkToVideo: event.target.value })} value={form.linkToVideo} />
+            </label>
+            <label>
+                Description
+                <textarea disabled={!canManage} onChange={(event) => onChange({ ...form, description: event.target.value })} value={form.description} />
+            </label>
+            <button disabled={!canManage} type="submit">
+                {editingID == null ? "Create lineup" : "Save lineup"}
+            </button>
+        </form>
+    )
+}
+
+function approvedFilterValue(value: ApprovedFilter): boolean | undefined {
+    switch (value) {
+        case "approved":
+            return true
+        case "pending":
+            return false
+        case "all":
+            return undefined
     }
 }
 

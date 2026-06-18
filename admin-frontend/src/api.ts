@@ -50,6 +50,58 @@ export type AdminUser = {
     roles: AdminRole[]
 }
 
+export type AdminLineup = {
+    user_id: number
+    grenade_id: number
+    map_id: number
+    link_to_video: string | null
+    creator: {
+        user_id: number
+        username: string
+        role?: string
+    }
+    created_at: string
+    title: string
+    description: string | null
+    is_approved: boolean
+    is_favorite: boolean
+    views: number
+    preview_image_link: string | null
+    grenade_class: {
+        grenade_class_id: number
+        name: string
+        description: string | null
+        price: number
+    }
+    property_list: Array<{
+        property_id: number
+        name: string
+        value: string | null
+    }>
+    request: {
+        request_id: number | null
+        status: string
+    }
+}
+
+export type LineupFilters = {
+    isApproved?: boolean
+    ordering?: "date_of_creation" | "-date_of_creation" | "by_alphabet" | "-by_alphabet"
+    query?: string
+}
+
+export type LineupInput = {
+    description?: string
+    grenade_class_id?: number
+    is_approved?: boolean
+    link_to_video?: string
+    map_id?: number
+    preview_image_link?: File
+    title?: string
+    user_id?: number
+    views?: number
+}
+
 export type PullRequestDetail = {
     pull_request: PullRequestSummary
     comments: AdminComment[]
@@ -57,9 +109,6 @@ export type PullRequestDetail = {
 
 const api = axios.create({
     baseURL: __ADMIN_API_URL__.replace(/\/$/, ""),
-    headers: {
-        "Content-Type": "application/json",
-    },
 })
 
 export function isAuthFailure(error: unknown): boolean {
@@ -104,6 +153,38 @@ export async function setUserRoles(token: string, userID: number, roles: AdminRo
     await api.put(`/admin/users/${userID}/roles`, { roles }, authConfig(token))
 }
 
+export async function fetchLineups(token: string, filters: LineupFilters = {}): Promise<AdminLineup[]> {
+    const params: Record<string, string> = {}
+    if (filters.isApproved !== undefined) {
+        params.is_approved = String(filters.isApproved)
+    }
+    if (filters.ordering) {
+        params.ordering = filters.ordering
+    }
+    if (filters.query) {
+        params.query = filters.query
+    }
+    const response = await api.get<AdminLineup[]>("/admin/lineups", {
+        ...authConfig(token),
+        params,
+    })
+    return response.data
+}
+
+export async function createLineup(token: string, input: LineupInput): Promise<AdminLineup> {
+    const response = await api.post<AdminLineup>("/admin/lineups", toLineupFormData(input), authConfig(token))
+    return response.data
+}
+
+export async function updateLineup(token: string, id: number, input: LineupInput): Promise<AdminLineup> {
+    const response = await api.patch<AdminLineup>(`/admin/lineups/${id}`, toLineupFormData(input), authConfig(token))
+    return response.data
+}
+
+export async function deleteLineup(token: string, id: number): Promise<void> {
+    await api.delete(`/admin/lineups/${id}`, authConfig(token))
+}
+
 export async function fetchPullRequestDetail(token: string, id: number): Promise<PullRequestDetail> {
     const response = await api.get<PullRequestDetail>(`/admin/pull_requests/${id}`, authConfig(token))
     return response.data
@@ -136,6 +217,31 @@ function authConfig(token: string) {
             Authorization: `Bearer ${token}`,
         },
     }
+}
+
+function toLineupFormData(input: LineupInput): FormData {
+    const body = new FormData()
+    appendFormValue(body, "map_id", input.map_id)
+    appendFormValue(body, "user_id", input.user_id)
+    appendFormValue(body, "title", input.title)
+    appendFormValue(body, "description", input.description)
+    appendFormValue(body, "is_approved", input.is_approved)
+    appendFormValue(body, "views", input.views)
+    appendFormValue(body, "grenade_class_id", input.grenade_class_id)
+    appendFormValue(body, "link_to_video", input.link_to_video)
+    appendFormValue(body, "preview_image_link", input.preview_image_link)
+    return body
+}
+
+function appendFormValue(body: FormData, key: string, value: boolean | File | number | string | undefined): void {
+    if (value === undefined || value === "") {
+        return
+    }
+    if (value instanceof File) {
+        body.append(key, value)
+        return
+    }
+    body.append(key, String(value))
 }
 
 export type APIError = AxiosError
