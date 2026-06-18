@@ -80,6 +80,17 @@ curl -fsS http://localhost:3001/api/health
 Подробности replay/refresh процесса находятся в
 `docs/legacy-contract/README.md`.
 
+### Go backend deployment notes
+
+- Public app: `http://localhost:8000`, admin app: `http://localhost:8001`,
+  backend API: `http://localhost:3000/api`, OpenAPI docs: `/api/docs`.
+- Production compose serves the Telegram frontend through nginx `/`, the admin
+  frontend through `/admin/`, Go API through `/api/`, WebSockets through
+  `/ws/api/`, and media through `/media/`.
+- Keep `WRITE_GATE=true` until migration verification, golden contract diff,
+  WebSocket log redaction probe, and smoke checks pass.
+- Cutover and rollback runbooks live under `docs/release/`.
+
 ---
 
 ## 💬 **Контакты**

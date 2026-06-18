@@ -89,6 +89,21 @@ services:
             - WEB_APP_URL=${WEB_APP_URL}
         command: sh -c "python bot.py"
 
+    admin-frontend:
+        container_name: admin-frontend
+        build:
+            context: ./admin-frontend
+            dockerfile: dockerfile.prod
+        restart: unless-stopped
+        env_file: ./.env
+        environment:
+            - VITE_ADMIN_API_URL=${VITE_ADMIN_API_URL}
+            - VITE_BACKEND_URL=${VITE_BACKEND_URL}
+        expose:
+            - 80
+        depends_on:
+            - backend
+
     nginx: 
         container_name: nginx-server
         build:
@@ -107,6 +122,7 @@ services:
             - /etc/letsencrypt/ssl/privkey.pem:/etc/nginx/ssl/privkey.pem
         depends_on: 
             - backend
+            - admin-frontend
             - info-service
         ports:
             - 443:443

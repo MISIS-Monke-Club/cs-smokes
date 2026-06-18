@@ -12,6 +12,7 @@ import (
 	"github.com/MISIS-Monke-Club/cs-smokes/backend/internal/grenadeclasses"
 	"github.com/MISIS-Monke-Club/cs-smokes/backend/internal/lineups"
 	"github.com/MISIS-Monke-Club/cs-smokes/backend/internal/maps"
+	"github.com/MISIS-Monke-Club/cs-smokes/backend/internal/openapi"
 	"github.com/MISIS-Monke-Club/cs-smokes/backend/internal/platform/httpx"
 	"github.com/MISIS-Monke-Club/cs-smokes/backend/internal/properties"
 	"github.com/MISIS-Monke-Club/cs-smokes/backend/internal/pullrequests"
@@ -46,6 +47,10 @@ func NewWithRepositories(cfg config.Config, repos Repositories) *http.Server {
 	router.Get("/api/healthz/", health)
 	router.Get("/api/health", health)
 	router.Get("/api/health/", health)
+	router.Get("/api/schema", openapi.Schema)
+	router.Get("/api/schema/", openapi.Schema)
+	router.Get("/api/docs", openapi.Docs)
+	router.Get("/api/docs/", openapi.Docs)
 	auth.RegisterRoutes(router, auth.NewHandler(repos.Auth, cfg.SecretKey, cfg.TelegramToken))
 	users.RegisterRoutes(router, users.NewHandler(repos.Users))
 	grenadeclasses.RegisterRoutes(router, grenadeclasses.NewHandler(repos.GrenadeClasses))
