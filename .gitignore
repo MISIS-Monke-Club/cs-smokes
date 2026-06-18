@@ -3,6 +3,7 @@ postgres_data
 /.env
 .DS_Store
 .vite
+.superpowers/
 
 # Worktrees
 feature
