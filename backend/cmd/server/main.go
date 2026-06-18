@@ -10,9 +10,11 @@ import (
 	"time"
 
 	"github.com/MISIS-Monke-Club/cs-smokes/backend/internal/config"
+	"github.com/MISIS-Monke-Club/cs-smokes/backend/internal/platform/cache"
 	"github.com/MISIS-Monke-Club/cs-smokes/backend/internal/platform/httpserver"
 	"github.com/MISIS-Monke-Club/cs-smokes/backend/internal/platform/postgres"
 	"github.com/MISIS-Monke-Club/cs-smokes/backend/internal/platform/postgresrepo"
+	redisplatform "github.com/MISIS-Monke-Club/cs-smokes/backend/internal/platform/redis"
 )
 
 func main() {
@@ -30,7 +32,11 @@ func main() {
 	}
 	defer pool.Close()
 
+	redisClient := redisplatform.NewClient(cfg.RedisAddr, cfg.RedisPassword)
+	defer redisClient.Close()
+
 	repos := postgresrepo.New(pool).Repositories()
+	repos = cache.WrapRepositories(repos, cache.NewRedisStore(redisClient), 5*time.Minute)
 	server := httpserver.NewWithRepositories(cfg, repos)
 
 	go func() {
