@@ -9,6 +9,12 @@ export type AdminMe = {
     roles: AdminRole[]
 }
 
+export type CommentOwner = {
+    creator: {
+        user_id: number
+    }
+}
+
 const storageKey = "cs-smokes-admin-session"
 
 export function readSession(storage: Pick<Storage, "getItem"> = window.sessionStorage): AdminSession | null {
@@ -41,6 +47,14 @@ export function canManageUsers(me: AdminMe | null): boolean {
 
 export function canGrantRoles(me: AdminMe | null): boolean {
     return Boolean(me?.roles.includes("superuser"))
+}
+
+export function canModeratePullRequests(me: AdminMe | null): boolean {
+    return Boolean(me?.roles.includes("superuser") || me?.roles.includes("base_admin"))
+}
+
+export function canDeleteComment(me: AdminMe | null, comment: CommentOwner): boolean {
+    return Boolean(canModeratePullRequests(me) || me?.user_id === comment.creator.user_id)
 }
 
 export function roleLabel(role: AdminRole): string {

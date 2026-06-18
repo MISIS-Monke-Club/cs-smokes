@@ -28,6 +28,22 @@ export type PullRequestSummary = {
     }
 }
 
+export type AdminComment = {
+    id: number
+    text: string
+    creator: {
+        user_id: number
+        username: string
+        role: string
+    }
+    created_at: string
+}
+
+export type PullRequestDetail = {
+    pull_request: PullRequestSummary
+    comments: AdminComment[]
+}
+
 const api = axios.create({
     baseURL: __ADMIN_API_URL__.replace(/\/$/, ""),
     headers: {
@@ -68,8 +84,30 @@ export async function fetchPullRequests(token: string): Promise<PullRequestSumma
     return response.data
 }
 
+export async function fetchPullRequestDetail(token: string, id: number): Promise<PullRequestDetail> {
+    const response = await api.get<PullRequestDetail>(`/admin/pull_requests/${id}`, authConfig(token))
+    return response.data
+}
+
 export async function approvePullRequest(token: string, id: number): Promise<void> {
     await api.patch(`/admin/pull_requests/${id}/approve`, undefined, authConfig(token))
+}
+
+export async function rejectPullRequest(token: string, id: number): Promise<void> {
+    await api.patch(`/admin/pull_requests/${id}/reject`, undefined, authConfig(token))
+}
+
+export async function cancelPullRequest(token: string, id: number): Promise<void> {
+    await api.patch(`/admin/pull_requests/${id}/cancel`, undefined, authConfig(token))
+}
+
+export async function createComment(token: string, pullRequestID: number, text: string): Promise<AdminComment> {
+    const response = await api.post<AdminComment>(`/admin/pull_requests/${pullRequestID}/comments`, { text }, authConfig(token))
+    return response.data
+}
+
+export async function deleteComment(token: string, id: number): Promise<void> {
+    await api.delete(`/admin/comments/${id}`, authConfig(token))
 }
 
 function authConfig(token: string) {
