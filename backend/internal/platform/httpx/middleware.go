@@ -30,6 +30,36 @@ func CORS(allowedOrigins []string) func(http.Handler) http.Handler {
 	}
 }
 
+func WriteGate(enabled bool) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if !enabled || isSafeMethod(r.Method) || isHealthPath(r.URL.Path) {
+				next.ServeHTTP(w, r)
+				return
+			}
+			WriteError(
+				w,
+				http.StatusServiceUnavailable,
+				"write_gate_enabled",
+				"Writes are temporarily disabled during migration.",
+			)
+		})
+	}
+}
+
+func isSafeMethod(method string) bool {
+	return method == http.MethodGet || method == http.MethodHead || method == http.MethodOptions
+}
+
+func isHealthPath(path string) bool {
+	switch path {
+	case "/healthz", "/api/healthz", "/api/healthz/", "/api/health", "/api/health/":
+		return true
+	default:
+		return false
+	}
+}
+
 func Recoverer(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {

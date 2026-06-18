@@ -12,6 +12,7 @@ import (
 func New(cfg config.Config) *http.Server {
 	router := chi.NewRouter()
 	router.Use(httpx.CORS(cfg.AllowedOrigins))
+	router.Use(httpx.WriteGate(cfg.WriteGate))
 	router.Get("/healthz", health)
 	router.Get("/api/healthz", health)
 	router.Get("/api/healthz/", health)
