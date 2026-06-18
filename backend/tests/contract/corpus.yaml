@@ -1,0 +1,117 @@
+metadata:
+  contract_corpus_version: legacy-django-v1
+  legacy_git_commit: 3a9f9076130c97e202a0b8dad634540eb584e72b
+  legacy_image: cs-smokes-legacy-django
+  legacy_manifest: docs/legacy-contract/manifest.json
+cases:
+  - {name: health ok, method: GET, path: /api/health, tags: [public, slash-variant]}
+  - {name: health ok slash, method: GET, path: /api/health/, tags: [public, slash-variant]}
+  - {name: telegram login missing init data, method: POST, path: /api/login/tg/, headers: {Content-Type: application/json}, body: "{}", tags: [auth, validation-error]}
+  - {name: telegram login invalid hash, method: POST, path: /api/login/tg/, headers: {Content-Type: application/json}, body: '{"init_data":"user=%7B%22id%22%3A1%7D&hash=bad"}', tags: [auth, validation-error]}
+  - {name: telegram login invalid user payload, method: POST, path: /api/login/tg/, headers: {Content-Type: application/json}, body: '{"init_data":"user=not-json&hash=bad"}', tags: [auth, validation-error]}
+  - {name: telegram login success fixture, method: POST, path: /api/login/tg/, headers: {Content-Type: application/json}, body: '{"init_data":"{{signed_telegram_init_data}}"}', tags: [auth, success]}
+  - {name: password login username success, method: POST, path: /api/login/, headers: {Content-Type: application/json}, body: '{"username":"player","password":"password"}', tags: [auth, success]}
+  - {name: password login email success, method: POST, path: /api/login/, headers: {Content-Type: application/json}, body: '{"username":"player@example.com","password":"password"}', tags: [auth, success]}
+  - {name: password login missing fields, method: POST, path: /api/login/, headers: {Content-Type: application/json}, body: "{}", tags: [auth, validation-error]}
+  - {name: password login invalid credentials, method: POST, path: /api/login/, headers: {Content-Type: application/json}, body: '{"username":"missing","password":"wrong"}', tags: [auth, validation-error]}
+  - {name: register success, method: POST, path: /api/register/, headers: {Content-Type: application/json}, body: '{"username":"new-player","email":"new-player@example.com","password":"password"}', tags: [auth, success]}
+  - {name: register missing fields, method: POST, path: /api/register/, headers: {Content-Type: application/json}, body: "{}", tags: [auth, validation-error]}
+  - {name: register duplicate email, method: POST, path: /api/register/, headers: {Content-Type: application/json}, body: '{"username":"player2","email":"player@example.com","password":"password"}', tags: [auth, duplicate-write]}
+  - {name: users list, method: GET, path: /api/users, headers: {Authorization: "Bearer {{access_token}}"}, tags: [users, slash-variant]}
+  - {name: users list slash, method: GET, path: /api/users/, headers: {Authorization: "Bearer {{access_token}}"}, tags: [users, slash-variant]}
+  - {name: users create success, method: POST, path: /api/users, headers: {Authorization: "Bearer {{access_token}}", Content-Type: application/json}, body: '{"username":"created","email":"created@example.com","password":"password"}', tags: [users, success]}
+  - {name: users create duplicate username, method: POST, path: /api/users, headers: {Authorization: "Bearer {{access_token}}", Content-Type: application/json}, body: '{"username":"player","email":"another@example.com","password":"password"}', tags: [users, duplicate-write]}
+  - {name: users create unauthenticated, method: POST, path: /api/users, headers: {Content-Type: application/json}, body: '{"username":"anon","email":"anon@example.com","password":"password"}', tags: [users, auth-error]}
+  - {name: users detail, method: GET, path: /api/users/1, headers: {Authorization: "Bearer {{access_token}}"}, tags: [users, success]}
+  - {name: users detail missing, method: GET, path: /api/users/404404, headers: {Authorization: "Bearer {{access_token}}"}, tags: [users, missing-row-404]}
+  - {name: users replace, method: PUT, path: /api/users/1, headers: {Authorization: "Bearer {{access_token}}", Content-Type: application/json}, body: '{"username":"player","email":"player@example.com"}', tags: [users, success]}
+  - {name: users patch, method: PATCH, path: /api/users/1, headers: {Authorization: "Bearer {{access_token}}", Content-Type: application/json}, body: '{"first_name":"Play"}', tags: [users, success]}
+  - {name: users delete, method: DELETE, path: /api/users/1, headers: {Authorization: "Bearer {{access_token}}"}, tags: [users, success]}
+  - {name: maps list, method: GET, path: /api/maps, tags: [maps, slash-variant]}
+  - {name: maps list slash, method: GET, path: /api/maps/, tags: [maps, slash-variant]}
+  - {name: maps filter esports, method: GET, path: "/api/maps?is_esports_pool=true", tags: [maps, filter]}
+  - {name: maps ordering quantity, method: GET, path: "/api/maps?ordering=-quantity", tags: [maps, filter]}
+  - {name: maps search query, method: GET, path: "/api/maps?query=dust", tags: [maps, filter]}
+  - {name: maps create multipart, method: POST, path: /api/maps, headers: {Authorization: "Bearer {{access_token}}", Content-Type: "multipart/form-data; boundary=contract"}, body: "--contract\r\nContent-Disposition: form-data; name=\"name\"\r\n\r\nCache\r\n--contract\r\nContent-Disposition: form-data; name=\"link\"\r\n\r\nhttps://example.test/cache\r\n--contract--\r\n", tags: [maps, multipart, success]}
+  - {name: maps create missing auth, method: POST, path: /api/maps, headers: {Content-Type: application/json}, body: '{"name":"Cache"}', tags: [maps, auth-error]}
+  - {name: maps create validation error, method: POST, path: /api/maps, headers: {Authorization: "Bearer {{access_token}}", Content-Type: application/json}, body: "{}", tags: [maps, validation-error]}
+  - {name: maps detail, method: GET, path: /api/maps/1, tags: [maps, success]}
+  - {name: maps detail missing, method: GET, path: /api/maps/404404, tags: [maps, missing-row-404]}
+  - {name: maps replace, method: PUT, path: /api/maps/1, headers: {Authorization: "Bearer {{access_token}}", Content-Type: application/json}, body: '{"name":"Cache","link":"https://example.test/cache","is_esports_pool":true}', tags: [maps, success]}
+  - {name: maps patch, method: PATCH, path: /api/maps/1, headers: {Authorization: "Bearer {{access_token}}", Content-Type: application/json}, body: '{"name":"Cache"}', tags: [maps, success]}
+  - {name: maps delete, method: DELETE, path: /api/maps/1, headers: {Authorization: "Bearer {{access_token}}"}, tags: [maps, success]}
+  - {name: grenade classes list, method: GET, path: /api/grenade-classes, tags: [grenade-classes, slash-variant]}
+  - {name: grenade classes list slash, method: GET, path: /api/grenade-classes/, tags: [grenade-classes, slash-variant]}
+  - {name: grenade classes create, method: POST, path: /api/grenade-classes, headers: {Authorization: "Bearer {{access_token}}", Content-Type: application/json}, body: '{"name":"Smoke","description":null,"price":300}', tags: [grenade-classes, success]}
+  - {name: grenade classes create auth error, method: POST, path: /api/grenade-classes, headers: {Content-Type: application/json}, body: '{"name":"Smoke","price":300}', tags: [grenade-classes, auth-error]}
+  - {name: grenade classes create validation, method: POST, path: /api/grenade-classes, headers: {Authorization: "Bearer {{access_token}}", Content-Type: application/json}, body: '{"name":"","price":"bad"}', tags: [grenade-classes, validation-error]}
+  - {name: grenade classes detail, method: GET, path: /api/grenade-classes/1, tags: [grenade-classes, success]}
+  - {name: grenade classes detail missing, method: GET, path: /api/grenade-classes/404404, tags: [grenade-classes, missing-row-404]}
+  - {name: grenade classes replace, method: PUT, path: /api/grenade-classes/1, headers: {Authorization: "Bearer {{access_token}}", Content-Type: application/json}, body: '{"name":"Smoke","description":"desc","price":300}', tags: [grenade-classes, success]}
+  - {name: grenade classes patch, method: PATCH, path: /api/grenade-classes/1, headers: {Authorization: "Bearer {{access_token}}", Content-Type: application/json}, body: '{"price":350}', tags: [grenade-classes, success]}
+  - {name: grenade classes delete, method: DELETE, path: /api/grenade-classes/1, headers: {Authorization: "Bearer {{access_token}}"}, tags: [grenade-classes, success]}
+  - {name: lineups list, method: GET, path: /api/lineups, tags: [lineups, slash-variant]}
+  - {name: lineups list slash, method: GET, path: /api/lineups/, tags: [lineups, slash-variant]}
+  - {name: lineups filter approved, method: GET, path: "/api/lineups?is_approved=true", tags: [lineups, filter]}
+  - {name: lineups ordering date, method: GET, path: "/api/lineups?ordering=-date_of_creation", tags: [lineups, filter]}
+  - {name: lineups search query, method: GET, path: "/api/lineups?query=smoke", tags: [lineups, filter]}
+  - {name: lineups by user name, method: GET, path: "/api/lineups?by_user_name=player", tags: [lineups, filter]}
+  - {name: lineups ignored unknown query, method: GET, path: "/api/lineups?creator_id=1", tags: [lineups, filter]}
+  - {name: lineups create multipart, method: POST, path: /api/lineups, headers: {Authorization: "Bearer {{access_token}}", Content-Type: "multipart/form-data; boundary=contract"}, body: "--contract\r\nContent-Disposition: form-data; name=\"map_id\"\r\n\r\n1\r\n--contract\r\nContent-Disposition: form-data; name=\"title\"\r\n\r\nWindow smoke\r\n--contract--\r\n", tags: [lineups, multipart, success]}
+  - {name: lineups create validation, method: POST, path: /api/lineups, headers: {Authorization: "Bearer {{access_token}}", Content-Type: application/json}, body: "{}", tags: [lineups, validation-error]}
+  - {name: lineups detail, method: GET, path: /api/lineups/1, tags: [lineups, success]}
+  - {name: lineups detail missing, method: GET, path: /api/lineups/404404, tags: [lineups, missing-row-404]}
+  - {name: lineups replace, method: PUT, path: /api/lineups/1, headers: {Authorization: "Bearer {{access_token}}", Content-Type: application/json}, body: '{"map_id":1,"title":"Window smoke","grenade_class_id":1}', tags: [lineups, success]}
+  - {name: lineups patch, method: PATCH, path: /api/lineups/1, headers: {Authorization: "Bearer {{access_token}}", Content-Type: application/json}, body: '{"title":"Window smoke"}', tags: [lineups, success]}
+  - {name: lineups delete, method: DELETE, path: /api/lineups/1, headers: {Authorization: "Bearer {{access_token}}"}, tags: [lineups, success]}
+  - {name: lineups change grenade class, method: PATCH, path: /api/lineups/1/change-grenade-class, headers: {Authorization: "Bearer {{access_token}}", Content-Type: application/json}, body: '{"grenade_class_id":1}', tags: [lineups, success]}
+  - {name: lineups change grenade class missing id, method: PATCH, path: /api/lineups/1/change-grenade-class, headers: {Authorization: "Bearer {{access_token}}", Content-Type: application/json}, body: "{}", tags: [lineups, validation-error]}
+  - {name: lineups view filters, method: GET, path: /api/lineups/view_filters, tags: [lineups, success]}
+  - {name: lineups view sorts, method: GET, path: /api/lineups/view_sorts, tags: [lineups, success]}
+  - {name: properties list, method: GET, path: /api/properties, headers: {Authorization: "Bearer {{access_token}}"}, tags: [properties, success]}
+  - {name: properties create, method: POST, path: /api/properties, headers: {Authorization: "Bearer {{access_token}}", Content-Type: application/json}, body: '{"name":"tickrate","value":"128"}', tags: [properties, success]}
+  - {name: properties create auth error, method: POST, path: /api/properties, headers: {Content-Type: application/json}, body: '{"name":"tickrate"}', tags: [properties, auth-error]}
+  - {name: properties create validation, method: POST, path: /api/properties, headers: {Authorization: "Bearer {{access_token}}", Content-Type: application/json}, body: "{}", tags: [properties, validation-error]}
+  - {name: properties detail, method: GET, path: /api/properties/1, headers: {Authorization: "Bearer {{access_token}}"}, tags: [properties, success]}
+  - {name: properties detail missing, method: GET, path: /api/properties/404404, headers: {Authorization: "Bearer {{access_token}}"}, tags: [properties, missing-row-404]}
+  - {name: properties replace, method: PUT, path: /api/properties/1, headers: {Authorization: "Bearer {{access_token}}", Content-Type: application/json}, body: '{"name":"tickrate","value":"128"}', tags: [properties, success]}
+  - {name: properties patch, method: PATCH, path: /api/properties/1, headers: {Authorization: "Bearer {{access_token}}", Content-Type: application/json}, body: '{"value":"64"}', tags: [properties, success]}
+  - {name: properties delete, method: DELETE, path: /api/properties/1, headers: {Authorization: "Bearer {{access_token}}"}, tags: [properties, success]}
+  - {name: property list all, method: GET, path: /api/property-list, tags: [properties, success]}
+  - {name: property list filtered, method: GET, path: "/api/property-list?grenade_id=1", tags: [properties, filter]}
+  - {name: lineup property create, method: POST, path: /api/lineups/1/properties, headers: {Authorization: "Bearer {{access_token}}", Content-Type: application/json}, body: '{"property_id":1}', tags: [properties, success]}
+  - {name: lineup property duplicate, method: POST, path: /api/lineups/1/properties, headers: {Authorization: "Bearer {{access_token}}", Content-Type: application/json}, body: '{"property_id":1}', tags: [properties, duplicate-write]}
+  - {name: lineup property missing property, method: POST, path: /api/lineups/1/properties, headers: {Authorization: "Bearer {{access_token}}", Content-Type: application/json}, body: '{"property_id":404404}', tags: [properties, missing-row-404]}
+  - {name: lineup property delete, method: DELETE, path: /api/lineups/1/properties/1, headers: {Authorization: "Bearer {{access_token}}"}, tags: [properties, success]}
+  - {name: favorites create, method: POST, path: /api/favorites, headers: {Authorization: "Bearer {{access_token}}", Content-Type: application/json}, body: '{"grenade_id":1}', tags: [favorites, success]}
+  - {name: favorites create duplicate, method: POST, path: /api/favorites, headers: {Authorization: "Bearer {{access_token}}", Content-Type: application/json}, body: '{"grenade_id":1}', tags: [favorites, duplicate-write]}
+  - {name: favorites create auth error, method: POST, path: /api/favorites, headers: {Content-Type: application/json}, body: '{"grenade_id":1}', tags: [favorites, auth-error]}
+  - {name: favorites get by user id, method: GET, path: /api/favorites/1, headers: {Authorization: "Bearer {{access_token}}"}, tags: [favorites, slash-variant]}
+  - {name: favorites get by user id slash, method: GET, path: /api/favorites/1/, headers: {Authorization: "Bearer {{access_token}}"}, tags: [favorites, slash-variant]}
+  - {name: favorites delete by grenade id, method: DELETE, path: /api/favorites/1, headers: {Authorization: "Bearer {{access_token}}"}, tags: [favorites, success]}
+  - {name: pull requests list, method: GET, path: /api/pull_requests, headers: {Authorization: "Bearer {{access_token}}"}, tags: [pull-requests, success]}
+  - {name: pull requests create, method: POST, path: /api/pull_requests, headers: {Authorization: "Bearer {{access_token}}", Content-Type: application/json}, body: '{"lineup_id":1}', tags: [pull-requests, success]}
+  - {name: pull requests create missing lineup, method: POST, path: /api/pull_requests, headers: {Authorization: "Bearer {{access_token}}", Content-Type: application/json}, body: "{}", tags: [pull-requests, validation-error]}
+  - {name: pull requests create unknown lineup, method: POST, path: /api/pull_requests, headers: {Authorization: "Bearer {{access_token}}", Content-Type: application/json}, body: '{"lineup_id":404404}', tags: [pull-requests, missing-row-404]}
+  - {name: pull requests detail, method: GET, path: /api/pull_requests/1, headers: {Authorization: "Bearer {{access_token}}"}, tags: [pull-requests, slash-variant]}
+  - {name: pull requests detail slash, method: GET, path: /api/pull_requests/1/, headers: {Authorization: "Bearer {{access_token}}"}, tags: [pull-requests, slash-variant]}
+  - {name: pull requests detail missing, method: GET, path: /api/pull_requests/404404, headers: {Authorization: "Bearer {{access_token}}"}, tags: [pull-requests, missing-row-404]}
+  - {name: pull requests patch status, method: PATCH, path: /api/pull_requests/1, headers: {Authorization: "Bearer {{access_token}}", Content-Type: application/json}, body: '{"status":"APPROVED","approver_id":1}', tags: [pull-requests, success]}
+  - {name: pull requests delete, method: DELETE, path: /api/pull_requests/1, headers: {Authorization: "Bearer {{access_token}}"}, tags: [pull-requests, success]}
+  - {name: pull requests put unsupported, method: PUT, path: /api/pull_requests/1, headers: {Authorization: "Bearer {{access_token}}", Content-Type: application/json}, body: '{"status":"OPEN"}', tags: [pull-requests, unsupported-method-405]}
+  - {name: pull request comments list, method: GET, path: /api/pull_requests/1/comments, headers: {Authorization: "Bearer {{access_token}}"}, tags: [comments, success]}
+  - {name: pull request comments create, method: POST, path: /api/pull_requests/1/comments, headers: {Authorization: "Bearer {{access_token}}", Content-Type: application/json}, body: '{"text":"looks good"}', tags: [comments, success]}
+  - {name: pull request comments missing pr, method: POST, path: /api/pull_requests/404404/comments, headers: {Authorization: "Bearer {{access_token}}", Content-Type: application/json}, body: '{"text":"looks good"}', tags: [comments, missing-row-404]}
+  - {name: comments detail, method: GET, path: /api/comments/1, headers: {Authorization: "Bearer {{access_token}}"}, tags: [comments, success]}
+  - {name: comments patch, method: PATCH, path: /api/comments/1, headers: {Authorization: "Bearer {{access_token}}", Content-Type: application/json}, body: '{"text":"updated"}', tags: [comments, success]}
+  - {name: comments delete, method: DELETE, path: /api/comments/1, headers: {Authorization: "Bearer {{access_token}}"}, tags: [comments, success]}
+  - {name: comments put unsupported, method: PUT, path: /api/comments/1, headers: {Authorization: "Bearer {{access_token}}", Content-Type: application/json}, body: '{"text":"updated"}', tags: [comments, unsupported-method-405]}
+  - {name: pull request approve, method: PATCH, path: /api/pull_requests/1/approve, headers: {Authorization: "Bearer {{access_token}}"}, tags: [pull-requests, permission]}
+  - {name: pull request approve forbidden, method: PATCH, path: /api/pull_requests/1/approve, headers: {Authorization: "Bearer {{non_admin_access_token}}"}, tags: [pull-requests, permission-error]}
+  - {name: pull request reject, method: PATCH, path: /api/pull_requests/1/reject, headers: {Authorization: "Bearer {{access_token}}"}, tags: [pull-requests, permission]}
+  - {name: pull request reject forbidden, method: PATCH, path: /api/pull_requests/1/reject, headers: {Authorization: "Bearer {{non_admin_access_token}}"}, tags: [pull-requests, permission-error]}
+  - {name: pull request cancel, method: PATCH, path: /api/pull_requests/1/cancel, headers: {Authorization: "Bearer {{access_token}}"}, tags: [pull-requests, permission]}
+  - {name: admin users unauthenticated denied, method: GET, path: /api/admin/users, tags: [admin, admin-denial, auth-error]}
+  - {name: admin users non admin denied, method: GET, path: /api/admin/users, headers: {Authorization: "Bearer {{non_admin_access_token}}"}, tags: [admin, admin-denial, permission-error]}
+  - {name: admin moderation queue non admin denied, method: GET, path: /api/admin/pull_requests, headers: {Authorization: "Bearer {{non_admin_access_token}}"}, tags: [admin, admin-denial, permission-error]}
+  - {name: admin map write non admin denied, method: POST, path: /api/admin/maps, headers: {Authorization: "Bearer {{non_admin_access_token}}", Content-Type: application/json}, body: '{"name":"Cache"}', tags: [admin, admin-denial, permission-error]}

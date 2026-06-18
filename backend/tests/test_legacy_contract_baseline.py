@@ -59,3 +59,4 @@ class LegacyContractBaselineTests(unittest.TestCase):
             self.assertIn("docker compose -f docker-compose.yaml -f docker-compose.legacy-django.yaml", text)
             self.assertIn("localhost:3001/api/health", text)
             self.assertIn("refresh", text.lower())
+        self.assertIn("go run ./tools/contract-diff", capture_text)

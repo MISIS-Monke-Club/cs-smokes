@@ -37,6 +37,16 @@ curl -fsS http://localhost:3001/api/health
 After health succeeds, run the contract capture command for the route corpus
 and update `docs/legacy-contract/manifest.json` with the reviewed metadata.
 
+Run the golden diff against the preserved Django baseline and the Go backend:
+
+```bash
+cd backend
+go run ./tools/contract-diff \
+  --old-base http://localhost:3001 \
+  --new-base http://localhost:3000 \
+  --corpus ./tests/contract/corpus.yaml
+```
+
 ## Stop Baseline
 
 ```bash
