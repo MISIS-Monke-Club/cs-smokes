@@ -17,6 +17,7 @@
         "test:prepare": "npx playwright install",
         "test:prepare-ci": "npx playwright install --with-deps",
         "test": "VITE_BACKEND_URL=http://localhost:3000/api VITE_TG_INIT_DATA=123 VITE_IN_TG_ENVIRONMENT=false npx vitest run",
+        "test:e2e": "npm run test && npm run type-check",
         "type-check": "tsc --noEmit --pretty --skipLibCheck -p tsconfig.json",
         "test-storybook": "VITE_BACKEND_URL=http://localhost:3000/api VITE_TG_INIT_DATA=123 VITE_IN_TG_ENVIRONMENT=false npx test-storybook",
         "build-storybook": "VITE_BACKEND_URL=http://localhost:3000/api VITE_TG_INIT_DATA=123 VITE_IN_TG_ENVIRONMENT=false storybook build"
