@@ -7,7 +7,34 @@ package generated
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
+
+const getGrenadeClassByID = `-- name: GetGrenadeClassByID :one
+select grenade_class_id, name, description, price
+from grenade_classes
+where grenade_class_id = $1
+`
+
+type GetGrenadeClassByIDRow struct {
+	GrenadeClassID int32
+	Name           string
+	Description    pgtype.Text
+	Price          int32
+}
+
+func (q *Queries) GetGrenadeClassByID(ctx context.Context, grenadeClassID int32) (GetGrenadeClassByIDRow, error) {
+	row := q.db.QueryRow(ctx, getGrenadeClassByID, grenadeClassID)
+	var i GetGrenadeClassByIDRow
+	err := row.Scan(
+		&i.GrenadeClassID,
+		&i.Name,
+		&i.Description,
+		&i.Price,
+	)
+	return i, err
+}
 
 const getHealthValue = `-- name: GetHealthValue :one
 select 1::int as value
@@ -18,4 +45,125 @@ func (q *Queries) GetHealthValue(ctx context.Context) (int32, error) {
 	var value int32
 	err := row.Scan(&value)
 	return value, err
+}
+
+const getUserByID = `-- name: GetUserByID :one
+select user_id, username, email, first_name, last_name, avatar_url, steam_link, tg_id, is_banned
+from users
+where user_id = $1
+`
+
+type GetUserByIDRow struct {
+	UserID    int32
+	Username  string
+	Email     pgtype.Text
+	FirstName pgtype.Text
+	LastName  pgtype.Text
+	AvatarUrl pgtype.Text
+	SteamLink pgtype.Text
+	TgID      pgtype.Int8
+	IsBanned  bool
+}
+
+func (q *Queries) GetUserByID(ctx context.Context, userID int32) (GetUserByIDRow, error) {
+	row := q.db.QueryRow(ctx, getUserByID, userID)
+	var i GetUserByIDRow
+	err := row.Scan(
+		&i.UserID,
+		&i.Username,
+		&i.Email,
+		&i.FirstName,
+		&i.LastName,
+		&i.AvatarUrl,
+		&i.SteamLink,
+		&i.TgID,
+		&i.IsBanned,
+	)
+	return i, err
+}
+
+const listGrenadeClasses = `-- name: ListGrenadeClasses :many
+select grenade_class_id, name, description, price
+from grenade_classes
+order by grenade_class_id
+`
+
+type ListGrenadeClassesRow struct {
+	GrenadeClassID int32
+	Name           string
+	Description    pgtype.Text
+	Price          int32
+}
+
+func (q *Queries) ListGrenadeClasses(ctx context.Context) ([]ListGrenadeClassesRow, error) {
+	rows, err := q.db.Query(ctx, listGrenadeClasses)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListGrenadeClassesRow
+	for rows.Next() {
+		var i ListGrenadeClassesRow
+		if err := rows.Scan(
+			&i.GrenadeClassID,
+			&i.Name,
+			&i.Description,
+			&i.Price,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listUsers = `-- name: ListUsers :many
+select user_id, username, email, first_name, last_name, avatar_url, steam_link, tg_id, is_banned
+from users
+order by user_id
+`
+
+type ListUsersRow struct {
+	UserID    int32
+	Username  string
+	Email     pgtype.Text
+	FirstName pgtype.Text
+	LastName  pgtype.Text
+	AvatarUrl pgtype.Text
+	SteamLink pgtype.Text
+	TgID      pgtype.Int8
+	IsBanned  bool
+}
+
+func (q *Queries) ListUsers(ctx context.Context) ([]ListUsersRow, error) {
+	rows, err := q.db.Query(ctx, listUsers)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListUsersRow
+	for rows.Next() {
+		var i ListUsersRow
+		if err := rows.Scan(
+			&i.UserID,
+			&i.Username,
+			&i.Email,
+			&i.FirstName,
+			&i.LastName,
+			&i.AvatarUrl,
+			&i.SteamLink,
+			&i.TgID,
+			&i.IsBanned,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
