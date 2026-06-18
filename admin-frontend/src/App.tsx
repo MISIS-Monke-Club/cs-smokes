@@ -14,18 +14,22 @@ import {
     cancelPullRequest,
     createComment,
     deleteComment,
+    AdminUser,
     errorMessage,
     fetchMe,
     fetchPullRequestDetail,
     fetchPullRequests,
+    fetchUsers,
     isAuthFailure,
     login,
     PullRequestDetail,
     PullRequestSummary,
     rejectPullRequest,
+    setUserRoles,
 } from "./api"
 import {
     AdminMe,
+    AdminRole,
     canDeleteComment,
     canGrantRoles,
     canManageUsers,
@@ -42,6 +46,7 @@ export function App() {
     const [token, setToken] = useState(() => readSession()?.token ?? "")
     const [me, setMe] = useState<AdminMe | null>(null)
     const [requests, setRequests] = useState<PullRequestSummary[]>([])
+    const [users, setUsers] = useState<AdminUser[]>([])
     const [selectedID, setSelectedID] = useState<number | null>(null)
     const [detail, setDetail] = useState<PullRequestDetail | null>(null)
     const [commentText, setCommentText] = useState("")
@@ -63,8 +68,10 @@ export function App() {
         setMessage("")
         try {
             const [adminUser, pullRequests] = await Promise.all([fetchMe(token), fetchPullRequests(token)])
+            const adminUsers = canManageUsers(adminUser) ? await fetchUsers(token) : []
             setMe(adminUser)
             setRequests(pullRequests)
+            setUsers(adminUsers)
             setSelectedID((current) => current ?? pullRequests[0]?.id ?? null)
             setLoadState("ready")
         } catch (error) {
@@ -207,15 +214,16 @@ export function App() {
 
                 <section className="split-panels">
                     <div className="panel" id="users">
-                        <h2>User access</h2>
-                        <p>
-                            {canManageUsers(me)
-                                ? "This role can view users and moderation flags."
-                                : "Editors cannot view or manage users."}
-                        </p>
-                        <span className={canGrantRoles(me) ? "status ok" : "status muted"}>
-                            {canGrantRoles(me) ? "Role grants enabled" : "Role grants locked"}
-                        </span>
+                        <UsersPanel
+                            canGrant={canGrantRoles(me)}
+                            canView={canManageUsers(me)}
+                            onRolesChange={(userID, roles) =>
+                                handleModerationAction(async () => {
+                                    await setUserRoles(token, userID, roles)
+                                })
+                            }
+                            users={users}
+                        />
                     </div>
                     <div className="panel" id="content">
                         <h2>Content tools</h2>
@@ -237,6 +245,85 @@ export function App() {
             setMessage(errorMessage(error))
         }
     }
+}
+
+function UsersPanel({
+    canGrant,
+    canView,
+    onRolesChange,
+    users,
+}: {
+    canGrant: boolean
+    canView: boolean
+    onRolesChange: (userID: number, roles: AdminRole[]) => Promise<void>
+    users: AdminUser[]
+}) {
+    if (!canView) {
+        return (
+            <>
+                <h2>User access</h2>
+                <p>Editors cannot view or manage users.</p>
+                <span className="status muted">Role grants locked</span>
+            </>
+        )
+    }
+
+    return (
+        <>
+            <div className="panel-heading tight">
+                <div>
+                    <h2>User access</h2>
+                    <p>{canGrant ? "Superusers can grant or revoke roles." : "Base admins can view roles but cannot grant access."}</p>
+                </div>
+                <span className={canGrant ? "status ok" : "status muted"}>{canGrant ? "Role grants enabled" : "Read only"}</span>
+            </div>
+            <div className="user-list">
+                {users.length === 0 && <p className="hint">No users loaded.</p>}
+                {users.map((user) => (
+                    <article className="user-row" key={user.user_id}>
+                        <div>
+                            <strong>{user.username}</strong>
+                            <span>#{user.user_id}</span>
+                        </div>
+                        <RoleCheckboxes canGrant={canGrant} onChange={(roles) => onRolesChange(user.user_id, roles)} roles={user.roles} />
+                    </article>
+                ))}
+            </div>
+        </>
+    )
+}
+
+function RoleCheckboxes({
+    canGrant,
+    onChange,
+    roles,
+}: {
+    canGrant: boolean
+    onChange: (roles: AdminRole[]) => Promise<void>
+    roles: AdminRole[]
+}) {
+    const options: AdminRole[] = ["superuser", "base_admin", "editor"]
+    return (
+        <div className="role-checkboxes">
+            {options.map((role) => {
+                const checked = roles.includes(role)
+                return (
+                    <label key={role}>
+                        <input
+                            checked={checked}
+                            disabled={!canGrant}
+                            onChange={() => {
+                                const next = checked ? roles.filter((item) => item !== role) : [...roles, role]
+                                void onChange(next)
+                            }}
+                            type="checkbox"
+                        />
+                        {roleLabel(role)}
+                    </label>
+                )
+            })}
+        </div>
+    )
 }
 
 function LoginScreen({ message, onLogin }: { message: string; onLogin: (token: string) => void }) {

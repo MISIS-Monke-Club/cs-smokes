@@ -34,6 +34,11 @@ type PullRequestRepository interface {
 	pullrequests.Repository
 }
 
+type UserDTO struct {
+	users.UserDTO
+	Roles []string `json:"roles"`
+}
+
 type Handler struct {
 	roles RoleRepository
 	users UserRepository
@@ -116,9 +121,9 @@ func (h Handler) ListUsers(w http.ResponseWriter, r *http.Request) {
 		httpx.WriteError(w, http.StatusInternalServerError, "users_unavailable", "Users are unavailable.")
 		return
 	}
-	dto := make([]users.UserDTO, len(rows))
+	dto := make([]UserDTO, len(rows))
 	for i, user := range rows {
-		dto[i] = users.ToDTO(user)
+		dto[i] = h.toUserDTO(r, user)
 	}
 	httpx.WriteJSON(w, http.StatusOK, dto)
 }
@@ -420,7 +425,26 @@ func (h Handler) writeUserResult(w http.ResponseWriter, user users.User, err err
 		httpx.WriteError(w, http.StatusInternalServerError, "user_failed", "User operation failed.")
 		return
 	}
-	httpx.WriteJSON(w, http.StatusOK, users.ToDTO(user))
+	httpx.WriteJSON(w, http.StatusOK, h.toUserDTO(nil, user))
+}
+
+func (h Handler) toUserDTO(r *http.Request, user users.User) UserDTO {
+	dto := UserDTO{UserDTO: users.ToDTO(user), Roles: []string{}}
+	if h.roles == nil {
+		return dto
+	}
+	ctx := context.Background()
+	if r != nil {
+		ctx = r.Context()
+	}
+	roles, err := h.roles.RolesForUser(ctx, user.UserID)
+	if err == nil {
+		dto.Roles = roleCodes(roles)
+		if dto.Roles == nil {
+			dto.Roles = []string{}
+		}
+	}
+	return dto
 }
 
 func parseID(w http.ResponseWriter, r *http.Request, name string) (int, bool) {

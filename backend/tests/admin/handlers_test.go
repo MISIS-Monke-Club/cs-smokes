@@ -2,6 +2,7 @@ package admin_test
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
@@ -49,6 +50,15 @@ func TestAdminUserRoleMatrix(t *testing.T) {
 	}
 	if resp := perform(router, http.MethodGet, "/api/admin/users", "", "base"); resp.Code != http.StatusOK {
 		t.Fatalf("base list users status = %d, body = %s", resp.Code, resp.Body.String())
+	} else {
+		var body []map[string]any
+		if err := json.Unmarshal(resp.Body.Bytes(), &body); err != nil {
+			t.Fatalf("decode users: %v", err)
+		}
+		roles, ok := body[0]["roles"].([]any)
+		if !ok || len(roles) != 0 {
+			t.Fatalf("user roles missing/invalid: %#v", body)
+		}
 	}
 	if resp := perform(router, http.MethodPut, "/api/admin/users/7/roles", `{"roles":["editor"]}`, "base"); resp.Code != http.StatusForbidden {
 		t.Fatalf("base grant roles status = %d, body = %s", resp.Code, resp.Body.String())

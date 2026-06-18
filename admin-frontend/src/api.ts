@@ -1,6 +1,7 @@
 import axios, { AxiosError } from "axios"
 
 import type { AdminMe } from "./session"
+import type { AdminRole } from "./session"
 
 export type LoginResponse = {
     access_token: string
@@ -37,6 +38,16 @@ export type AdminComment = {
         role: string
     }
     created_at: string
+}
+
+export type AdminUser = {
+    user_id: number
+    username: string
+    email: string | null
+    first_name: string | null
+    last_name: string | null
+    is_banned: boolean
+    roles: AdminRole[]
 }
 
 export type PullRequestDetail = {
@@ -82,6 +93,15 @@ export async function fetchMe(token: string): Promise<AdminMe> {
 export async function fetchPullRequests(token: string): Promise<PullRequestSummary[]> {
     const response = await api.get<PullRequestSummary[]>("/admin/pull_requests", authConfig(token))
     return response.data
+}
+
+export async function fetchUsers(token: string): Promise<AdminUser[]> {
+    const response = await api.get<AdminUser[]>("/admin/users", authConfig(token))
+    return response.data
+}
+
+export async function setUserRoles(token: string, userID: number, roles: AdminRole[]): Promise<void> {
+    await api.put(`/admin/users/${userID}/roles`, { roles }, authConfig(token))
 }
 
 export async function fetchPullRequestDetail(token: string, id: number): Promise<PullRequestDetail> {
