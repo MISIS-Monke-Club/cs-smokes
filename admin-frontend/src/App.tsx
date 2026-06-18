@@ -7,20 +7,36 @@ import {
     Shield,
     Users,
 } from "lucide-react"
-import { FormEvent, useCallback, useEffect, useMemo, useState } from "react"
+import { FormEvent, ReactNode, useCallback, useEffect, useMemo, useState } from "react"
 
 import {
+    AdminGrenadeClass,
     AdminLineup,
+    AdminMap,
+    AdminProperty,
+    AdminPropertyRelation,
     approvePullRequest,
     cancelPullRequest,
+    createGrenadeClass,
     createLineup,
     createComment,
+    createMap,
+    createProperty,
+    createPropertyRelation,
+    deleteGrenadeClass,
     deleteLineup,
     deleteComment,
+    deleteMap,
+    deleteProperty,
+    deletePropertyRelation,
     AdminUser,
     errorMessage,
+    fetchGrenadeClasses,
     fetchLineups,
+    fetchMaps,
     fetchMe,
+    fetchProperties,
+    fetchPropertyRelations,
     fetchPullRequestDetail,
     fetchPullRequests,
     fetchUsers,
@@ -30,8 +46,22 @@ import {
     PullRequestSummary,
     rejectPullRequest,
     setUserRoles,
+    updateGrenadeClass,
     updateLineup,
+    updateMap,
+    updateProperty,
 } from "./api"
+import {
+    classInputFromForm,
+    ClassFormState,
+    emptyClassForm,
+    emptyMapForm,
+    emptyPropertyForm,
+    mapInputFromForm,
+    MapFormState,
+    propertyInputFromForm,
+    PropertyFormState,
+} from "./catalog"
 import { canManageContent, emptyLineupForm, lineupFormFromLineup, lineupInputFromForm, LineupFormState } from "./lineups"
 import {
     AdminMe,
@@ -53,6 +83,16 @@ type LineupFiltersState = {
     ordering: "date_of_creation" | "-date_of_creation" | "by_alphabet" | "-by_alphabet"
     query: string
 }
+type MapPoolFilter = "all" | "active" | "reserve"
+type MapFiltersState = {
+    ordering: "quantity" | "-quantity" | "by_alphabet" | "-by_alphabet"
+    pool: MapPoolFilter
+    query: string
+}
+type RelationFormState = {
+    grenadeID: string
+    propertyID: string
+}
 
 export function App() {
     const [token, setToken] = useState(() => readSession()?.token ?? "")
@@ -64,6 +104,18 @@ export function App() {
     const [selectedLineupID, setSelectedLineupID] = useState<number | null>(null)
     const [editingLineupID, setEditingLineupID] = useState<number | null>(null)
     const [lineupForm, setLineupForm] = useState<LineupFormState>(emptyLineupForm)
+    const [maps, setMaps] = useState<AdminMap[]>([])
+    const [mapFilters, setMapFilters] = useState<MapFiltersState>({ ordering: "by_alphabet", pool: "all", query: "" })
+    const [mapForm, setMapForm] = useState<MapFormState>(emptyMapForm)
+    const [editingMapID, setEditingMapID] = useState<number | null>(null)
+    const [grenadeClasses, setGrenadeClasses] = useState<AdminGrenadeClass[]>([])
+    const [classForm, setClassForm] = useState<ClassFormState>(emptyClassForm)
+    const [editingClassID, setEditingClassID] = useState<number | null>(null)
+    const [properties, setProperties] = useState<AdminProperty[]>([])
+    const [propertyForm, setPropertyForm] = useState<PropertyFormState>(emptyPropertyForm)
+    const [editingPropertyID, setEditingPropertyID] = useState<number | null>(null)
+    const [propertyRelations, setPropertyRelations] = useState<AdminPropertyRelation[]>([])
+    const [relationForm, setRelationForm] = useState<RelationFormState>({ grenadeID: "", propertyID: "" })
     const [selectedID, setSelectedID] = useState<number | null>(null)
     const [detail, setDetail] = useState<PullRequestDetail | null>(null)
     const [commentText, setCommentText] = useState("")
@@ -77,6 +129,10 @@ export function App() {
         setRequests([])
         setUsers([])
         setLineups([])
+        setMaps([])
+        setGrenadeClasses([])
+        setProperties([])
+        setPropertyRelations([])
         setDetail(null)
     }, [])
 
@@ -89,17 +145,32 @@ export function App() {
         try {
             const [adminUser, pullRequests] = await Promise.all([fetchMe(token), fetchPullRequests(token)])
             const adminUsers = canManageUsers(adminUser) ? await fetchUsers(token) : []
-            const adminLineups = canManageContent(adminUser)
-                ? await fetchLineups(token, {
-                      isApproved: approvedFilterValue(lineupFilters.approved),
-                      ordering: lineupFilters.ordering,
-                      query: lineupFilters.query.trim() || undefined,
-                  })
-                : []
+            const contentAllowed = canManageContent(adminUser)
+            const [adminLineups, adminMaps, adminClasses, adminProperties, adminRelations] = contentAllowed
+                ? await Promise.all([
+                      fetchLineups(token, {
+                          isApproved: approvedFilterValue(lineupFilters.approved),
+                          ordering: lineupFilters.ordering,
+                          query: lineupFilters.query.trim() || undefined,
+                      }),
+                      fetchMaps(token, {
+                          isEsportsPool: mapPoolFilterValue(mapFilters.pool),
+                          ordering: mapFilters.ordering,
+                          query: mapFilters.query.trim() || undefined,
+                      }),
+                      fetchGrenadeClasses(token),
+                      fetchProperties(token),
+                      fetchPropertyRelations(token, relationForm.grenadeID.trim() ? Number(relationForm.grenadeID.trim()) : undefined),
+                  ])
+                : [[], [], [], [], []]
             setMe(adminUser)
             setRequests(pullRequests)
             setUsers(adminUsers)
             setLineups(adminLineups)
+            setMaps(adminMaps)
+            setGrenadeClasses(adminClasses)
+            setProperties(adminProperties)
+            setPropertyRelations(adminRelations)
             setSelectedID((current) => current ?? pullRequests[0]?.id ?? null)
             setSelectedLineupID((current) =>
                 current != null && adminLineups.some((lineup) => lineup.grenade_id === current) ? current : (adminLineups[0]?.grenade_id ?? null),
@@ -114,7 +185,17 @@ export function App() {
                 setMessage(errorMessage(error))
             }
         }
-    }, [lineupFilters.approved, lineupFilters.ordering, lineupFilters.query, resetSession, token])
+    }, [
+        lineupFilters.approved,
+        lineupFilters.ordering,
+        lineupFilters.query,
+        mapFilters.ordering,
+        mapFilters.pool,
+        mapFilters.query,
+        relationForm.grenadeID,
+        resetSession,
+        token,
+    ])
 
     useEffect(() => {
         void loadAdminData()
@@ -293,6 +374,99 @@ export function App() {
                             })
                         }}
                         selectedLineup={selectedLineup}
+                    />
+                </section>
+
+                <section className="panel follow-panel" id="catalog">
+                    <CatalogPanel
+                        canManage={canManageContent(me)}
+                        classForm={classForm}
+                        editingClassID={editingClassID}
+                        editingMapID={editingMapID}
+                        editingPropertyID={editingPropertyID}
+                        grenadeClasses={grenadeClasses}
+                        mapFilters={mapFilters}
+                        mapForm={mapForm}
+                        maps={maps}
+                        onClassDelete={(id) => handleModerationAction(() => deleteGrenadeClass(token, id))}
+                        onClassEdit={(item) => {
+                            setEditingClassID(item.grenade_class_id)
+                            setClassForm({ description: item.description ?? "", name: item.name, price: String(item.price) })
+                        }}
+                        onClassFormChange={setClassForm}
+                        onClassNew={() => {
+                            setEditingClassID(null)
+                            setClassForm(emptyClassForm)
+                        }}
+                        onClassSubmit={() =>
+                            handleModerationAction(async () => {
+                                const input = classInputFromForm(classForm)
+                                if (editingClassID == null) {
+                                    await createGrenadeClass(token, input)
+                                } else {
+                                    await updateGrenadeClass(token, editingClassID, input)
+                                }
+                                setEditingClassID(null)
+                                setClassForm(emptyClassForm)
+                            })
+                        }
+                        onMapDelete={(id) => handleModerationAction(() => deleteMap(token, id))}
+                        onMapEdit={(item) => {
+                            setEditingMapID(item.map_id)
+                            setMapForm({ image: undefined, isEsportsPool: item.is_esports_pool, link: item.link ?? "", name: item.name })
+                        }}
+                        onMapFiltersChange={setMapFilters}
+                        onMapFormChange={setMapForm}
+                        onMapNew={() => {
+                            setEditingMapID(null)
+                            setMapForm(emptyMapForm)
+                        }}
+                        onMapSubmit={() =>
+                            handleModerationAction(async () => {
+                                const input = mapInputFromForm(mapForm)
+                                if (editingMapID == null) {
+                                    await createMap(token, input)
+                                } else {
+                                    await updateMap(token, editingMapID, input)
+                                }
+                                setEditingMapID(null)
+                                setMapForm(emptyMapForm)
+                            })
+                        }
+                        onPropertyDelete={(id) => handleModerationAction(() => deleteProperty(token, id))}
+                        onPropertyEdit={(item) => {
+                            setEditingPropertyID(item.property_id)
+                            setPropertyForm({ name: item.name, value: item.value ?? "" })
+                        }}
+                        onPropertyFormChange={setPropertyForm}
+                        onPropertyNew={() => {
+                            setEditingPropertyID(null)
+                            setPropertyForm(emptyPropertyForm)
+                        }}
+                        onPropertySubmit={() =>
+                            handleModerationAction(async () => {
+                                const input = propertyInputFromForm(propertyForm)
+                                if (editingPropertyID == null) {
+                                    await createProperty(token, input)
+                                } else {
+                                    await updateProperty(token, editingPropertyID, input)
+                                }
+                                setEditingPropertyID(null)
+                                setPropertyForm(emptyPropertyForm)
+                            })
+                        }
+                        onRelationDelete={(grenadeID, propertyID) => handleModerationAction(() => deletePropertyRelation(token, grenadeID, propertyID))}
+                        onRelationFormChange={setRelationForm}
+                        onRelationSubmit={() =>
+                            handleModerationAction(async () => {
+                                await createPropertyRelation(token, Number(relationForm.grenadeID), Number(relationForm.propertyID))
+                                setRelationForm({ ...relationForm, propertyID: "" })
+                            })
+                        }
+                        properties={properties}
+                        propertyForm={propertyForm}
+                        propertyRelations={propertyRelations}
+                        relationForm={relationForm}
                     />
                 </section>
             </section>
@@ -594,6 +768,339 @@ function approvedFilterValue(value: ApprovedFilter): boolean | undefined {
         case "all":
             return undefined
     }
+}
+
+function mapPoolFilterValue(value: MapPoolFilter): boolean | undefined {
+    switch (value) {
+        case "active":
+            return true
+        case "reserve":
+            return false
+        case "all":
+            return undefined
+    }
+}
+
+function CatalogPanel({
+    canManage,
+    classForm,
+    editingClassID,
+    editingMapID,
+    editingPropertyID,
+    grenadeClasses,
+    mapFilters,
+    mapForm,
+    maps,
+    onClassDelete,
+    onClassEdit,
+    onClassFormChange,
+    onClassNew,
+    onClassSubmit,
+    onMapDelete,
+    onMapEdit,
+    onMapFiltersChange,
+    onMapFormChange,
+    onMapNew,
+    onMapSubmit,
+    onPropertyDelete,
+    onPropertyEdit,
+    onPropertyFormChange,
+    onPropertyNew,
+    onPropertySubmit,
+    onRelationDelete,
+    onRelationFormChange,
+    onRelationSubmit,
+    properties,
+    propertyForm,
+    propertyRelations,
+    relationForm,
+}: {
+    canManage: boolean
+    classForm: ClassFormState
+    editingClassID: number | null
+    editingMapID: number | null
+    editingPropertyID: number | null
+    grenadeClasses: AdminGrenadeClass[]
+    mapFilters: MapFiltersState
+    mapForm: MapFormState
+    maps: AdminMap[]
+    onClassDelete: (id: number) => Promise<void>
+    onClassEdit: (item: AdminGrenadeClass) => void
+    onClassFormChange: (form: ClassFormState) => void
+    onClassNew: () => void
+    onClassSubmit: () => Promise<void>
+    onMapDelete: (id: number) => Promise<void>
+    onMapEdit: (item: AdminMap) => void
+    onMapFiltersChange: (filters: MapFiltersState) => void
+    onMapFormChange: (form: MapFormState) => void
+    onMapNew: () => void
+    onMapSubmit: () => Promise<void>
+    onPropertyDelete: (id: number) => Promise<void>
+    onPropertyEdit: (item: AdminProperty) => void
+    onPropertyFormChange: (form: PropertyFormState) => void
+    onPropertyNew: () => void
+    onPropertySubmit: () => Promise<void>
+    onRelationDelete: (grenadeID: number, propertyID: number) => Promise<void>
+    onRelationFormChange: (form: RelationFormState) => void
+    onRelationSubmit: () => Promise<void>
+    properties: AdminProperty[]
+    propertyForm: PropertyFormState
+    propertyRelations: AdminPropertyRelation[]
+    relationForm: RelationFormState
+}) {
+    return (
+        <>
+            <div className="panel-heading tight">
+                <div>
+                    <h2>Catalog</h2>
+                    <p>Maps, grenade classes, properties, media fields, and lineup property links.</p>
+                </div>
+                <span className={canManage ? "status ok" : "status muted"}>{canManage ? "Catalog access" : "Catalog locked"}</span>
+            </div>
+            <section className="catalog-grid">
+                <CatalogCard title="Maps">
+                    <div className="lineup-tools">
+                        <label>
+                            Search
+                            <input
+                                disabled={!canManage}
+                                onChange={(event) => onMapFiltersChange({ ...mapFilters, query: event.target.value })}
+                                value={mapFilters.query}
+                            />
+                        </label>
+                        <label>
+                            Pool
+                            <select
+                                disabled={!canManage}
+                                onChange={(event) => onMapFiltersChange({ ...mapFilters, pool: event.target.value as MapPoolFilter })}
+                                value={mapFilters.pool}
+                            >
+                                <option value="all">All</option>
+                                <option value="active">Esports pool</option>
+                                <option value="reserve">Reserve</option>
+                            </select>
+                        </label>
+                        <label>
+                            Sort
+                            <select
+                                disabled={!canManage}
+                                onChange={(event) => onMapFiltersChange({ ...mapFilters, ordering: event.target.value as MapFiltersState["ordering"] })}
+                                value={mapFilters.ordering}
+                            >
+                                <option value="by_alphabet">A-Z</option>
+                                <option value="-by_alphabet">Z-A</option>
+                                <option value="-quantity">Most lineups</option>
+                                <option value="quantity">Fewest lineups</option>
+                            </select>
+                        </label>
+                    </div>
+                    <SimpleTable
+                        columns={["ID", "Name", "Pool", "Action"]}
+                        rows={maps.map((item) => ({
+                            action: (
+                                <RowActions
+                                    canManage={canManage}
+                                    onDelete={() => onMapDelete(item.map_id)}
+                                    onEdit={() => onMapEdit(item)}
+                                />
+                            ),
+                            cells: [`#${item.map_id}`, item.name, item.is_esports_pool ? "Esports" : "Reserve"],
+                            key: item.map_id,
+                        }))}
+                    />
+                    <form className="catalog-form" onSubmit={(event) => submitForm(event, onMapSubmit)}>
+                        <FormHeading onNew={onMapNew} title={editingMapID == null ? "Create map" : `Edit map #${editingMapID}`} />
+                        <label>
+                            Name
+                            <input disabled={!canManage} onChange={(event) => onMapFormChange({ ...mapForm, name: event.target.value })} required value={mapForm.name} />
+                        </label>
+                        <label>
+                            Link
+                            <input disabled={!canManage} onChange={(event) => onMapFormChange({ ...mapForm, link: event.target.value })} value={mapForm.link} />
+                        </label>
+                        <label>
+                            Image
+                            <input
+                                disabled={!canManage}
+                                onChange={(event) => onMapFormChange({ ...mapForm, image: event.target.files?.[0] })}
+                                type="file"
+                            />
+                        </label>
+                        <label className="checkbox-label">
+                            <input
+                                checked={mapForm.isEsportsPool}
+                                disabled={!canManage}
+                                onChange={(event) => onMapFormChange({ ...mapForm, isEsportsPool: event.target.checked })}
+                                type="checkbox"
+                            />
+                            Esports pool
+                        </label>
+                        <button disabled={!canManage} type="submit">{editingMapID == null ? "Create map" : "Save map"}</button>
+                    </form>
+                </CatalogCard>
+
+                <CatalogCard title="Grenade classes">
+                    <SimpleTable
+                        columns={["ID", "Name", "Price", "Action"]}
+                        rows={grenadeClasses.map((item) => ({
+                            action: <RowActions canManage={canManage} onDelete={() => onClassDelete(item.grenade_class_id)} onEdit={() => onClassEdit(item)} />,
+                            cells: [`#${item.grenade_class_id}`, item.name, `$${item.price}`],
+                            key: item.grenade_class_id,
+                        }))}
+                    />
+                    <form className="catalog-form" onSubmit={(event) => submitForm(event, onClassSubmit)}>
+                        <FormHeading onNew={onClassNew} title={editingClassID == null ? "Create class" : `Edit class #${editingClassID}`} />
+                        <label>
+                            Name
+                            <input disabled={!canManage} onChange={(event) => onClassFormChange({ ...classForm, name: event.target.value })} required value={classForm.name} />
+                        </label>
+                        <label>
+                            Price
+                            <input disabled={!canManage} onChange={(event) => onClassFormChange({ ...classForm, price: event.target.value })} value={classForm.price} />
+                        </label>
+                        <label>
+                            Description
+                            <textarea disabled={!canManage} onChange={(event) => onClassFormChange({ ...classForm, description: event.target.value })} value={classForm.description} />
+                        </label>
+                        <button disabled={!canManage} type="submit">{editingClassID == null ? "Create class" : "Save class"}</button>
+                    </form>
+                </CatalogCard>
+
+                <CatalogCard title="Properties">
+                    <SimpleTable
+                        columns={["ID", "Name", "Value", "Action"]}
+                        rows={properties.map((item) => ({
+                            action: <RowActions canManage={canManage} onDelete={() => onPropertyDelete(item.property_id)} onEdit={() => onPropertyEdit(item)} />,
+                            cells: [`#${item.property_id}`, item.name, item.value ?? ""],
+                            key: item.property_id,
+                        }))}
+                    />
+                    <form className="catalog-form" onSubmit={(event) => submitForm(event, onPropertySubmit)}>
+                        <FormHeading onNew={onPropertyNew} title={editingPropertyID == null ? "Create property" : `Edit property #${editingPropertyID}`} />
+                        <label>
+                            Name
+                            <input disabled={!canManage} onChange={(event) => onPropertyFormChange({ ...propertyForm, name: event.target.value })} required value={propertyForm.name} />
+                        </label>
+                        <label>
+                            Value
+                            <input disabled={!canManage} onChange={(event) => onPropertyFormChange({ ...propertyForm, value: event.target.value })} value={propertyForm.value} />
+                        </label>
+                        <button disabled={!canManage} type="submit">{editingPropertyID == null ? "Create property" : "Save property"}</button>
+                    </form>
+                </CatalogCard>
+
+                <CatalogCard title="Property links">
+                    <form className="catalog-form compact" onSubmit={(event) => submitForm(event, onRelationSubmit)}>
+                        <label>
+                            Lineup ID
+                            <input
+                                disabled={!canManage}
+                                onChange={(event) => onRelationFormChange({ ...relationForm, grenadeID: event.target.value })}
+                                required
+                                value={relationForm.grenadeID}
+                            />
+                        </label>
+                        <label>
+                            Property ID
+                            <input
+                                disabled={!canManage}
+                                onChange={(event) => onRelationFormChange({ ...relationForm, propertyID: event.target.value })}
+                                required
+                                value={relationForm.propertyID}
+                            />
+                        </label>
+                        <button disabled={!canManage} type="submit">Link property</button>
+                    </form>
+                    <SimpleTable
+                        columns={["Lineup", "Property", "Value", "Action"]}
+                        rows={propertyRelations.map((item) => ({
+                            action: (
+                                <button
+                                    className="row-action danger"
+                                    disabled={!canManage}
+                                    onClick={() => void onRelationDelete(item.grenade_id, item.property_id)}
+                                    type="button"
+                                >
+                                    Unlink
+                                </button>
+                            ),
+                            cells: [`#${item.grenade_id}`, item.name, item.value ?? ""],
+                            key: `${item.grenade_id}-${item.property_id}`,
+                        }))}
+                    />
+                </CatalogCard>
+            </section>
+        </>
+    )
+}
+
+function CatalogCard({ children, title }: { children: ReactNode; title: string }) {
+    return (
+        <article className="catalog-card">
+            <h3>{title}</h3>
+            {children}
+        </article>
+    )
+}
+
+function FormHeading({ onNew, title }: { onNew: () => void; title: string }) {
+    return (
+        <div className="form-heading">
+            <h3>{title}</h3>
+            <button className="secondary-action compact" onClick={onNew} type="button">
+                New
+            </button>
+        </div>
+    )
+}
+
+function RowActions({ canManage, onDelete, onEdit }: { canManage: boolean; onDelete: () => Promise<void>; onEdit: () => void }) {
+    return (
+        <>
+            <button className="row-action secondary" disabled={!canManage} onClick={onEdit} type="button">
+                Edit
+            </button>
+            <button className="row-action danger" disabled={!canManage} onClick={() => void onDelete()} type="button">
+                Delete
+            </button>
+        </>
+    )
+}
+
+function SimpleTable({
+    columns,
+    rows,
+}: {
+    columns: string[]
+    rows: Array<{ action: ReactNode; cells: string[]; key: number | string }>
+}) {
+    if (rows.length === 0) {
+        return <div className="empty-state compact-empty">No records loaded.</div>
+    }
+    return (
+        <div className="table-wrap compact-table">
+            <table>
+                <thead>
+                    <tr>{columns.map((column) => <th key={column}>{column}</th>)}</tr>
+                </thead>
+                <tbody>
+                    {rows.map((row) => (
+                        <tr key={row.key}>
+                            {row.cells.map((cell, index) => (
+                                <td data-label={columns[index]} key={columns[index]}>{cell}</td>
+                            ))}
+                            <td data-label={columns[columns.length - 1]}>{row.action}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    )
+}
+
+function submitForm(event: FormEvent<HTMLFormElement>, action: () => Promise<void>) {
+    event.preventDefault()
+    void action()
 }
 
 function UsersPanel({

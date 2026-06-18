@@ -102,6 +102,58 @@ export type LineupInput = {
     views?: number
 }
 
+export type AdminMap = {
+    map_id: number
+    name: string
+    link: string | null
+    is_esports_pool: boolean
+    image_link: string | null
+}
+
+export type MapFilters = {
+    isEsportsPool?: boolean
+    ordering?: "quantity" | "-quantity" | "by_alphabet" | "-by_alphabet"
+    query?: string
+}
+
+export type MapInput = {
+    image_link?: File
+    is_esports_pool?: boolean
+    link?: string
+    name?: string
+}
+
+export type AdminGrenadeClass = {
+    grenade_class_id: number
+    name: string
+    description: string | null
+    price: number
+}
+
+export type GrenadeClassInput = {
+    description?: string
+    name?: string
+    price?: number
+}
+
+export type AdminProperty = {
+    property_id: number
+    name: string
+    value: string | null
+}
+
+export type PropertyInput = {
+    name?: string
+    value?: string
+}
+
+export type AdminPropertyRelation = {
+    property_id: number
+    grenade_id: number
+    name: string
+    value: string | null
+}
+
 export type PullRequestDetail = {
     pull_request: PullRequestSummary
     comments: AdminComment[]
@@ -185,6 +237,93 @@ export async function deleteLineup(token: string, id: number): Promise<void> {
     await api.delete(`/admin/lineups/${id}`, authConfig(token))
 }
 
+export async function fetchMaps(token: string, filters: MapFilters = {}): Promise<AdminMap[]> {
+    const params: Record<string, string> = {}
+    if (filters.isEsportsPool !== undefined) {
+        params.is_esports_pool = String(filters.isEsportsPool)
+    }
+    if (filters.ordering) {
+        params.ordering = filters.ordering
+    }
+    if (filters.query) {
+        params.query = filters.query
+    }
+    const response = await api.get<AdminMap[]>("/admin/maps", {
+        ...authConfig(token),
+        params,
+    })
+    return response.data
+}
+
+export async function createMap(token: string, input: MapInput): Promise<AdminMap> {
+    const response = await api.post<AdminMap>("/admin/maps", toMapFormData(input), authConfig(token))
+    return response.data
+}
+
+export async function updateMap(token: string, id: number, input: MapInput): Promise<AdminMap> {
+    const response = await api.patch<AdminMap>(`/admin/maps/${id}`, toMapFormData(input), authConfig(token))
+    return response.data
+}
+
+export async function deleteMap(token: string, id: number): Promise<void> {
+    await api.delete(`/admin/maps/${id}`, authConfig(token))
+}
+
+export async function fetchGrenadeClasses(token: string): Promise<AdminGrenadeClass[]> {
+    const response = await api.get<AdminGrenadeClass[]>("/admin/grenade-classes", authConfig(token))
+    return response.data
+}
+
+export async function createGrenadeClass(token: string, input: GrenadeClassInput): Promise<AdminGrenadeClass> {
+    const response = await api.post<AdminGrenadeClass>("/admin/grenade-classes", input, authConfig(token))
+    return response.data
+}
+
+export async function updateGrenadeClass(token: string, id: number, input: GrenadeClassInput): Promise<AdminGrenadeClass> {
+    const response = await api.patch<AdminGrenadeClass>(`/admin/grenade-classes/${id}`, input, authConfig(token))
+    return response.data
+}
+
+export async function deleteGrenadeClass(token: string, id: number): Promise<void> {
+    await api.delete(`/admin/grenade-classes/${id}`, authConfig(token))
+}
+
+export async function fetchProperties(token: string): Promise<AdminProperty[]> {
+    const response = await api.get<AdminProperty[]>("/admin/properties", authConfig(token))
+    return response.data
+}
+
+export async function createProperty(token: string, input: PropertyInput): Promise<AdminProperty> {
+    const response = await api.post<AdminProperty>("/admin/properties", input, authConfig(token))
+    return response.data
+}
+
+export async function updateProperty(token: string, id: number, input: PropertyInput): Promise<AdminProperty> {
+    const response = await api.patch<AdminProperty>(`/admin/properties/${id}`, input, authConfig(token))
+    return response.data
+}
+
+export async function deleteProperty(token: string, id: number): Promise<void> {
+    await api.delete(`/admin/properties/${id}`, authConfig(token))
+}
+
+export async function fetchPropertyRelations(token: string, grenadeID?: number): Promise<AdminPropertyRelation[]> {
+    const response = await api.get<AdminPropertyRelation[]>("/admin/property-list", {
+        ...authConfig(token),
+        params: grenadeID == null ? {} : { grenade_id: String(grenadeID) },
+    })
+    return response.data
+}
+
+export async function createPropertyRelation(token: string, grenadeID: number, propertyID: number): Promise<AdminPropertyRelation> {
+    const response = await api.post<AdminPropertyRelation>(`/admin/lineups/${grenadeID}/properties`, { property_id: propertyID }, authConfig(token))
+    return response.data
+}
+
+export async function deletePropertyRelation(token: string, grenadeID: number, propertyID: number): Promise<void> {
+    await api.delete(`/admin/lineups/${grenadeID}/properties/${propertyID}`, authConfig(token))
+}
+
 export async function fetchPullRequestDetail(token: string, id: number): Promise<PullRequestDetail> {
     const response = await api.get<PullRequestDetail>(`/admin/pull_requests/${id}`, authConfig(token))
     return response.data
@@ -230,6 +369,15 @@ function toLineupFormData(input: LineupInput): FormData {
     appendFormValue(body, "grenade_class_id", input.grenade_class_id)
     appendFormValue(body, "link_to_video", input.link_to_video)
     appendFormValue(body, "preview_image_link", input.preview_image_link)
+    return body
+}
+
+function toMapFormData(input: MapInput): FormData {
+    const body = new FormData()
+    appendFormValue(body, "name", input.name)
+    appendFormValue(body, "link", input.link)
+    appendFormValue(body, "is_esports_pool", input.is_esports_pool)
+    appendFormValue(body, "image_link", input.image_link)
     return body
 }
 
