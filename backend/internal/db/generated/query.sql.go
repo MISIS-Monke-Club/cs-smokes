@@ -96,6 +96,37 @@ func (q *Queries) CreateFavorite(ctx context.Context, arg CreateFavoriteParams) 
 	return err
 }
 
+const createGrenadeClass = `-- name: CreateGrenadeClass :one
+insert into grenade_classes (name, description, price)
+values ($1, $2, $3)
+returning grenade_class_id, name, description, price
+`
+
+type CreateGrenadeClassParams struct {
+	Name        string
+	Description pgtype.Text
+	Price       int32
+}
+
+type CreateGrenadeClassRow struct {
+	GrenadeClassID int32
+	Name           string
+	Description    pgtype.Text
+	Price          int32
+}
+
+func (q *Queries) CreateGrenadeClass(ctx context.Context, arg CreateGrenadeClassParams) (CreateGrenadeClassRow, error) {
+	row := q.db.QueryRow(ctx, createGrenadeClass, arg.Name, arg.Description, arg.Price)
+	var i CreateGrenadeClassRow
+	err := row.Scan(
+		&i.GrenadeClassID,
+		&i.Name,
+		&i.Description,
+		&i.Price,
+	)
+	return i, err
+}
+
 const createLineup = `-- name: CreateLineup :one
 insert into lineups (map_id, user_id, grenade_class_id, link_to_video, title, description, is_approved, views, preview_image_path)
 values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
@@ -261,6 +292,63 @@ func (q *Queries) CreatePullRequest(ctx context.Context, arg CreatePullRequestPa
 	return i, err
 }
 
+const createUser = `-- name: CreateUser :one
+insert into users (username, email, password_hash, first_name, last_name, avatar_url, steam_link, tg_id, is_banned)
+values ($1, $2, $3, $4, $5, $6, $7, $8, false)
+returning user_id, username, email, password_hash, first_name, last_name, avatar_url, steam_link, tg_id, is_banned
+`
+
+type CreateUserParams struct {
+	Username     string
+	Email        pgtype.Text
+	PasswordHash pgtype.Text
+	FirstName    pgtype.Text
+	LastName     pgtype.Text
+	AvatarUrl    pgtype.Text
+	SteamLink    pgtype.Text
+	TgID         pgtype.Int8
+}
+
+type CreateUserRow struct {
+	UserID       int32
+	Username     string
+	Email        pgtype.Text
+	PasswordHash pgtype.Text
+	FirstName    pgtype.Text
+	LastName     pgtype.Text
+	AvatarUrl    pgtype.Text
+	SteamLink    pgtype.Text
+	TgID         pgtype.Int8
+	IsBanned     bool
+}
+
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (CreateUserRow, error) {
+	row := q.db.QueryRow(ctx, createUser,
+		arg.Username,
+		arg.Email,
+		arg.PasswordHash,
+		arg.FirstName,
+		arg.LastName,
+		arg.AvatarUrl,
+		arg.SteamLink,
+		arg.TgID,
+	)
+	var i CreateUserRow
+	err := row.Scan(
+		&i.UserID,
+		&i.Username,
+		&i.Email,
+		&i.PasswordHash,
+		&i.FirstName,
+		&i.LastName,
+		&i.AvatarUrl,
+		&i.SteamLink,
+		&i.TgID,
+		&i.IsBanned,
+	)
+	return i, err
+}
+
 const deleteComment = `-- name: DeleteComment :exec
 delete from comments
 where id = $1
@@ -283,6 +371,16 @@ type DeleteFavoriteParams struct {
 
 func (q *Queries) DeleteFavorite(ctx context.Context, arg DeleteFavoriteParams) error {
 	_, err := q.db.Exec(ctx, deleteFavorite, arg.UserID, arg.GrenadeID)
+	return err
+}
+
+const deleteGrenadeClass = `-- name: DeleteGrenadeClass :exec
+delete from grenade_classes
+where grenade_class_id = $1
+`
+
+func (q *Queries) DeleteGrenadeClass(ctx context.Context, grenadeClassID int32) error {
+	_, err := q.db.Exec(ctx, deleteGrenadeClass, grenadeClassID)
 	return err
 }
 
@@ -339,6 +437,90 @@ where id = $1
 func (q *Queries) DeletePullRequest(ctx context.Context, id int32) error {
 	_, err := q.db.Exec(ctx, deletePullRequest, id)
 	return err
+}
+
+const deleteUser = `-- name: DeleteUser :exec
+delete from users
+where user_id = $1
+`
+
+func (q *Queries) DeleteUser(ctx context.Context, userID int32) error {
+	_, err := q.db.Exec(ctx, deleteUser, userID)
+	return err
+}
+
+const findUserByTelegramID = `-- name: FindUserByTelegramID :one
+select user_id, username, email, password_hash, first_name, last_name, avatar_url, steam_link, tg_id, is_banned
+from users
+where tg_id = $1
+`
+
+type FindUserByTelegramIDRow struct {
+	UserID       int32
+	Username     string
+	Email        pgtype.Text
+	PasswordHash pgtype.Text
+	FirstName    pgtype.Text
+	LastName     pgtype.Text
+	AvatarUrl    pgtype.Text
+	SteamLink    pgtype.Text
+	TgID         pgtype.Int8
+	IsBanned     bool
+}
+
+func (q *Queries) FindUserByTelegramID(ctx context.Context, tgID pgtype.Int8) (FindUserByTelegramIDRow, error) {
+	row := q.db.QueryRow(ctx, findUserByTelegramID, tgID)
+	var i FindUserByTelegramIDRow
+	err := row.Scan(
+		&i.UserID,
+		&i.Username,
+		&i.Email,
+		&i.PasswordHash,
+		&i.FirstName,
+		&i.LastName,
+		&i.AvatarUrl,
+		&i.SteamLink,
+		&i.TgID,
+		&i.IsBanned,
+	)
+	return i, err
+}
+
+const findUserByUsernameOrEmail = `-- name: FindUserByUsernameOrEmail :one
+select user_id, username, email, password_hash, first_name, last_name, avatar_url, steam_link, tg_id, is_banned
+from users
+where username = $1 or email = $1
+`
+
+type FindUserByUsernameOrEmailRow struct {
+	UserID       int32
+	Username     string
+	Email        pgtype.Text
+	PasswordHash pgtype.Text
+	FirstName    pgtype.Text
+	LastName     pgtype.Text
+	AvatarUrl    pgtype.Text
+	SteamLink    pgtype.Text
+	TgID         pgtype.Int8
+	IsBanned     bool
+}
+
+func (q *Queries) FindUserByUsernameOrEmail(ctx context.Context, username string) (FindUserByUsernameOrEmailRow, error) {
+	row := q.db.QueryRow(ctx, findUserByUsernameOrEmail, username)
+	var i FindUserByUsernameOrEmailRow
+	err := row.Scan(
+		&i.UserID,
+		&i.Username,
+		&i.Email,
+		&i.PasswordHash,
+		&i.FirstName,
+		&i.LastName,
+		&i.AvatarUrl,
+		&i.SteamLink,
+		&i.TgID,
+		&i.IsBanned,
+	)
+	return i, err
 }
 
 const getCommentByID = `-- name: GetCommentByID :one
@@ -506,22 +688,46 @@ func (q *Queries) GetPullRequestByID(ctx context.Context, id int32) (PullRequest
 	return i, err
 }
 
+const getPullRequestByLineupID = `-- name: GetPullRequestByLineupID :one
+select id, lineup_id, creator_id, approver_id, status, created_at, closed_at
+from pull_requests
+where lineup_id = $1
+order by id desc
+limit 1
+`
+
+func (q *Queries) GetPullRequestByLineupID(ctx context.Context, lineupID int32) (PullRequest, error) {
+	row := q.db.QueryRow(ctx, getPullRequestByLineupID, lineupID)
+	var i PullRequest
+	err := row.Scan(
+		&i.ID,
+		&i.LineupID,
+		&i.CreatorID,
+		&i.ApproverID,
+		&i.Status,
+		&i.CreatedAt,
+		&i.ClosedAt,
+	)
+	return i, err
+}
+
 const getUserByID = `-- name: GetUserByID :one
-select user_id, username, email, first_name, last_name, avatar_url, steam_link, tg_id, is_banned
+select user_id, username, email, password_hash, first_name, last_name, avatar_url, steam_link, tg_id, is_banned
 from users
 where user_id = $1
 `
 
 type GetUserByIDRow struct {
-	UserID    int32
-	Username  string
-	Email     pgtype.Text
-	FirstName pgtype.Text
-	LastName  pgtype.Text
-	AvatarUrl pgtype.Text
-	SteamLink pgtype.Text
-	TgID      pgtype.Int8
-	IsBanned  bool
+	UserID       int32
+	Username     string
+	Email        pgtype.Text
+	PasswordHash pgtype.Text
+	FirstName    pgtype.Text
+	LastName     pgtype.Text
+	AvatarUrl    pgtype.Text
+	SteamLink    pgtype.Text
+	TgID         pgtype.Int8
+	IsBanned     bool
 }
 
 func (q *Queries) GetUserByID(ctx context.Context, userID int32) (GetUserByIDRow, error) {
@@ -531,6 +737,7 @@ func (q *Queries) GetUserByID(ctx context.Context, userID int32) (GetUserByIDRow
 		&i.UserID,
 		&i.Username,
 		&i.Email,
+		&i.PasswordHash,
 		&i.FirstName,
 		&i.LastName,
 		&i.AvatarUrl,
@@ -567,6 +774,33 @@ func (q *Queries) ListCommentsByPullRequest(ctx context.Context, pullRequestID i
 			return nil, err
 		}
 		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listFavoriteLineupIDsByUser = `-- name: ListFavoriteLineupIDsByUser :many
+select grenade_id
+from favorites
+where user_id = $1
+order by created_at
+`
+
+func (q *Queries) ListFavoriteLineupIDsByUser(ctx context.Context, userID int32) ([]int32, error) {
+	rows, err := q.db.Query(ctx, listFavoriteLineupIDsByUser, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []int32
+	for rows.Next() {
+		var grenade_id int32
+		if err := rows.Scan(&grenade_id); err != nil {
+			return nil, err
+		}
+		items = append(items, grenade_id)
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
@@ -814,6 +1048,34 @@ func (q *Queries) ListPullRequests(ctx context.Context) ([]PullRequest, error) {
 	return items, nil
 }
 
+const listUserRoleCodes = `-- name: ListUserRoleCodes :many
+select ar.code
+from user_admin_roles uar
+join admin_roles ar on ar.role_id = uar.role_id
+where uar.user_id = $1
+order by ar.code
+`
+
+func (q *Queries) ListUserRoleCodes(ctx context.Context, userID int32) ([]string, error) {
+	rows, err := q.db.Query(ctx, listUserRoleCodes, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []string
+	for rows.Next() {
+		var code string
+		if err := rows.Scan(&code); err != nil {
+			return nil, err
+		}
+		items = append(items, code)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listUsers = `-- name: ListUsers :many
 select user_id, username, email, first_name, last_name, avatar_url, steam_link, tg_id, is_banned
 from users
@@ -883,6 +1145,44 @@ func (q *Queries) UpdateComment(ctx context.Context, arg UpdateCommentParams) (C
 		&i.AuthorID,
 		&i.Text,
 		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const updateGrenadeClass = `-- name: UpdateGrenadeClass :one
+update grenade_classes
+set name = $2, description = $3, price = $4, updated_at = now()
+where grenade_class_id = $1
+returning grenade_class_id, name, description, price
+`
+
+type UpdateGrenadeClassParams struct {
+	GrenadeClassID int32
+	Name           string
+	Description    pgtype.Text
+	Price          int32
+}
+
+type UpdateGrenadeClassRow struct {
+	GrenadeClassID int32
+	Name           string
+	Description    pgtype.Text
+	Price          int32
+}
+
+func (q *Queries) UpdateGrenadeClass(ctx context.Context, arg UpdateGrenadeClassParams) (UpdateGrenadeClassRow, error) {
+	row := q.db.QueryRow(ctx, updateGrenadeClass,
+		arg.GrenadeClassID,
+		arg.Name,
+		arg.Description,
+		arg.Price,
+	)
+	var i UpdateGrenadeClassRow
+	err := row.Scan(
+		&i.GrenadeClassID,
+		&i.Name,
+		&i.Description,
+		&i.Price,
 	)
 	return i, err
 }
@@ -1043,6 +1343,64 @@ func (q *Queries) UpdatePullRequestStatus(ctx context.Context, arg UpdatePullReq
 		&i.Status,
 		&i.CreatedAt,
 		&i.ClosedAt,
+	)
+	return i, err
+}
+
+const updateUser = `-- name: UpdateUser :one
+update users
+set username = $2, email = $3, password_hash = $4, first_name = $5, last_name = $6, avatar_url = $7, steam_link = $8, updated_at = now()
+where user_id = $1
+returning user_id, username, email, password_hash, first_name, last_name, avatar_url, steam_link, tg_id, is_banned
+`
+
+type UpdateUserParams struct {
+	UserID       int32
+	Username     string
+	Email        pgtype.Text
+	PasswordHash pgtype.Text
+	FirstName    pgtype.Text
+	LastName     pgtype.Text
+	AvatarUrl    pgtype.Text
+	SteamLink    pgtype.Text
+}
+
+type UpdateUserRow struct {
+	UserID       int32
+	Username     string
+	Email        pgtype.Text
+	PasswordHash pgtype.Text
+	FirstName    pgtype.Text
+	LastName     pgtype.Text
+	AvatarUrl    pgtype.Text
+	SteamLink    pgtype.Text
+	TgID         pgtype.Int8
+	IsBanned     bool
+}
+
+func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (UpdateUserRow, error) {
+	row := q.db.QueryRow(ctx, updateUser,
+		arg.UserID,
+		arg.Username,
+		arg.Email,
+		arg.PasswordHash,
+		arg.FirstName,
+		arg.LastName,
+		arg.AvatarUrl,
+		arg.SteamLink,
+	)
+	var i UpdateUserRow
+	err := row.Scan(
+		&i.UserID,
+		&i.Username,
+		&i.Email,
+		&i.PasswordHash,
+		&i.FirstName,
+		&i.LastName,
+		&i.AvatarUrl,
+		&i.SteamLink,
+		&i.TgID,
+		&i.IsBanned,
 	)
 	return i, err
 }

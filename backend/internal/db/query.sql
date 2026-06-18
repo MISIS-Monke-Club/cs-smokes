@@ -2,7 +2,7 @@
 select 1::int as value;
 
 -- name: GetUserByID :one
-select user_id, username, email, first_name, last_name, avatar_url, steam_link, tg_id, is_banned
+select user_id, username, email, password_hash, first_name, last_name, avatar_url, steam_link, tg_id, is_banned
 from users
 where user_id = $1;
 
@@ -10,6 +10,38 @@ where user_id = $1;
 select user_id, username, email, first_name, last_name, avatar_url, steam_link, tg_id, is_banned
 from users
 order by user_id;
+
+-- name: FindUserByTelegramID :one
+select user_id, username, email, password_hash, first_name, last_name, avatar_url, steam_link, tg_id, is_banned
+from users
+where tg_id = $1;
+
+-- name: FindUserByUsernameOrEmail :one
+select user_id, username, email, password_hash, first_name, last_name, avatar_url, steam_link, tg_id, is_banned
+from users
+where username = $1 or email = $1;
+
+-- name: CreateUser :one
+insert into users (username, email, password_hash, first_name, last_name, avatar_url, steam_link, tg_id, is_banned)
+values ($1, $2, $3, $4, $5, $6, $7, $8, false)
+returning user_id, username, email, password_hash, first_name, last_name, avatar_url, steam_link, tg_id, is_banned;
+
+-- name: UpdateUser :one
+update users
+set username = $2, email = $3, password_hash = $4, first_name = $5, last_name = $6, avatar_url = $7, steam_link = $8, updated_at = now()
+where user_id = $1
+returning user_id, username, email, password_hash, first_name, last_name, avatar_url, steam_link, tg_id, is_banned;
+
+-- name: DeleteUser :exec
+delete from users
+where user_id = $1;
+
+-- name: ListUserRoleCodes :many
+select ar.code
+from user_admin_roles uar
+join admin_roles ar on ar.role_id = uar.role_id
+where uar.user_id = $1
+order by ar.code;
 
 -- name: ListGrenadeClasses :many
 select grenade_class_id, name, description, price
@@ -19,6 +51,21 @@ order by grenade_class_id;
 -- name: GetGrenadeClassByID :one
 select grenade_class_id, name, description, price
 from grenade_classes
+where grenade_class_id = $1;
+
+-- name: CreateGrenadeClass :one
+insert into grenade_classes (name, description, price)
+values ($1, $2, $3)
+returning grenade_class_id, name, description, price;
+
+-- name: UpdateGrenadeClass :one
+update grenade_classes
+set name = $2, description = $3, price = $4, updated_at = now()
+where grenade_class_id = $1
+returning grenade_class_id, name, description, price;
+
+-- name: DeleteGrenadeClass :exec
+delete from grenade_classes
 where grenade_class_id = $1;
 
 -- name: ListMaps :many
@@ -129,6 +176,12 @@ values ($1, $2);
 delete from favorites
 where user_id = $1 and grenade_id = $2;
 
+-- name: ListFavoriteLineupIDsByUser :many
+select grenade_id
+from favorites
+where user_id = $1
+order by created_at;
+
 -- name: ListPullRequests :many
 select id, lineup_id, creator_id, approver_id, status, created_at, closed_at
 from pull_requests
@@ -138,6 +191,13 @@ order by id;
 select id, lineup_id, creator_id, approver_id, status, created_at, closed_at
 from pull_requests
 where id = $1;
+
+-- name: GetPullRequestByLineupID :one
+select id, lineup_id, creator_id, approver_id, status, created_at, closed_at
+from pull_requests
+where lineup_id = $1
+order by id desc
+limit 1;
 
 -- name: CreatePullRequest :one
 insert into pull_requests (lineup_id, creator_id, status)

@@ -11,6 +11,8 @@ import (
 
 	"github.com/MISIS-Monke-Club/cs-smokes/backend/internal/config"
 	"github.com/MISIS-Monke-Club/cs-smokes/backend/internal/platform/httpserver"
+	"github.com/MISIS-Monke-Club/cs-smokes/backend/internal/platform/postgres"
+	"github.com/MISIS-Monke-Club/cs-smokes/backend/internal/platform/postgresrepo"
 )
 
 func main() {
@@ -19,9 +21,17 @@ func main() {
 		log.Fatalf("load config: %v", err)
 	}
 
-	server := httpserver.New(cfg)
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
+
+	pool, err := postgres.Connect(ctx, cfg.DatabaseURL)
+	if err != nil {
+		log.Fatalf("connect postgres: %v", err)
+	}
+	defer pool.Close()
+
+	repos := postgresrepo.New(pool).Repositories()
+	server := httpserver.NewWithRepositories(cfg, repos)
 
 	go func() {
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {

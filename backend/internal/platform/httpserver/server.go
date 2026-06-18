@@ -3,6 +3,7 @@ package httpserver
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 
 	"github.com/MISIS-Monke-Club/cs-smokes/backend/internal/auth"
 	"github.com/MISIS-Monke-Club/cs-smokes/backend/internal/config"
@@ -18,7 +19,23 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
+type Repositories struct {
+	Auth           auth.UserRepository
+	Users          users.Repository
+	GrenadeClasses grenadeclasses.Repository
+	Maps           maps.Repository
+	Lineups        lineups.Repository
+	Properties     properties.Repository
+	Favorites      favorites.Repository
+	PullRequests   pullrequests.Repository
+	Realtime       realtime.Repository
+}
+
 func New(cfg config.Config) *http.Server {
+	return NewWithRepositories(cfg, Repositories{})
+}
+
+func NewWithRepositories(cfg config.Config, repos Repositories) *http.Server {
 	router := chi.NewRouter()
 	router.Use(httpx.CORS(cfg.AllowedOrigins))
 	router.Use(httpx.WriteGate(cfg.WriteGate))
@@ -27,15 +44,15 @@ func New(cfg config.Config) *http.Server {
 	router.Get("/api/healthz/", health)
 	router.Get("/api/health", health)
 	router.Get("/api/health/", health)
-	auth.RegisterRoutes(router, auth.NewHandler(nil, cfg.SecretKey, cfg.TelegramToken))
-	users.RegisterRoutes(router, users.NewHandler(nil))
-	grenadeclasses.RegisterRoutes(router, grenadeclasses.NewHandler(nil))
-	maps.RegisterRoutes(router, maps.NewHandler(nil, "media"))
-	lineups.RegisterRoutes(router, lineups.NewHandler(nil, "media"))
-	properties.RegisterRoutes(router, properties.NewHandler(nil))
-	favorites.RegisterRoutes(router, favorites.NewHandler(nil, nil))
-	pullrequests.RegisterRoutes(router, pullrequests.NewHandler(nil, nil))
-	router.Get("/ws/api/pull_requests/{pr_id}/comments/", realtime.NewHandler(nil, cfg.SecretKey, cfg.WSAllowDevAnon).Comments)
+	auth.RegisterRoutes(router, auth.NewHandler(repos.Auth, cfg.SecretKey, cfg.TelegramToken))
+	users.RegisterRoutes(router, users.NewHandler(repos.Users))
+	grenadeclasses.RegisterRoutes(router, grenadeclasses.NewHandler(repos.GrenadeClasses))
+	maps.RegisterRoutes(router, maps.NewHandler(repos.Maps, cfg.MediaRoot))
+	lineups.RegisterRoutes(router, lineups.NewHandler(repos.Lineups, cfg.MediaRoot))
+	properties.RegisterRoutes(router, properties.NewHandler(repos.Properties))
+	favorites.RegisterRoutes(router, favorites.NewHandler(repos.Favorites, currentUser(cfg.SecretKey)))
+	pullrequests.RegisterRoutes(router, pullrequests.NewHandler(repos.PullRequests, actor(cfg.SecretKey)))
+	router.Get("/ws/api/pull_requests/{pr_id}/comments/", realtime.NewHandler(repos.Realtime, cfg.SecretKey, cfg.WSAllowDevAnon).Comments)
 
 	return &http.Server{Addr: cfg.HTTPAddr, Handler: router}
 }
@@ -44,4 +61,42 @@ func health(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	_ = json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
+}
+
+func currentUser(secret string) favorites.CurrentUserFunc {
+	return func(r *http.Request) int {
+		claims, ok := bearerClaims(secret, r)
+		if !ok {
+			return 0
+		}
+		return claims.UserID
+	}
+}
+
+func actor(secret string) pullrequests.ActorFunc {
+	return func(r *http.Request) pullrequests.Actor {
+		claims, ok := bearerClaims(secret, r)
+		if !ok {
+			return pullrequests.Actor{}
+		}
+		return pullrequests.Actor{
+			UserID:      claims.UserID,
+			IsSuperuser: claims.IsSuperuser,
+			IsBaseAdmin: claims.IsBaseAdmin,
+			IsEditor:    claims.IsEditor,
+		}
+	}
+}
+
+func bearerClaims(secret string, r *http.Request) (auth.UserClaims, bool) {
+	raw := r.Header.Get("Authorization")
+	token, ok := strings.CutPrefix(raw, "Bearer ")
+	if !ok || token == "" {
+		return auth.UserClaims{}, false
+	}
+	claims, err := auth.ParseAccessToken(secret, token)
+	if err != nil {
+		return auth.UserClaims{}, false
+	}
+	return claims, true
 }
