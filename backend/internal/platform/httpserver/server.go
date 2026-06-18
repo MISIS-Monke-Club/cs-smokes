@@ -7,6 +7,7 @@ import (
 	"github.com/MISIS-Monke-Club/cs-smokes/backend/internal/auth"
 	"github.com/MISIS-Monke-Club/cs-smokes/backend/internal/config"
 	"github.com/MISIS-Monke-Club/cs-smokes/backend/internal/grenadeclasses"
+	"github.com/MISIS-Monke-Club/cs-smokes/backend/internal/maps"
 	"github.com/MISIS-Monke-Club/cs-smokes/backend/internal/platform/httpx"
 	"github.com/MISIS-Monke-Club/cs-smokes/backend/internal/users"
 	"github.com/go-chi/chi/v5"
@@ -24,6 +25,7 @@ func New(cfg config.Config) *http.Server {
 	auth.RegisterRoutes(router, auth.NewHandler(nil, cfg.SecretKey, cfg.TelegramToken))
 	users.RegisterRoutes(router, users.NewHandler(nil))
 	grenadeclasses.RegisterRoutes(router, grenadeclasses.NewHandler(nil))
+	maps.RegisterRoutes(router, maps.NewHandler(nil, "media"))
 
 	return &http.Server{Addr: cfg.HTTPAddr, Handler: router}
 }

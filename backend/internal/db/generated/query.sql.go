@@ -11,6 +11,55 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const createMap = `-- name: CreateMap :one
+insert into maps (name, link, is_esports_pool, image_path)
+values ($1, $2, $3, $4)
+returning map_id, name, link, is_esports_pool, image_path
+`
+
+type CreateMapParams struct {
+	Name          string
+	Link          pgtype.Text
+	IsEsportsPool bool
+	ImagePath     pgtype.Text
+}
+
+type CreateMapRow struct {
+	MapID         int32
+	Name          string
+	Link          pgtype.Text
+	IsEsportsPool bool
+	ImagePath     pgtype.Text
+}
+
+func (q *Queries) CreateMap(ctx context.Context, arg CreateMapParams) (CreateMapRow, error) {
+	row := q.db.QueryRow(ctx, createMap,
+		arg.Name,
+		arg.Link,
+		arg.IsEsportsPool,
+		arg.ImagePath,
+	)
+	var i CreateMapRow
+	err := row.Scan(
+		&i.MapID,
+		&i.Name,
+		&i.Link,
+		&i.IsEsportsPool,
+		&i.ImagePath,
+	)
+	return i, err
+}
+
+const deleteMap = `-- name: DeleteMap :exec
+delete from maps
+where map_id = $1
+`
+
+func (q *Queries) DeleteMap(ctx context.Context, mapID int32) error {
+	_, err := q.db.Exec(ctx, deleteMap, mapID)
+	return err
+}
+
 const getGrenadeClassByID = `-- name: GetGrenadeClassByID :one
 select grenade_class_id, name, description, price
 from grenade_classes
@@ -45,6 +94,37 @@ func (q *Queries) GetHealthValue(ctx context.Context) (int32, error) {
 	var value int32
 	err := row.Scan(&value)
 	return value, err
+}
+
+const getMapByID = `-- name: GetMapByID :one
+select m.map_id, m.name, m.link, m.is_esports_pool, m.image_path, count(l.grenade_id)::int as quantity
+from maps m
+left join lineups l on l.map_id = m.map_id
+where m.map_id = $1
+group by m.map_id
+`
+
+type GetMapByIDRow struct {
+	MapID         int32
+	Name          string
+	Link          pgtype.Text
+	IsEsportsPool bool
+	ImagePath     pgtype.Text
+	Quantity      int32
+}
+
+func (q *Queries) GetMapByID(ctx context.Context, mapID int32) (GetMapByIDRow, error) {
+	row := q.db.QueryRow(ctx, getMapByID, mapID)
+	var i GetMapByIDRow
+	err := row.Scan(
+		&i.MapID,
+		&i.Name,
+		&i.Link,
+		&i.IsEsportsPool,
+		&i.ImagePath,
+		&i.Quantity,
+	)
+	return i, err
 }
 
 const getUserByID = `-- name: GetUserByID :one
@@ -120,6 +200,50 @@ func (q *Queries) ListGrenadeClasses(ctx context.Context) ([]ListGrenadeClassesR
 	return items, nil
 }
 
+const listMaps = `-- name: ListMaps :many
+select m.map_id, m.name, m.link, m.is_esports_pool, m.image_path, count(l.grenade_id)::int as quantity
+from maps m
+left join lineups l on l.map_id = m.map_id
+group by m.map_id
+order by m.map_id
+`
+
+type ListMapsRow struct {
+	MapID         int32
+	Name          string
+	Link          pgtype.Text
+	IsEsportsPool bool
+	ImagePath     pgtype.Text
+	Quantity      int32
+}
+
+func (q *Queries) ListMaps(ctx context.Context) ([]ListMapsRow, error) {
+	rows, err := q.db.Query(ctx, listMaps)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListMapsRow
+	for rows.Next() {
+		var i ListMapsRow
+		if err := rows.Scan(
+			&i.MapID,
+			&i.Name,
+			&i.Link,
+			&i.IsEsportsPool,
+			&i.ImagePath,
+			&i.Quantity,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listUsers = `-- name: ListUsers :many
 select user_id, username, email, first_name, last_name, avatar_url, steam_link, tg_id, is_banned
 from users
@@ -166,4 +290,46 @@ func (q *Queries) ListUsers(ctx context.Context) ([]ListUsersRow, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateMap = `-- name: UpdateMap :one
+update maps
+set name = $2, link = $3, is_esports_pool = $4, image_path = $5, updated_at = now()
+where map_id = $1
+returning map_id, name, link, is_esports_pool, image_path
+`
+
+type UpdateMapParams struct {
+	MapID         int32
+	Name          string
+	Link          pgtype.Text
+	IsEsportsPool bool
+	ImagePath     pgtype.Text
+}
+
+type UpdateMapRow struct {
+	MapID         int32
+	Name          string
+	Link          pgtype.Text
+	IsEsportsPool bool
+	ImagePath     pgtype.Text
+}
+
+func (q *Queries) UpdateMap(ctx context.Context, arg UpdateMapParams) (UpdateMapRow, error) {
+	row := q.db.QueryRow(ctx, updateMap,
+		arg.MapID,
+		arg.Name,
+		arg.Link,
+		arg.IsEsportsPool,
+		arg.ImagePath,
+	)
+	var i UpdateMapRow
+	err := row.Scan(
+		&i.MapID,
+		&i.Name,
+		&i.Link,
+		&i.IsEsportsPool,
+		&i.ImagePath,
+	)
+	return i, err
 }
