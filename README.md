@@ -66,6 +66,20 @@ $ docker compose up -d --build
 - [ссылка на локальный фронтенд](http://localhost:8080/)
 - [ссылка на локальный бекенд](http://localhost:3000/)
 
+### Legacy Django contract baseline
+
+Во время миграции backend на Go сохранен отдельный Django baseline для
+контрактного сравнения API. Он запускается на `localhost:3001` и не заменяет
+основной `backend` сервис:
+
+```bash
+docker compose -f docker-compose.yaml -f docker-compose.legacy-django.yaml up --build -d db redis legacy-django
+curl -fsS http://localhost:3001/api/health
+```
+
+Подробности replay/refresh процесса находятся в
+`docs/legacy-contract/README.md`.
+
 ---
 
 ## 💬 **Контакты**
@@ -77,4 +91,4 @@ $ docker compose up -d --build
 
 ## 🎮 **Поддержка и вклад**
 
-Если хотите внести свой вклад в проект или помочь с его улучшением, не стесняйтесь отправлять разные гранаты на наши контакты: @dewi_x0 (tg). Ваши идеи и предложения всегда приветствуются!  
+Если хотите внести свой вклад в проект или помочь с его улучшением, не стесняйтесь отправлять разные гранаты на наши контакты: @dewi_x0 (tg). Ваши идеи и предложения всегда приветствуются!

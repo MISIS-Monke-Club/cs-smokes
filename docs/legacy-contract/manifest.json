@@ -1,0 +1,26 @@
+{
+  "git_commit": "3a9f9076130c97e202a0b8dad634540eb584e72b",
+  "legacy_image": {
+    "name": "cs-smokes-legacy-django",
+    "build_context": ".",
+    "dockerfile": "backend/dockerfile.legacy-django",
+    "build_arg_ref": "3a9f9076130c97e202a0b8dad634540eb584e72b"
+  },
+  "database_fixture": {
+    "kind": "management-command",
+    "command": "python manage.py seed_data",
+    "service": "legacy-django"
+  },
+  "media_fixture": {
+    "kind": "repository-directory",
+    "path": "backend/media",
+    "mount": "read-only"
+  },
+  "captured_at": "2026-06-18T11:59:45Z",
+  "contract_corpus_version": "legacy-django-v1",
+  "accepted_legacy_quirks": [
+    "GET /api/favorites/{id} treats id as user_id while DELETE /api/favorites/{id} treats id as grenade_id for the current user.",
+    "Public API routes preserve Django slash and no-slash compatibility where current clients rely on it.",
+    "Unknown lineup query parameters are tolerated by the legacy django-filter stack."
+  ]
+}
