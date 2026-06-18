@@ -128,3 +128,54 @@ values ($1, $2);
 -- name: DeleteFavorite :exec
 delete from favorites
 where user_id = $1 and grenade_id = $2;
+
+-- name: ListPullRequests :many
+select id, lineup_id, creator_id, approver_id, status, created_at, closed_at
+from pull_requests
+order by id;
+
+-- name: GetPullRequestByID :one
+select id, lineup_id, creator_id, approver_id, status, created_at, closed_at
+from pull_requests
+where id = $1;
+
+-- name: CreatePullRequest :one
+insert into pull_requests (lineup_id, creator_id, status)
+values ($1, $2, 'OPEN')
+returning id, lineup_id, creator_id, approver_id, status, created_at, closed_at;
+
+-- name: UpdatePullRequestStatus :one
+update pull_requests
+set status = $2, approver_id = $3, closed_at = case when $2 = 'CLOSED' then now() else closed_at end, updated_at = now()
+where id = $1
+returning id, lineup_id, creator_id, approver_id, status, created_at, closed_at;
+
+-- name: DeletePullRequest :exec
+delete from pull_requests
+where id = $1;
+
+-- name: ListCommentsByPullRequest :many
+select id, pull_request_id, author_id, text, created_at
+from comments
+where pull_request_id = $1
+order by created_at;
+
+-- name: GetCommentByID :one
+select id, pull_request_id, author_id, text, created_at
+from comments
+where id = $1;
+
+-- name: CreateComment :one
+insert into comments (pull_request_id, author_id, text)
+values ($1, $2, $3)
+returning id, pull_request_id, author_id, text, created_at;
+
+-- name: UpdateComment :one
+update comments
+set text = $2
+where id = $1
+returning id, pull_request_id, author_id, text, created_at;
+
+-- name: DeleteComment :exec
+delete from comments
+where id = $1;

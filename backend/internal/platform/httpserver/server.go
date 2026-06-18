@@ -12,6 +12,7 @@ import (
 	"github.com/MISIS-Monke-Club/cs-smokes/backend/internal/maps"
 	"github.com/MISIS-Monke-Club/cs-smokes/backend/internal/platform/httpx"
 	"github.com/MISIS-Monke-Club/cs-smokes/backend/internal/properties"
+	"github.com/MISIS-Monke-Club/cs-smokes/backend/internal/pullrequests"
 	"github.com/MISIS-Monke-Club/cs-smokes/backend/internal/users"
 	"github.com/go-chi/chi/v5"
 )
@@ -32,6 +33,7 @@ func New(cfg config.Config) *http.Server {
 	lineups.RegisterRoutes(router, lineups.NewHandler(nil, "media"))
 	properties.RegisterRoutes(router, properties.NewHandler(nil))
 	favorites.RegisterRoutes(router, favorites.NewHandler(nil, nil))
+	pullrequests.RegisterRoutes(router, pullrequests.NewHandler(nil, nil))
 
 	return &http.Server{Addr: cfg.HTTPAddr, Handler: router}
 }

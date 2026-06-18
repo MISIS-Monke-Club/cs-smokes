@@ -56,6 +56,31 @@ func (q *Queries) ChangeLineupGrenadeClass(ctx context.Context, arg ChangeLineup
 	return i, err
 }
 
+const createComment = `-- name: CreateComment :one
+insert into comments (pull_request_id, author_id, text)
+values ($1, $2, $3)
+returning id, pull_request_id, author_id, text, created_at
+`
+
+type CreateCommentParams struct {
+	PullRequestID int32
+	AuthorID      int32
+	Text          string
+}
+
+func (q *Queries) CreateComment(ctx context.Context, arg CreateCommentParams) (Comment, error) {
+	row := q.db.QueryRow(ctx, createComment, arg.PullRequestID, arg.AuthorID, arg.Text)
+	var i Comment
+	err := row.Scan(
+		&i.ID,
+		&i.PullRequestID,
+		&i.AuthorID,
+		&i.Text,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const createFavorite = `-- name: CreateFavorite :exec
 insert into favorites (user_id, grenade_id)
 values ($1, $2)
@@ -210,6 +235,42 @@ func (q *Queries) CreateProperty(ctx context.Context, arg CreatePropertyParams) 
 	return i, err
 }
 
+const createPullRequest = `-- name: CreatePullRequest :one
+insert into pull_requests (lineup_id, creator_id, status)
+values ($1, $2, 'OPEN')
+returning id, lineup_id, creator_id, approver_id, status, created_at, closed_at
+`
+
+type CreatePullRequestParams struct {
+	LineupID  int32
+	CreatorID int32
+}
+
+func (q *Queries) CreatePullRequest(ctx context.Context, arg CreatePullRequestParams) (PullRequest, error) {
+	row := q.db.QueryRow(ctx, createPullRequest, arg.LineupID, arg.CreatorID)
+	var i PullRequest
+	err := row.Scan(
+		&i.ID,
+		&i.LineupID,
+		&i.CreatorID,
+		&i.ApproverID,
+		&i.Status,
+		&i.CreatedAt,
+		&i.ClosedAt,
+	)
+	return i, err
+}
+
+const deleteComment = `-- name: DeleteComment :exec
+delete from comments
+where id = $1
+`
+
+func (q *Queries) DeleteComment(ctx context.Context, id int32) error {
+	_, err := q.db.Exec(ctx, deleteComment, id)
+	return err
+}
+
 const deleteFavorite = `-- name: DeleteFavorite :exec
 delete from favorites
 where user_id = $1 and grenade_id = $2
@@ -268,6 +329,35 @@ where property_id = $1
 func (q *Queries) DeleteProperty(ctx context.Context, propertyID int32) error {
 	_, err := q.db.Exec(ctx, deleteProperty, propertyID)
 	return err
+}
+
+const deletePullRequest = `-- name: DeletePullRequest :exec
+delete from pull_requests
+where id = $1
+`
+
+func (q *Queries) DeletePullRequest(ctx context.Context, id int32) error {
+	_, err := q.db.Exec(ctx, deletePullRequest, id)
+	return err
+}
+
+const getCommentByID = `-- name: GetCommentByID :one
+select id, pull_request_id, author_id, text, created_at
+from comments
+where id = $1
+`
+
+func (q *Queries) GetCommentByID(ctx context.Context, id int32) (Comment, error) {
+	row := q.db.QueryRow(ctx, getCommentByID, id)
+	var i Comment
+	err := row.Scan(
+		&i.ID,
+		&i.PullRequestID,
+		&i.AuthorID,
+		&i.Text,
+		&i.CreatedAt,
+	)
+	return i, err
 }
 
 const getGrenadeClassByID = `-- name: GetGrenadeClassByID :one
@@ -395,6 +485,27 @@ func (q *Queries) GetPropertyByID(ctx context.Context, propertyID int32) (GetPro
 	return i, err
 }
 
+const getPullRequestByID = `-- name: GetPullRequestByID :one
+select id, lineup_id, creator_id, approver_id, status, created_at, closed_at
+from pull_requests
+where id = $1
+`
+
+func (q *Queries) GetPullRequestByID(ctx context.Context, id int32) (PullRequest, error) {
+	row := q.db.QueryRow(ctx, getPullRequestByID, id)
+	var i PullRequest
+	err := row.Scan(
+		&i.ID,
+		&i.LineupID,
+		&i.CreatorID,
+		&i.ApproverID,
+		&i.Status,
+		&i.CreatedAt,
+		&i.ClosedAt,
+	)
+	return i, err
+}
+
 const getUserByID = `-- name: GetUserByID :one
 select user_id, username, email, first_name, last_name, avatar_url, steam_link, tg_id, is_banned
 from users
@@ -428,6 +539,39 @@ func (q *Queries) GetUserByID(ctx context.Context, userID int32) (GetUserByIDRow
 		&i.IsBanned,
 	)
 	return i, err
+}
+
+const listCommentsByPullRequest = `-- name: ListCommentsByPullRequest :many
+select id, pull_request_id, author_id, text, created_at
+from comments
+where pull_request_id = $1
+order by created_at
+`
+
+func (q *Queries) ListCommentsByPullRequest(ctx context.Context, pullRequestID int32) ([]Comment, error) {
+	rows, err := q.db.Query(ctx, listCommentsByPullRequest, pullRequestID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Comment
+	for rows.Next() {
+		var i Comment
+		if err := rows.Scan(
+			&i.ID,
+			&i.PullRequestID,
+			&i.AuthorID,
+			&i.Text,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const listGrenadeClasses = `-- name: ListGrenadeClasses :many
@@ -636,6 +780,40 @@ func (q *Queries) ListProperties(ctx context.Context) ([]ListPropertiesRow, erro
 	return items, nil
 }
 
+const listPullRequests = `-- name: ListPullRequests :many
+select id, lineup_id, creator_id, approver_id, status, created_at, closed_at
+from pull_requests
+order by id
+`
+
+func (q *Queries) ListPullRequests(ctx context.Context) ([]PullRequest, error) {
+	rows, err := q.db.Query(ctx, listPullRequests)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []PullRequest
+	for rows.Next() {
+		var i PullRequest
+		if err := rows.Scan(
+			&i.ID,
+			&i.LineupID,
+			&i.CreatorID,
+			&i.ApproverID,
+			&i.Status,
+			&i.CreatedAt,
+			&i.ClosedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listUsers = `-- name: ListUsers :many
 select user_id, username, email, first_name, last_name, avatar_url, steam_link, tg_id, is_banned
 from users
@@ -682,6 +860,31 @@ func (q *Queries) ListUsers(ctx context.Context) ([]ListUsersRow, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateComment = `-- name: UpdateComment :one
+update comments
+set text = $2
+where id = $1
+returning id, pull_request_id, author_id, text, created_at
+`
+
+type UpdateCommentParams struct {
+	ID   int32
+	Text string
+}
+
+func (q *Queries) UpdateComment(ctx context.Context, arg UpdateCommentParams) (Comment, error) {
+	row := q.db.QueryRow(ctx, updateComment, arg.ID, arg.Text)
+	var i Comment
+	err := row.Scan(
+		&i.ID,
+		&i.PullRequestID,
+		&i.AuthorID,
+		&i.Text,
+		&i.CreatedAt,
+	)
+	return i, err
 }
 
 const updateLineup = `-- name: UpdateLineup :one
@@ -813,5 +1016,33 @@ func (q *Queries) UpdateProperty(ctx context.Context, arg UpdatePropertyParams) 
 	row := q.db.QueryRow(ctx, updateProperty, arg.PropertyID, arg.Name, arg.Value)
 	var i UpdatePropertyRow
 	err := row.Scan(&i.PropertyID, &i.Name, &i.Value)
+	return i, err
+}
+
+const updatePullRequestStatus = `-- name: UpdatePullRequestStatus :one
+update pull_requests
+set status = $2, approver_id = $3, closed_at = case when $2 = 'CLOSED' then now() else closed_at end, updated_at = now()
+where id = $1
+returning id, lineup_id, creator_id, approver_id, status, created_at, closed_at
+`
+
+type UpdatePullRequestStatusParams struct {
+	ID         int32
+	Status     string
+	ApproverID pgtype.Int4
+}
+
+func (q *Queries) UpdatePullRequestStatus(ctx context.Context, arg UpdatePullRequestStatusParams) (PullRequest, error) {
+	row := q.db.QueryRow(ctx, updatePullRequestStatus, arg.ID, arg.Status, arg.ApproverID)
+	var i PullRequest
+	err := row.Scan(
+		&i.ID,
+		&i.LineupID,
+		&i.CreatorID,
+		&i.ApproverID,
+		&i.Status,
+		&i.CreatedAt,
+		&i.ClosedAt,
+	)
 	return i, err
 }
