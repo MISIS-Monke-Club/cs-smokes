@@ -1,19 +1,25 @@
-FROM python:3.13-alpine3.20
+FROM golang:1.25-alpine AS build
+
+WORKDIR /src
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+RUN CGO_ENABLED=0 GOOS=linux go build -o /out/cs-smokes-backend ./cmd/server
+
+FROM alpine:3.20
 
 WORKDIR /backend
 
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
+RUN adduser -D service-user \
+    && mkdir -p /backend/media \
+    && chown -R service-user:service-user /backend
 
-COPY requirements.txt /backend/production-requirements.txt
-COPY . /backend
+COPY --from=build /out/cs-smokes-backend /usr/local/bin/cs-smokes-backend
+
 EXPOSE 8000
 
-RUN apk update && apk add --no-cache postgresql-client build-base postgresql-dev
-RUN pip install --upgrade pip
-RUN pip install --no-cache-dir -r production-requirements.txt
-
-RUN adduser --disabled-password service-user
 USER service-user
 
-CMD ["sh", "-c","python uvicorn backend.asgi:application --host 0.0.0.0 --port 8000 --reload"]
+CMD ["cs-smokes-backend"]

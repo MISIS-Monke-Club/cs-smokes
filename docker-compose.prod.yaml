@@ -5,32 +5,26 @@ services:
             context: ./backend
             dockerfile: dockerfile.prod
         volumes:
-            - ./backend:/backend
-            - ./backend:/static
             - media:/backend/media
         expose:
             - 8000
         env_file: ./.env
         environment:
             - BACKEND_SERVER=${VITE_BACKEND_URL}
-            - BACKEND_PREFIX=${BACKEND_PREFIX}
-            - DEBUG=${DJANGO_DEBUG:?Variable DJANGO_DEBUG required}
             - SECRET_KEY=${SECRET_KEY}
             - DB_NAME=${DB_NAME}
             - DB_USER=${DB_USER}
             - DB_PASSWORD=${DB_PASSWORD}
             - DB_HOST=${DB_HOST}
             - DB_PORT=${DB_PORT}
-            - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
             - REDIS_PASS=${REDIS_PASS}
             - WRITE_GATE=true
             - WS_ALLOW_UNAUTHENTICATED_DEV=false
-            - SUPER_USER_NAME=${SUPER_USER_NAME}
-            - SUPER_USER_EMAIL=${SUPER_USER_EMAIL}
-            - SUPER_USER_PASSWORD=${SUPER_USER_PASSWORD}
+            - TOKEN=${TOKEN}
+            - ALLOWED_ORIGINS=${ALLOWED_ORIGINS}
+            - PUBLIC_MEDIA_URL=${PUBLIC_MEDIA_URL}
         depends_on:
             - db
-        command: sh ./run-server.prod.sh
 
     db:
         container_name: postgres-db
