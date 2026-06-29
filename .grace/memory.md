@@ -1,6 +1,6 @@
 # Grace Memory: cs-smokes
 
-Last updated: 2026-06-19
+Last updated: 2026-06-29
 
 ## Project Purpose
 
@@ -10,7 +10,7 @@ Last updated: 2026-06-19
 
 - `backend/`: Go backend replacing the legacy Django REST runtime. Runtime code lives under `cmd/`, `internal/`, `migrations/`, and `tools/`; Python files under `backend/` are limited to tests.
 - `tg-frontend/`: React 18 + Vite + TypeScript frontend using Feature-Sliced Design, Redux Toolkit, React Query, zod DTO validation, SCSS modules, Storybook, Vitest, Playwright tooling, and Telegram Web Apps integration.
-- `bot/`: aiogram Telegram bot that sends a Web App button pointing at `WEB_APP_URL`.
+- `bot/`: Go Telegram polling bot that sends a Web App button pointing at `WEB_APP_URL`.
 - `info-service/`: Swagger UI container reading `info-service/swagger.yaml`.
 - `nginx/`: production nginx config mounted by `docker-compose.prod.yaml`.
 - `.codex/skills/`: project-local Codex skills installed from the archive.
@@ -37,7 +37,7 @@ Last updated: 2026-06-19
   - `db`: PostgreSQL 15 Alpine, host port `5433`, container port `5432`.
   - `redis`: Redis Alpine, host port `6379`, password from `REDIS_PASS`.
   - `info-service`: Swagger UI, host port `9999`, container port `8080`.
-  - `bot`: aiogram bot.
+  - `bot`: Go Telegram polling bot.
 - Production compose builds the Go `backend` from `backend/dockerfile.prod`, builds frontend/nginx from `tg-frontend/dockerfile.prod`, exposes nginx on `80` and `443`, and mounts Let's Encrypt certs from `/etc/letsencrypt/ssl`.
 - Required env vars are documented in `.env.example`; do not commit real `.env` or secrets.
 

@@ -116,5 +116,4 @@ services:
         environment:
             - TOKEN=${TOKEN}
             - WEB_APP_URL=${WEB_APP_URL}
-        command: sh -c "python bot.py"
     
