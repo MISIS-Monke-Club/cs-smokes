@@ -75,13 +75,10 @@ services:
         build:
             context: ./bot
         restart: unless-stopped
-        volumes:
-            - ./bot:/bot
         env_file: ./.env
         environment:
             - TOKEN=${TOKEN}
             - WEB_APP_URL=${WEB_APP_URL}
-        command: sh -c "python bot.py"
 
     admin-frontend:
         container_name: admin-frontend
