@@ -1,9 +1,6 @@
 package contract
 
 import (
-	"encoding/json"
-	"os"
-	"path/filepath"
 	"slices"
 	"strings"
 	"testing"
@@ -17,16 +14,8 @@ func TestCorpusLoads(t *testing.T) {
 	if len(corpus.Cases) < 80 {
 		t.Fatalf("expected at least 80 contract cases, got %d", len(corpus.Cases))
 	}
-	if corpus.Metadata.ContractCorpusVersion != "legacy-django-v1" {
+	if corpus.Metadata.ContractCorpusVersion != "go-backend-v1" {
 		t.Fatalf("contract corpus version = %q", corpus.Metadata.ContractCorpusVersion)
-	}
-
-	manifest := readLegacyManifest(t)
-	if corpus.Metadata.LegacyGitCommit != manifest["git_commit"] {
-		t.Fatalf("legacy git commit = %q, want manifest commit %q", corpus.Metadata.LegacyGitCommit, manifest["git_commit"])
-	}
-	if corpus.Metadata.LegacyManifest != "docs/legacy-contract/manifest.json" {
-		t.Fatalf("legacy manifest path = %q", corpus.Metadata.LegacyManifest)
 	}
 }
 
@@ -144,18 +133,4 @@ func TestCompareResponsesReportsStatusAndJSONShapeDiffs(t *testing.T) {
 			t.Fatalf("diff %q does not contain %q", text, expected)
 		}
 	}
-}
-
-func readLegacyManifest(t *testing.T) map[string]any {
-	t.Helper()
-	path := filepath.Join("..", "..", "..", "docs", "legacy-contract", "manifest.json")
-	content, err := os.ReadFile(path)
-	if err != nil {
-		t.Fatalf("read manifest: %v", err)
-	}
-	var manifest map[string]any
-	if err := json.Unmarshal(content, &manifest); err != nil {
-		t.Fatalf("decode manifest: %v", err)
-	}
-	return manifest
 }

@@ -13,10 +13,7 @@ import (
 func TestContractDiffFailsBeforeCallingNewBackendWhenLegacyUnavailable(t *testing.T) {
 	corpus := writeCorpus(t, `
 metadata:
-  contract_corpus_version: legacy-django-v1
-  legacy_git_commit: test
-  legacy_image: test
-  legacy_manifest: docs/legacy-contract/manifest.json
+  contract_corpus_version: go-backend-v1
 cases:
   - name: example
     method: GET
@@ -45,10 +42,7 @@ cases:
 func TestContractDiffReportsActionableResponseDifferences(t *testing.T) {
 	corpus := writeCorpus(t, `
 metadata:
-  contract_corpus_version: legacy-django-v1
-  legacy_git_commit: test
-  legacy_image: test
-  legacy_manifest: docs/legacy-contract/manifest.json
+  contract_corpus_version: go-backend-v1
 cases:
   - name: example detail
     method: GET

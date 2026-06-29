@@ -1,8 +1,5 @@
 metadata:
-  contract_corpus_version: legacy-django-v1
-  legacy_git_commit: 3a9f9076130c97e202a0b8dad634540eb584e72b
-  legacy_image: cs-smokes-legacy-django
-  legacy_manifest: docs/legacy-contract/manifest.json
+  contract_corpus_version: go-backend-v1
 cases:
   - {name: health ok, method: GET, path: /api/health, tags: [public, slash-variant]}
   - {name: health ok slash, method: GET, path: /api/health/, tags: [public, slash-variant]}

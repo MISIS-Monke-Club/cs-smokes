@@ -9,7 +9,6 @@ moderation and content tooling lives under `/api/admin/*`.
 ```bash
 go test ./...
 python3 -m unittest discover -s tests
-python3 -m flake8 tests/test_legacy_contract_baseline.py
 ```
 
 ## Runtime Notes

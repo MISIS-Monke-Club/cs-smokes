@@ -7,16 +7,11 @@ REPO_ROOT = BACKEND_ROOT.parent
 
 ALLOWED_PYTHON_FILES = {
     pathlib.Path("tests/__init__.py"),
-    pathlib.Path("tests/test_legacy_contract_baseline.py"),
     pathlib.Path("tests/test_no_legacy_python_runtime.py"),
 }
 
 ALLOWED_PYTHON_DIRS = {
     pathlib.Path("tests"),
-}
-
-ALLOWED_DJANGO_REFERENCES = {
-    pathlib.Path("dockerfile.legacy-django"),
 }
 
 ALLOWED_DJANGO_REFERENCE_DIRS = {
@@ -44,8 +39,6 @@ class NoLegacyPythonRuntimeTest(unittest.TestCase):
             if not path.is_file() or ".git" in path.parts:
                 continue
             relative = path.relative_to(BACKEND_ROOT)
-            if relative in ALLOWED_DJANGO_REFERENCES:
-                continue
             if any(relative.is_relative_to(prefix) for prefix in ALLOWED_DJANGO_REFERENCE_DIRS):
                 continue
             if any(relative.is_relative_to(prefix) for prefix in ALLOWED_PYTHON_DIRS):
