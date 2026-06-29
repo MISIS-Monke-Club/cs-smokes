@@ -38,9 +38,62 @@ func TestCachedLineupsListUsesCacheAndInvalidatesOnWrite(t *testing.T) {
 	}
 }
 
+func TestCachedLineupsDetailUsesCacheAndAllWritesInvalidate(t *testing.T) {
+	store := newMemoryStore()
+	repo := &lineupRepo{items: []lineups.Lineup{{GrenadeID: 1, Title: "Window smoke"}, {GrenadeID: 2, Title: "Connector smoke"}}}
+	cached := cache.NewLineups(repo, store, time.Minute)
+
+	first, err := cached.GetLineup(context.Background(), 1)
+	if err != nil {
+		t.Fatalf("first detail: %v", err)
+	}
+	second, err := cached.GetLineup(context.Background(), 1)
+	if err != nil {
+		t.Fatalf("second detail: %v", err)
+	}
+	if repo.getCalls != 1 {
+		t.Fatalf("get calls = %d", repo.getCalls)
+	}
+	if first.Title != second.Title {
+		t.Fatalf("cached detail mismatch: %#v %#v", first, second)
+	}
+
+	for _, tc := range []struct {
+		name string
+		run  func() error
+	}{
+		{name: "create", run: func() error {
+			_, err := cached.CreateLineup(context.Background(), lineups.Input{Title: "A smoke"})
+			return err
+		}},
+		{name: "replace", run: func() error {
+			_, err := cached.ReplaceLineup(context.Background(), 1, lineups.Input{Title: "Window updated"})
+			return err
+		}},
+		{name: "delete", run: func() error {
+			return cached.DeleteLineup(context.Background(), 2)
+		}},
+		{name: "change class", run: func() error {
+			_, err := cached.ChangeGrenadeClass(context.Background(), 1, 3)
+			return err
+		}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			before := len(store.deletedPrefixes)
+			if err := tc.run(); err != nil {
+				t.Fatalf("%s returned error: %v", tc.name, err)
+			}
+			if len(store.deletedPrefixes) != before+1 {
+				t.Fatalf("%s did not invalidate cache, prefixes = %#v", tc.name, store.deletedPrefixes)
+			}
+		})
+	}
+}
+
 type lineupRepo struct {
 	items     []lineups.Lineup
 	listCalls int
+	getCalls  int
 }
 
 func (r *lineupRepo) ListLineups(_ context.Context, _ lineups.Filter) ([]lineups.Lineup, error) {
@@ -55,6 +108,7 @@ func (r *lineupRepo) CreateLineup(_ context.Context, input lineups.Input) (lineu
 }
 
 func (r *lineupRepo) GetLineup(_ context.Context, id int) (lineups.Lineup, error) {
+	r.getCalls++
 	for _, item := range r.items {
 		if item.GrenadeID == id {
 			return item, nil

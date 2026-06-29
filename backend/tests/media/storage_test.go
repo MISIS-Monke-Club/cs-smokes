@@ -2,6 +2,7 @@ package media_test
 
 import (
 	"mime/multipart"
+	"net/http"
 	"net/textproto"
 	"os"
 	"path/filepath"
@@ -52,6 +53,14 @@ func TestSaveMultipartFileValidatesTypeSizeAndFolder(t *testing.T) {
 	if _, err := media.SaveMultipartFile(root, "avatars", strings.NewReader("png"), header); err == nil {
 		t.Fatalf("invalid folder unexpectedly passed")
 	}
+	octetStreamJPG := fileHeader("fallback.jpg", "application/octet-stream", 3)
+	stored, err = media.SaveMultipartFile(root, "lineups", strings.NewReader("jpg"), octetStreamJPG)
+	if err != nil {
+		t.Fatalf("octet stream jpg fallback returned error: %v", err)
+	}
+	if stored != "lineups/fallback.jpg" {
+		t.Fatalf("octet stream stored path = %q", stored)
+	}
 	badType := fileHeader("mirage.gif", "image/gif", 3)
 	if _, err := media.SaveMultipartFile(root, "maps", strings.NewReader("gif"), badType); err == nil {
 		t.Fatalf("invalid content type unexpectedly passed")
@@ -59,6 +68,13 @@ func TestSaveMultipartFileValidatesTypeSizeAndFolder(t *testing.T) {
 	tooLarge := fileHeader("huge.png", "image/png", media.MaxImageBytes+1)
 	if _, err := media.SaveMultipartFile(root, "maps", strings.NewReader("png"), tooLarge); err == nil {
 		t.Fatalf("oversized file unexpectedly passed")
+	}
+}
+
+func TestDetectContentTypeDelegatesToHTTPDetection(t *testing.T) {
+	prefix := []byte("\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR")
+	if got, want := media.DetectContentType(prefix), http.DetectContentType(prefix); got != want {
+		t.Fatalf("DetectContentType = %q, want %q", got, want)
 	}
 }
 

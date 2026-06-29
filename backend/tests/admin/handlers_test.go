@@ -105,6 +105,77 @@ func TestAdminPullRequestAndCommentPermissions(t *testing.T) {
 	}
 }
 
+func TestAdminDetailAndCommentReadRoutes(t *testing.T) {
+	repo := newAdminRepo()
+	router := newRouter(repo, actorFromHeader)
+
+	if resp := perform(router, http.MethodGet, "/api/admin/users/7", "", "base"); resp.Code != http.StatusOK {
+		t.Fatalf("get user status = %d, body = %s", resp.Code, resp.Body.String())
+	} else if !strings.Contains(resp.Body.String(), `"username":"player"`) {
+		t.Fatalf("get user body missing player: %s", resp.Body.String())
+	}
+
+	if resp := perform(router, http.MethodPatch, "/api/admin/users/7", `{"first_name":"Patched"}`, "base"); resp.Code != http.StatusOK {
+		t.Fatalf("patch user status = %d, body = %s", resp.Code, resp.Body.String())
+	} else if got := repo.users[7].FirstName; got == nil || *got != "Patched" {
+		t.Fatalf("patched first name = %v", got)
+	}
+
+	if resp := perform(router, http.MethodGet, "/api/admin/pull_requests/1", "", "editor"); resp.Code != http.StatusOK {
+		t.Fatalf("pull request detail status = %d, body = %s", resp.Code, resp.Body.String())
+	} else if body := resp.Body.String(); !strings.Contains(body, `"pull_request"`) || !strings.Contains(body, `"comments"`) {
+		t.Fatalf("detail body missing expected envelopes: %s", body)
+	}
+
+	if resp := perform(router, http.MethodGet, "/api/admin/pull_requests/1/comments", "", "editor"); resp.Code != http.StatusOK {
+		t.Fatalf("list comments status = %d, body = %s", resp.Code, resp.Body.String())
+	} else if !strings.Contains(resp.Body.String(), `"text":"creator"`) {
+		t.Fatalf("comments body missing creator comment: %s", resp.Body.String())
+	}
+}
+
+func TestAdminModerationBranchesAndValidationErrors(t *testing.T) {
+	repo := newAdminRepo()
+	router := newRouter(repo, actorFromHeader)
+
+	if resp := perform(router, http.MethodPatch, "/api/admin/pull_requests/1/reject", "", "base"); resp.Code != http.StatusOK {
+		t.Fatalf("reject status = %d, body = %s", resp.Code, resp.Body.String())
+	}
+	if got := repo.requests[1].Status; got != pullrequests.StatusRejected {
+		t.Fatalf("status after reject = %q", got)
+	}
+
+	if resp := perform(router, http.MethodPatch, "/api/admin/pull_requests/1/cancel", "", "base"); resp.Code != http.StatusOK {
+		t.Fatalf("cancel status = %d, body = %s", resp.Code, resp.Body.String())
+	}
+	if got := repo.requests[1].Status; got != pullrequests.StatusClosed {
+		t.Fatalf("status after cancel = %q", got)
+	}
+
+	for _, tc := range []struct {
+		name   string
+		method string
+		path   string
+		body   string
+		actor  string
+		want   int
+	}{
+		{name: "invalid user id", method: http.MethodGet, path: "/api/admin/users/not-a-number", actor: "base", want: http.StatusNotFound},
+		{name: "missing user", method: http.MethodGet, path: "/api/admin/users/404", actor: "base", want: http.StatusNotFound},
+		{name: "invalid role", method: http.MethodPut, path: "/api/admin/users/7/roles", body: `{"roles":["owner"]}`, actor: "super", want: http.StatusBadRequest},
+		{name: "missing pull request", method: http.MethodGet, path: "/api/admin/pull_requests/404", actor: "editor", want: http.StatusNotFound},
+		{name: "missing comment text", method: http.MethodPost, path: "/api/admin/pull_requests/1/comments", body: `{}`, actor: "editor", want: http.StatusBadRequest},
+		{name: "missing comment", method: http.MethodDelete, path: "/api/admin/comments/404", actor: "base", want: http.StatusNotFound},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			resp := perform(router, tc.method, tc.path, tc.body, tc.actor)
+			if resp.Code != tc.want {
+				t.Fatalf("status = %d, want %d, body = %s", resp.Code, tc.want, resp.Body.String())
+			}
+		})
+	}
+}
+
 func newRouter(repo *fakeAdminRepo, actor admin.ActorFunc) http.Handler {
 	router := chi.NewRouter()
 	admin.RegisterRoutes(router, admin.NewHandler(repo, repo, repo, actor))

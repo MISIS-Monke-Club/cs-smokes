@@ -63,9 +63,58 @@ func TestCachedMapsFallsBackWhenCacheUnavailable(t *testing.T) {
 	}
 }
 
+func TestCachedMapsDetailUsesCacheAndAllWritesInvalidate(t *testing.T) {
+	store := newMemoryStore()
+	repo := &mapRepo{items: []maps.Map{{MapID: 1, Name: "Mirage"}, {MapID: 2, Name: "Nuke"}}}
+	cached := cache.NewMaps(repo, store, time.Minute)
+
+	first, err := cached.GetMap(context.Background(), 1)
+	if err != nil {
+		t.Fatalf("first detail: %v", err)
+	}
+	second, err := cached.GetMap(context.Background(), 1)
+	if err != nil {
+		t.Fatalf("second detail: %v", err)
+	}
+	if repo.getCalls != 1 {
+		t.Fatalf("get calls = %d", repo.getCalls)
+	}
+	if first.Name != second.Name {
+		t.Fatalf("cached detail mismatch: %#v %#v", first, second)
+	}
+
+	for _, tc := range []struct {
+		name string
+		run  func() error
+	}{
+		{name: "replace", run: func() error {
+			_, err := cached.ReplaceMap(context.Background(), 1, maps.Input{Name: "Mirage Updated"})
+			return err
+		}},
+		{name: "patch", run: func() error {
+			_, err := cached.PatchMap(context.Background(), 1, maps.Input{Name: "Mirage Patched"})
+			return err
+		}},
+		{name: "delete", run: func() error {
+			return cached.DeleteMap(context.Background(), 2)
+		}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			before := len(store.deletedPrefixes)
+			if err := tc.run(); err != nil {
+				t.Fatalf("%s returned error: %v", tc.name, err)
+			}
+			if len(store.deletedPrefixes) != before+1 {
+				t.Fatalf("%s did not invalidate cache, prefixes = %#v", tc.name, store.deletedPrefixes)
+			}
+		})
+	}
+}
+
 type mapRepo struct {
 	items     []maps.Map
 	listCalls int
+	getCalls  int
 }
 
 func (r *mapRepo) ListMaps(_ context.Context, _ maps.Filter) ([]maps.Map, error) {
@@ -80,6 +129,7 @@ func (r *mapRepo) CreateMap(_ context.Context, input maps.Input) (maps.Map, erro
 }
 
 func (r *mapRepo) GetMap(_ context.Context, id int) (maps.Map, error) {
+	r.getCalls++
 	for _, item := range r.items {
 		if item.MapID == id {
 			return item, nil
