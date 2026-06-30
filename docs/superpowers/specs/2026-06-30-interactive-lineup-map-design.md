@@ -101,7 +101,7 @@ Rules:
 - `throw` and `target` spots are separate namespaces.
 - Merge is only allowed when both spots have the same `map_id` and `kind`.
 - Rejected and merged spots are not public.
-- Approved spots can be reused by normal user lineup creation.
+- Approved and pending spots can be reused by normal user lineup creation.
 - A lineup with pending throw or target spots must not appear on the public interactive map until both spots are approved or merged into approved spots.
 
 ### `lineups` Changes
@@ -124,12 +124,19 @@ Rules:
 When creating or updating a lineup with spatial fields:
 
 1. Validate all supplied coordinates are numeric values from 0 to 100.
-2. For `throw` and `target` coordinates, search `map_spots` for the nearest non-rejected spot with the same `map_id` and `kind`.
+2. For `throw` and `target` coordinates, search `map_spots` for the nearest reusable spot with the same `map_id` and `kind`.
 3. A spot matches when the click lies within that spot's radius.
 4. If multiple spots match, choose the nearest by Euclidean distance in normalized coordinate space.
 5. If no spot matches, create a new `pending` spot with the submitted coordinate, default radius, created user, and optional suggested name.
 6. Attach the lineup to the matched or newly created spot.
 7. Store `aim_x/aim_y` directly on the lineup.
+
+Reusable spot definition:
+
+- Candidate spot statuses are exactly `approved` and `pending`.
+- `pending` spots are reusable during create and update so nearby user clicks cluster before moderation.
+- `rejected` and `merged` spots are terminal for matching and must be excluded from nearest-spot lookup.
+- After a merge, future matching can only choose the approved target spot, not the merged source spot.
 
 Initial default radius:
 
@@ -192,6 +199,14 @@ Validation:
 - Partial coordinate pairs return field errors.
 - Coordinates outside 0..100 return field errors.
 
+PATCH semantics:
+
+- PATCH handlers must distinguish omitted fields from supplied `false`, `0`, empty string, and `null`; omitted fields preserve the existing value.
+- Supplied `false` and `0` are valid updates for value fields and must not be treated as omitted.
+- Supplied `null` clears only nullable fields, including `radar_image_path`, `radar_source`, `radar_width`, `radar_height`, `throw_spot_id`, `target_spot_id`, `aim_x`, and `aim_y`; `null` for non-null fields returns a field error.
+- This presence-aware handling applies to all map and lineup PATCH fields touched while implementing this feature, not only the new spatial fields. Covered fields include `maps.is_esports_pool`, map radar fields, lineup text/media fields, `lineups.is_approved`, `lineups.views`, `map_id`, `grenade_class_id`, and the new throw/target/aim fields.
+- If shared DTO or admin PATCH code also touches price-like numeric fields, such as grenade class prices, those fields must use the same omitted-versus-supplied handling.
+
 ### Public Spots Endpoint
 
 Add:
@@ -202,7 +217,6 @@ Query params:
 
 - `kind=throw|target` required or default `throw`
 - `grenade_class_id`
-- `is_approved`
 - `query`
 - `by_user_name`
 - `ordering`
@@ -210,10 +224,12 @@ Query params:
 Response:
 
 - approved spots only
+- approved lineups only
 - each spot includes count and representative lineups matching filters
 - spots with zero matching approved lineups are omitted
+- `is_approved` is not a public spots query parameter; the endpoint always behaves as approved-only. If a client supplies `is_approved`, return `400` with an unsupported-filter error instead of exposing or implying unapproved map data.
 
-The spot endpoint and existing lineup list must agree: if filters exclude a lineup from the list, it must not contribute to marker counts.
+For supported shared filters, the spot endpoint and existing lineup list must agree: if filters exclude a lineup from the list, it must not contribute to marker counts.
 
 ## Admin API Design
 
@@ -253,8 +269,12 @@ Permissions:
 
 Moderation coupling:
 
-- Pull request approval for a lineup with new pending throw or target spots must include spot review in the same admin workflow.
-- The reviewer must either approve each pending spot, merge it into an approved spot, or reject/adjust it before the lineup becomes visible on the public map.
+- Pull request approval for a lineup with required spatial data must include spot review in the same admin workflow.
+- Required spatial data for new tg-frontend lineup submissions is `throw_spot_id`, `target_spot_id`, and `aim_x/aim_y`. Legacy approved lineups with missing coordinates remain valid in normal list views but stay absent from public map markers until placed.
+- Approval succeeds only when each required throw/target spot is `approved` or has been merged into an `approved` target spot.
+- If approval is attempted while a required spot is `pending`, return `409` with a clear `spot_review_required` error and the blocking spot IDs/statuses.
+- If approval is attempted with a rejected required spot or a missing required spot reference, return `409` with a clear `spot_correction_required` error. The admin must correct coordinates or attach/merge into an approved spot before approval.
+- Rejected or missing required spots keep the lineup off the public map and block publishing through the pull request approval path.
 - Existing pull request status approval must not silently publish unreviewed spots.
 
 ## tg-Frontend UX
@@ -302,7 +322,7 @@ UX rules:
 - Point placement stores global normalized coordinates, not quadrant-relative coordinates.
 - New lineup creation in tg-frontend must require throw, aim, and target positions.
 - Backend create keeps the coordinate fields technically optional for backward compatibility, but the tg-frontend create flow must always submit them.
-- Backend patch preserves existing spatial fields when omitted.
+- Backend patch preserves existing spatial fields and other editable map/lineup fields when omitted, including supplied `false` and `0` values as real updates.
 
 ## Admin Frontend UX
 
@@ -329,7 +349,9 @@ Add a dedicated admin section:
 
 Add an admin queue:
 
-- Shows approved or pending lineups missing `throw_spot_id` or `target_spot_id`.
+- Shows unplaced lineups missing `throw_spot_id`, `target_spot_id`, or `aim_x/aim_y`.
+- Queue membership is exactly approved lineups (`lineups.is_approved=true`, including legacy data) plus unapproved lineups attached to an active pull request (`pull_requests.status='OPEN'`).
+- Exclude lineups whose latest pull request is `APPROVED`, `REJECTED`, `MERGED`, or `CLOSED` unless the lineup itself is already approved and still missing placement.
 - Admin can open a lineup and assign throw, aim, and target points.
 - After saving and approving spots, the lineup appears on public map markers.
 
@@ -349,10 +371,31 @@ Radar PNGs for the 8 active-pool maps must be stored locally at `backend/assets/
 Migration/seed behavior:
 
 - Add radar fields.
-- Upsert the 8 maps by stable slug/name without changing existing `map_id` values.
+- Upsert the 8 maps without changing existing `map_id` values. The `maps` table does not need a slug column for this migration.
+- Match existing rows by canonicalized map name: trim whitespace, lowercase, remove `de_` prefix, replace `_` and `-` with spaces, collapse spaces, and compare against the alias set below.
+- Canonical display names and radar file names:
+  - `Ancient`: aliases `ancient`, `de ancient`; radar `de_ancient.png`
+  - `Anubis`: aliases `anubis`, `de anubis`; radar `de_anubis.png`
+  - `Cache`: aliases `cache`, `de cache`; radar `de_cache.png`
+  - `Dust II`: aliases `dust ii`, `dust 2`, `dust2`, `de dust2`, `de dust 2`; radar `de_dust2.png`
+  - `Inferno`: aliases `inferno`, `de inferno`; radar `de_inferno.png`
+  - `Mirage`: aliases `mirage`, `de mirage`; radar `de_mirage.png`
+  - `Nuke`: aliases `nuke`, `de nuke`; radar `de_nuke.png`
+  - `Overpass`: aliases `overpass`, `de overpass`; radar `de_overpass.png`
+- If exactly one existing row matches a canonical map, update that row in place.
+- If no existing row matches, insert a new row with the canonical display name.
+- If multiple existing rows match one canonical map, fail the migration with a diagnostic instead of choosing a row or changing IDs.
 - Set `is_esports_pool=true` for the 8 active-pool maps.
 - Set radar metadata and local radar path.
 - Do not automatically set all other maps to inactive unless a later explicit product decision requests that cleanup.
+
+Radar serving contract:
+
+- Runtime serves radar images only from the local `backend/assets/radars/` bundle.
+- `radar_image_path` stores a relative file name from the canonical radar file list, not an external URL or arbitrary filesystem path.
+- `radar_image_link` is generated only when the referenced file exists under `backend/assets/radars/`.
+- Generated links use `GET /api/radars/{file_name}` and must prevent path traversal; served files use `image/png`.
+- If the local file is missing, map detail/list still return `200` with `radar_image_link: null`; direct requests for a missing radar file return `404`.
 
 ## Backward Compatibility
 
@@ -377,11 +420,17 @@ Migration/seed behavior:
 Backend:
 
 - Migration/schema tests for new columns, constraints, and FKs.
-- Repository tests for nearest spot lookup, tie handling, new pending spot creation, and merge reassignment.
+- Migration/seed tests for canonical map-name matching, alias handling, duplicate-match failure, idempotent reruns, and preserving existing `map_id` values.
+- Repository tests for nearest spot lookup, tie handling, reuse of approved and pending spots, exclusion of rejected and merged spots, new pending spot creation, and merge reassignment.
 - Handler tests for lineup create/patch with throw, aim, target fields.
+- Handler tests that PATCH preserves omitted fields while accepting supplied `false`, `0`, empty string, and nullable clears for all map and lineup fields touched by this feature, including `is_esports_pool`, `is_approved`, `views`, price-like numerics if shared DTO code touches them, and the new spatial fields.
 - Handler tests that public spots exclude pending/rejected/merged spots.
+- Handler tests that public spots reject `is_approved` as an unsupported filter and always return approved spots with approved lineup counts only.
 - Handler tests that public spots respect lineup filters.
+- Handler tests that `radar_image_link` is generated only for existing local radar assets and is `null` when the local file is missing.
 - Admin tests for approve, reject, merge, and unplaced queue.
+- Admin tests that pull request approval is blocked with `spot_review_required` for pending required spots and `spot_correction_required` for rejected or missing required spots.
+- Admin tests that the unplaced queue contains exactly approved lineups, including legacy data, and lineups with active `OPEN` pull requests when required placement fields are missing.
 - OpenAPI/schema tests for new DTO fields and endpoints.
 
 tg-frontend:
