@@ -3,13 +3,13 @@ import { z } from "zod"
 export const grenadeClassDTOschema = z.object({
     grenade_class_id: z.number(),
     name: z.string(),
-    description: z.string(),
+    description: z.string().nullable(),
     price: z.number(),
 })
 
 export type GrenadeClassModel = {
     id: number
     name: string
-    description: string
+    description: string | null
     price: number
 }

@@ -85,6 +85,34 @@ func TestMapsMultipartCreateUpdatePatchAndDelete(t *testing.T) {
 	}
 }
 
+func TestMapsPatchPreservesOmittedPoolFlagAndAllowsFalse(t *testing.T) {
+	repo := newMapRepo()
+	router := chi.NewRouter()
+	maps.RegisterRoutes(router, maps.NewHandler(repo, t.TempDir()))
+
+	rename := multipartRequest(t, http.MethodPatch, "/api/maps/1", map[string]string{"name": "Mirage renamed"})
+	renameResp := perform(router, rename.Method, rename.URL.String(), rename.Body, rename.Header.Get("Content-Type"))
+	if renameResp.Code != http.StatusOK {
+		t.Fatalf("rename status = %d, body = %s", renameResp.Code, renameResp.Body.String())
+	}
+	var renamed map[string]any
+	decode(t, renameResp, &renamed)
+	if renamed["is_esports_pool"] != true {
+		t.Fatalf("omitted is_esports_pool changed value: %#v", renamed)
+	}
+
+	moveToReserve := multipartRequest(t, http.MethodPatch, "/api/maps/1", map[string]string{"is_esports_pool": "false"})
+	reserveResp := perform(router, moveToReserve.Method, moveToReserve.URL.String(), moveToReserve.Body, moveToReserve.Header.Get("Content-Type"))
+	if reserveResp.Code != http.StatusOK {
+		t.Fatalf("reserve status = %d, body = %s", reserveResp.Code, reserveResp.Body.String())
+	}
+	var reserve map[string]any
+	decode(t, reserveResp, &reserve)
+	if reserve["is_esports_pool"] != false {
+		t.Fatalf("explicit false is_esports_pool was not applied: %#v", reserve)
+	}
+}
+
 func TestMapsErrorsMatchLegacyVisibleShapes(t *testing.T) {
 	repo := newMapRepo()
 	router := chi.NewRouter()
@@ -137,7 +165,7 @@ func (r *fakeMapRepo) CreateMap(_ context.Context, input maps.Input) (maps.Map, 
 	if input.Name == "" {
 		return maps.Map{}, maps.ValidationError{Fields: []string{"name"}}
 	}
-	created := maps.Map{MapID: r.next, Name: input.Name, Link: input.Link, IsEsportsPool: input.IsEsportsPool, ImagePath: input.ImagePath}
+	created := maps.Map{MapID: r.next, Name: input.Name, Link: input.Link, IsEsportsPool: boolValue(input.IsEsportsPool, false), ImagePath: input.ImagePath}
 	r.maps[created.MapID] = created
 	r.next++
 	return created, nil
@@ -152,11 +180,11 @@ func (r *fakeMapRepo) GetMap(_ context.Context, id int) (maps.Map, error) {
 }
 
 func (r *fakeMapRepo) ReplaceMap(ctx context.Context, id int, input maps.Input) (maps.Map, error) {
-	return r.update(ctx, id, input)
+	return r.update(ctx, id, input, false)
 }
 
 func (r *fakeMapRepo) PatchMap(ctx context.Context, id int, input maps.Input) (maps.Map, error) {
-	return r.update(ctx, id, input)
+	return r.update(ctx, id, input, true)
 }
 
 func (r *fakeMapRepo) DeleteMap(_ context.Context, id int) error {
@@ -168,7 +196,7 @@ func (r *fakeMapRepo) DeleteMap(_ context.Context, id int) error {
 	return nil
 }
 
-func (r *fakeMapRepo) update(_ context.Context, id int, input maps.Input) (maps.Map, error) {
+func (r *fakeMapRepo) update(_ context.Context, id int, input maps.Input, merge bool) (maps.Map, error) {
 	item, ok := r.maps[id]
 	if !ok {
 		return maps.Map{}, maps.ErrNotFound
@@ -177,7 +205,11 @@ func (r *fakeMapRepo) update(_ context.Context, id int, input maps.Input) (maps.
 		item.Name = input.Name
 	}
 	item.Link = input.Link
-	item.IsEsportsPool = input.IsEsportsPool
+	if input.IsEsportsPool != nil {
+		item.IsEsportsPool = *input.IsEsportsPool
+	} else if !merge {
+		item.IsEsportsPool = false
+	}
 	if input.ImagePath != nil {
 		item.ImagePath = input.ImagePath
 	}
@@ -230,6 +262,13 @@ func decode(t *testing.T, recorder *httptest.ResponseRecorder, target any) {
 	if err := json.Unmarshal(recorder.Body.Bytes(), target); err != nil {
 		t.Fatalf("decode %q: %v", recorder.Body.String(), err)
 	}
+}
+
+func boolValue(value *bool, fallback bool) bool {
+	if value == nil {
+		return fallback
+	}
+	return *value
 }
 
 var _ maps.Repository = (*fakeMapRepo)(nil)

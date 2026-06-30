@@ -118,8 +118,11 @@ func (h Handler) decodeMultipart(w http.ResponseWriter, r *http.Request, require
 		return Input{}, false
 	}
 	input := Input{
-		Name:          r.FormValue("name"),
-		IsEsportsPool: r.FormValue("is_esports_pool") == "true",
+		Name: r.FormValue("name"),
+	}
+	if _, ok := r.MultipartForm.Value["is_esports_pool"]; ok {
+		value := r.FormValue("is_esports_pool") == "true"
+		input.IsEsportsPool = &value
 	}
 	if link := r.FormValue("link"); link != "" {
 		input.Link = &link

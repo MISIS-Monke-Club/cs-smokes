@@ -65,6 +65,22 @@ func TestGrenadeClassesCreateUpdatePatchAndDelete(t *testing.T) {
 	}
 }
 
+func TestGrenadeClassesPatchCanSetPriceToZero(t *testing.T) {
+	repo := newClassRepo()
+	router := chi.NewRouter()
+	grenadeclasses.RegisterRoutes(router, grenadeclasses.NewHandler(repo))
+
+	resp := perform(router, http.MethodPatch, "/api/grenade-classes/1", `{"price":0}`)
+	if resp.Code != http.StatusOK {
+		t.Fatalf("patch status = %d, body = %s", resp.Code, resp.Body.String())
+	}
+	var body map[string]any
+	decode(t, resp, &body)
+	if body["price"] != float64(0) {
+		t.Fatalf("price zero patch was not applied: %#v", body)
+	}
+}
+
 func TestGrenadeClassesErrorsMatchLegacyVisibleShapes(t *testing.T) {
 	repo := newClassRepo()
 	router := chi.NewRouter()
@@ -112,7 +128,7 @@ func (r *fakeClassRepo) ListGrenadeClasses(context.Context) ([]grenadeclasses.Gr
 }
 
 func (r *fakeClassRepo) CreateGrenadeClass(_ context.Context, input grenadeclasses.Input) (grenadeclasses.GrenadeClass, error) {
-	created := grenadeclasses.GrenadeClass{GrenadeClassID: r.next, Name: input.Name, Description: input.Description, Price: input.Price}
+	created := grenadeclasses.GrenadeClass{GrenadeClassID: r.next, Name: input.Name, Description: input.Description, Price: intValue(input.Price, 0)}
 	r.classes[created.GrenadeClassID] = created
 	r.next++
 	return created, nil
@@ -153,8 +169,8 @@ func (r *fakeClassRepo) update(_ context.Context, id int, input grenadeclasses.I
 	if input.Description != nil {
 		class.Description = input.Description
 	}
-	if input.Price != 0 {
-		class.Price = input.Price
+	if input.Price != nil {
+		class.Price = *input.Price
 	}
 	r.classes[id] = class
 	return class, nil
@@ -178,6 +194,13 @@ func decode(t *testing.T, recorder *httptest.ResponseRecorder, target any) {
 
 func ptr(value string) *string {
 	return &value
+}
+
+func intValue(value *int, fallback int) int {
+	if value == nil {
+		return fallback
+	}
+	return *value
 }
 
 var _ grenadeclasses.Repository = (*fakeClassRepo)(nil)

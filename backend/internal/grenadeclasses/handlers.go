@@ -133,7 +133,7 @@ func decodeInput(w http.ResponseWriter, r *http.Request, requireName bool) (Inpu
 	if requireName && input.Name == "" {
 		errorsByField["name"] = []string{"This field is required."}
 	}
-	if input.Price < 0 {
+	if input.Price != nil && *input.Price < 0 {
 		errorsByField["price"] = []string{"Ensure this value is greater than or equal to 0."}
 	}
 	if len(errorsByField) > 0 {

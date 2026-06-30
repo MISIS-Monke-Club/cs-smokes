@@ -17,7 +17,7 @@ type GrenadeClassDTO struct {
 type Input struct {
 	Name        string  `json:"name"`
 	Description *string `json:"description"`
-	Price       int     `json:"price"`
+	Price       *int    `json:"price"`
 }
 
 func ToDTO(class GrenadeClass) GrenadeClassDTO {

@@ -113,6 +113,20 @@ select grenade_id, map_id, user_id, grenade_class_id, link_to_video, title, desc
 from lineups
 order by grenade_id;
 
+-- name: ListLineupsFiltered :many
+select l.grenade_id, l.map_id, l.user_id, l.grenade_class_id, l.link_to_video, l.title, l.description, l.is_approved, l.views, l.preview_image_path, l.created_at
+from lineups l
+join users u on u.user_id = l.user_id
+where (sqlc.narg('is_approved')::boolean is null or l.is_approved = sqlc.narg('is_approved')::boolean)
+  and (sqlc.narg('query')::text is null or lower(l.title) like '%' || lower(sqlc.narg('query')::text) || '%')
+  and (sqlc.narg('by_user_name')::text is null or lower(u.username) like '%' || lower(sqlc.narg('by_user_name')::text) || '%')
+order by
+    case when sqlc.arg('ordering') = 'date_of_creation' then l.created_at end asc,
+    case when sqlc.arg('ordering') = '-date_of_creation' then l.created_at end desc,
+    case when sqlc.arg('ordering') = 'by_alphabet' then l.title end asc,
+    case when sqlc.arg('ordering') = '-by_alphabet' then l.title end desc,
+    l.grenade_id asc;
+
 -- name: GetLineupByID :one
 select grenade_id, map_id, user_id, grenade_class_id, link_to_video, title, description, is_approved, views, preview_image_path, created_at
 from lineups

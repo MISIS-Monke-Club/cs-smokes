@@ -151,9 +151,15 @@ func (h Handler) decodeMultipart(w http.ResponseWriter, r *http.Request, require
 		MapID:          parseInt(r.FormValue("map_id")),
 		UserID:         parseInt(r.FormValue("user_id")),
 		Title:          r.FormValue("title"),
-		IsApproved:     r.FormValue("is_approved") == "true",
-		Views:          parseInt(r.FormValue("views")),
 		GrenadeClassID: parseInt(r.FormValue("grenade_class_id")),
+	}
+	if _, ok := r.MultipartForm.Value["is_approved"]; ok {
+		value := r.FormValue("is_approved") == "true"
+		input.IsApproved = &value
+	}
+	if _, ok := r.MultipartForm.Value["views"]; ok {
+		value := parseInt(r.FormValue("views"))
+		input.Views = &value
 	}
 	if link := r.FormValue("link_to_video"); link != "" {
 		input.LinkToVideo = &link

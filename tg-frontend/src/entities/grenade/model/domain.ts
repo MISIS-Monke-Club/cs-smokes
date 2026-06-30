@@ -7,14 +7,14 @@ export const grenadeDTOschema = z.object({
     grenade_class: z.object({
         grenade_class_id: z.number(),
         name: z.string(),
-        description: z.string(),
-        price: z.number().positive().min(1),
+        description: z.string().nullable(),
+        price: z.number().min(0),
     }),
     property_list: z.array(
         z.object({
             property_id: z.number(),
             name: z.string(),
-            value: z.string(),
+            value: z.string().nullable(),
         })
     ),
     link_to_video: z.string().url().nullable(),
@@ -51,13 +51,13 @@ export type GrenadeModel = {
     grenadeClass: {
         grenadeClassId: number
         name: string
-        description: string
+        description: string | null
         price: number
     }
     propertyList: {
         propertyId: number
         name: string
-        value: string
+        value: string | null
     }[]
     linkToVideo: string | null
     creator: {

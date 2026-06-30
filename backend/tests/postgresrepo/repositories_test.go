@@ -4,8 +4,10 @@ import (
 	"context"
 	"errors"
 	"testing"
+	"time"
 
 	"github.com/MISIS-Monke-Club/cs-smokes/backend/internal/auth"
+	"github.com/MISIS-Monke-Club/cs-smokes/backend/internal/lineups"
 	"github.com/MISIS-Monke-Club/cs-smokes/backend/internal/platform/postgresrepo"
 	"github.com/MISIS-Monke-Club/cs-smokes/backend/internal/users"
 	"github.com/jackc/pgx/v5"
@@ -132,6 +134,65 @@ func TestStorePatchUserPreservesExistingPasswordHash(t *testing.T) {
 	}
 }
 
+func TestStoreListLineupsPushesFiltersIntoSQL(t *testing.T) {
+	db, err := pgxmock.NewPool()
+	if err != nil {
+		t.Fatalf("new mock pool: %v", err)
+	}
+	defer db.Close()
+	approved := true
+	createdAt := pgtype.Timestamptz{Time: time.Date(2026, 6, 30, 8, 0, 0, 0, time.UTC), Valid: true}
+
+	db.ExpectQuery("from lineups l\\s+join users u").
+		WithArgs(
+			pgtype.Bool{Bool: true, Valid: true},
+			pgtype.Text{String: "dust", Valid: true},
+			pgtype.Text{String: "alice", Valid: true},
+			"-date_of_creation",
+		).
+		WillReturnRows(lineupRows().AddRow(
+			int32(10),
+			int32(2),
+			int32(7),
+			int32(3),
+			nil,
+			"Dust lineup",
+			nil,
+			true,
+			int32(42),
+			nil,
+			createdAt,
+		))
+	db.ExpectQuery("from users\nwhere user_id = \\$1").
+		WithArgs(int32(7)).
+		WillReturnRows(userRecordRows().AddRow(int32(7), "alice", nil, nil, nil, nil, nil, nil, nil, false))
+	db.ExpectQuery("from grenade_classes\nwhere grenade_class_id = \\$1").
+		WithArgs(int32(3)).
+		WillReturnRows(grenadeClassRows().AddRow(int32(3), "Smoke", nil, int32(0)))
+	db.ExpectQuery("from lineup_properties lp").
+		WithArgs(pgtype.Int4{Int32: 10, Valid: true}).
+		WillReturnRows(lineupPropertyRows())
+	db.ExpectQuery("from pull_requests\nwhere lineup_id = \\$1").
+		WithArgs(int32(10)).
+		WillReturnError(pgx.ErrNoRows)
+
+	rows, err := postgresrepo.New(db).ListLineups(context.Background(), lineups.Filter{
+		IsApproved: &approved,
+		Ordering:   "-date_of_creation",
+		Query:      "dust",
+		ByUserName: "alice",
+	})
+	if err != nil {
+		t.Fatalf("ListLineups: %v", err)
+	}
+	if len(rows) != 1 || rows[0].GrenadeID != 10 || rows[0].Creator.Username != "alice" {
+		t.Fatalf("rows = %#v", rows)
+	}
+	if err := db.ExpectationsWereMet(); err != nil {
+		t.Fatalf("expectations: %v", err)
+	}
+}
+
 func TestStoreSetUserRolesReplacesRoleCodes(t *testing.T) {
 	db, err := pgxmock.NewPool()
 	if err != nil {
@@ -174,4 +235,38 @@ func userRecordRows() *pgxmock.Rows {
 
 func stringPtr(value string) *string {
 	return &value
+}
+
+func lineupRows() *pgxmock.Rows {
+	return pgxmock.NewRows([]string{
+		"grenade_id",
+		"map_id",
+		"user_id",
+		"grenade_class_id",
+		"link_to_video",
+		"title",
+		"description",
+		"is_approved",
+		"views",
+		"preview_image_path",
+		"created_at",
+	})
+}
+
+func grenadeClassRows() *pgxmock.Rows {
+	return pgxmock.NewRows([]string{
+		"grenade_class_id",
+		"name",
+		"description",
+		"price",
+	})
+}
+
+func lineupPropertyRows() *pgxmock.Rows {
+	return pgxmock.NewRows([]string{
+		"property_id",
+		"grenade_id",
+		"name",
+		"value",
+	})
 }

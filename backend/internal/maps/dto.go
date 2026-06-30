@@ -33,7 +33,7 @@ type Filter struct {
 type Input struct {
 	Name          string
 	Link          *string
-	IsEsportsPool bool
+	IsEsportsPool *bool
 	ImagePath     *string
 }
 

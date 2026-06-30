@@ -92,6 +92,34 @@ func TestLineupsMultipartCreateUpdatePatchDelete(t *testing.T) {
 	}
 }
 
+func TestLineupsPatchPreservesOmittedApprovalAndViewsAndAllowsZeroValues(t *testing.T) {
+	repo := newLineupRepo()
+	router := chi.NewRouter()
+	lineups.RegisterRoutes(router, lineups.NewHandler(repo, t.TempDir()))
+
+	rename := multipartRequest(t, http.MethodPatch, "/api/lineups/1", map[string]string{"title": "Window smoke renamed"})
+	renameResp := perform(router, rename.Method, rename.URL.String(), rename.Body, rename.Header.Get("Content-Type"))
+	if renameResp.Code != http.StatusOK {
+		t.Fatalf("rename status = %d, body = %s", renameResp.Code, renameResp.Body.String())
+	}
+	var renamed map[string]any
+	decode(t, renameResp, &renamed)
+	if renamed["is_approved"] != true || renamed["views"] != float64(10) {
+		t.Fatalf("omitted approval/views changed values: %#v", renamed)
+	}
+
+	unapprove := multipartRequest(t, http.MethodPatch, "/api/lineups/1", map[string]string{"is_approved": "false", "views": "0"})
+	unapproveResp := perform(router, unapprove.Method, unapprove.URL.String(), unapprove.Body, unapprove.Header.Get("Content-Type"))
+	if unapproveResp.Code != http.StatusOK {
+		t.Fatalf("unapprove status = %d, body = %s", unapproveResp.Code, unapproveResp.Body.String())
+	}
+	var unapproved map[string]any
+	decode(t, unapproveResp, &unapproved)
+	if unapproved["is_approved"] != false || unapproved["views"] != float64(0) {
+		t.Fatalf("explicit approval/views zero values were not applied: %#v", unapproved)
+	}
+}
+
 func TestLineupsAuxiliaryRoutesAndChangeClass(t *testing.T) {
 	repo := newLineupRepo()
 	router := chi.NewRouter()
@@ -194,6 +222,8 @@ func (r *fakeLineupRepo) CreateLineup(_ context.Context, input lineups.Input) (l
 	item.MapID = input.MapID
 	item.UserID = input.UserID
 	item.GrenadeClass.GrenadeClassID = input.GrenadeClassID
+	item.IsApproved = boolValue(input.IsApproved, false)
+	item.Views = intValue(input.Views, 0)
 	item.PreviewImagePath = input.PreviewImagePath
 	r.lineups[item.GrenadeID] = item
 	r.next++
@@ -209,11 +239,11 @@ func (r *fakeLineupRepo) GetLineup(_ context.Context, id int) (lineups.Lineup, e
 }
 
 func (r *fakeLineupRepo) ReplaceLineup(ctx context.Context, id int, input lineups.Input) (lineups.Lineup, error) {
-	return r.update(ctx, id, input)
+	return r.update(ctx, id, input, false)
 }
 
 func (r *fakeLineupRepo) PatchLineup(ctx context.Context, id int, input lineups.Input) (lineups.Lineup, error) {
-	return r.update(ctx, id, input)
+	return r.update(ctx, id, input, true)
 }
 
 func (r *fakeLineupRepo) DeleteLineup(_ context.Context, id int) error {
@@ -237,13 +267,23 @@ func (r *fakeLineupRepo) ChangeGrenadeClass(_ context.Context, id int, classID i
 	return item, nil
 }
 
-func (r *fakeLineupRepo) update(_ context.Context, id int, input lineups.Input) (lineups.Lineup, error) {
+func (r *fakeLineupRepo) update(_ context.Context, id int, input lineups.Input, merge bool) (lineups.Lineup, error) {
 	item, ok := r.lineups[id]
 	if !ok {
 		return lineups.Lineup{}, lineups.ErrNotFound
 	}
 	if input.Title != "" {
 		item.Title = input.Title
+	}
+	if input.IsApproved != nil {
+		item.IsApproved = *input.IsApproved
+	} else if !merge {
+		item.IsApproved = false
+	}
+	if input.Views != nil {
+		item.Views = *input.Views
+	} else if !merge {
+		item.Views = 0
 	}
 	if input.PreviewImagePath != nil {
 		item.PreviewImagePath = input.PreviewImagePath
@@ -298,6 +338,20 @@ func decode(t *testing.T, recorder *httptest.ResponseRecorder, target any) {
 
 func ptr(value string) *string {
 	return &value
+}
+
+func boolValue(value *bool, fallback bool) bool {
+	if value == nil {
+		return fallback
+	}
+	return *value
+}
+
+func intValue(value *int, fallback int) int {
+	if value == nil {
+		return fallback
+	}
+	return *value
 }
 
 var _ lineups.Repository = (*fakeLineupRepo)(nil)

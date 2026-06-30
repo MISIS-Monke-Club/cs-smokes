@@ -966,6 +966,79 @@ func (q *Queries) ListLineups(ctx context.Context) ([]ListLineupsRow, error) {
 	return items, nil
 }
 
+const listLineupsFiltered = `-- name: ListLineupsFiltered :many
+select l.grenade_id, l.map_id, l.user_id, l.grenade_class_id, l.link_to_video, l.title, l.description, l.is_approved, l.views, l.preview_image_path, l.created_at
+from lineups l
+join users u on u.user_id = l.user_id
+where ($1::boolean is null or l.is_approved = $1::boolean)
+  and ($2::text is null or lower(l.title) like '%' || lower($2::text) || '%')
+  and ($3::text is null or lower(u.username) like '%' || lower($3::text) || '%')
+order by
+    case when $4 = 'date_of_creation' then l.created_at end asc,
+    case when $4 = '-date_of_creation' then l.created_at end desc,
+    case when $4 = 'by_alphabet' then l.title end asc,
+    case when $4 = '-by_alphabet' then l.title end desc,
+    l.grenade_id asc
+`
+
+type ListLineupsFilteredParams struct {
+	IsApproved pgtype.Bool
+	Query      pgtype.Text
+	ByUserName pgtype.Text
+	Ordering   interface{}
+}
+
+type ListLineupsFilteredRow struct {
+	GrenadeID        int32
+	MapID            int32
+	UserID           int32
+	GrenadeClassID   int32
+	LinkToVideo      pgtype.Text
+	Title            string
+	Description      pgtype.Text
+	IsApproved       bool
+	Views            int32
+	PreviewImagePath pgtype.Text
+	CreatedAt        pgtype.Timestamptz
+}
+
+func (q *Queries) ListLineupsFiltered(ctx context.Context, arg ListLineupsFilteredParams) ([]ListLineupsFilteredRow, error) {
+	rows, err := q.db.Query(ctx, listLineupsFiltered,
+		arg.IsApproved,
+		arg.Query,
+		arg.ByUserName,
+		arg.Ordering,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListLineupsFilteredRow
+	for rows.Next() {
+		var i ListLineupsFilteredRow
+		if err := rows.Scan(
+			&i.GrenadeID,
+			&i.MapID,
+			&i.UserID,
+			&i.GrenadeClassID,
+			&i.LinkToVideo,
+			&i.Title,
+			&i.Description,
+			&i.IsApproved,
+			&i.Views,
+			&i.PreviewImagePath,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listMaps = `-- name: ListMaps :many
 select m.map_id, m.name, m.link, m.is_esports_pool, m.image_path, count(l.grenade_id)::int as quantity
 from maps m

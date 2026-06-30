@@ -72,8 +72,8 @@ type Input struct {
 	UserID           int
 	Title            string
 	Description      *string
-	IsApproved       bool
-	Views            int
+	IsApproved       *bool
+	Views            *int
 	PreviewImagePath *string
 	GrenadeClassID   int
 }
